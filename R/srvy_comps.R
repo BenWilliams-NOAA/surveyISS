@@ -1,0 +1,87 @@
+#' primary survey input sample size function
+#'
+#' @param lfreq_data length frequency data
+#' @param specimen_data age-length specimen data
+#' @param cpue_data abundance by length data 
+#' @param strata_data strata and associated area 
+#' @param yrs age filter returns years >= (default = NULL)
+#' @param boot_hauls switch for resampling hauls (default = FALSE)
+#' @param boot_lengths switch for resampling lengths (default = FALSE)
+#' @param boot_ages switch for resampling ages (default = FALSE)
+#'
+#' @return
+#' @export srvy_comps
+#'
+#' @examples
+#' srvy_comps(lfreq, specimen, cpue, strata_data, yrs = 2015, boot_hauls = TRUE,
+#'     boot_lengths = TRUE)
+srvy_comps <- function(lfreq_data, specimen_data, cpue_data, strata_data, yrs, 
+                boot_hauls, boot_lengths, boot_ages) {
+  # globals ----
+  # year switch
+  if (is.null(yrs)) yrs <- 0
+ 
+  # prep data ----
+  # complete cases by length/sex/strata for all years
+  lfreq_data %>%
+      tidytable::filter.(year >= yrs) %>% 
+      tibble::as_tibble() %>% 
+      dplyr::group_by(species_code) %>%
+      dplyr::distinct(length, year) %>%
+      tidyr::expand(length, year) -> .lngs
+  
+  # first pass of filtering
+  data.table::setDT(cpue_data) %>%
+    tidytable::filter.(year >= yrs) %>% 
+    tidytable::left_join.(strata_data) -> .cpue
+  
+  data.table::setDT(lfreq_data) %>%
+    tidytable::filter.(year >= yrs) %>% 
+    tidytable::drop_na.() -> .lfreq
+  
+  .lfreq %>% 
+    tidytable::uncount.(frequency) -> .lfreq_un
+  
+  data.table::setDT(specimen_data) %>%
+    tidytable::filter.(year >= yrs) %>% 
+    tidytable::drop_na.() -> .agedat
+  
+  # randomize hauls ----  
+  if(isTRUE(boot_hauls)) {
+    boot_haul(.cpue) -> .hls
+    
+    .hls %>% 
+      tidytable::left_join.(.cpue) -> .cpue
+    .hls %>% 
+      tidytable::left_join.(.lfreq) -> .lfreq
+    .hls %>% 
+      tidytable::left_join.(.lfreq_un) %>% 
+      tidytable::drop_na.() -> .lfreq_un
+    .hls %>% 
+      tidytable::left_join.(.agedat) %>% 
+      tidytable::drop_na.() -> .agedat
+    
+  } 
+  
+  # randomize lengths ----
+  if(isTRUE(boot_lengths)) {
+    boot_length(.lfreq_un) -> .lfreq_un
+  }
+
+  # length comp ----
+  lcomp(.lfreq_un) -> .lcomp
+  
+  # length population ----
+  lpop(.lcomp, .cpue, .lngs) -> .lpop
+  
+  # randomize age ----
+  if(isTRUE(boot_ages)) {
+  boot_age(.agedat) -> .agedat
+  }
+  
+  # age population ----
+  apop(.lpop, .agedat) -> .apop
+ 
+  list(age = .apop, length = .lpop)
+   
+}
