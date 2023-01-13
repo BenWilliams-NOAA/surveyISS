@@ -6,3 +6,4 @@ use_build_ignore("dev")
 
 # after adding a function come back and run devtools::document()
 document()
+pkgdown::build_site()
