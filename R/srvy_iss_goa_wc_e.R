@@ -172,24 +172,24 @@ srvy_iss_goa_wc_e <- function(iters = 1, lfreq_data, specimen_data, cpue_data, s
       tidytable::map_df.(., ~as.data.frame(.x), .id = "sim") %>% 
       tidytable::mutate.(region = "wcgoa") %>% 
       tidytable::select(-sim...2) %>% 
-      tidytable::rename(sim = 'sim...1') -> .r_age_wc
+      tidytable::rename.(sim = 'sim...1') -> .r_age_wc
     r_age_e %>%
       tidytable::map_df.(., ~as.data.frame(.x), .id = "sim") %>% 
       tidytable::mutate.(region = "egoa") %>% 
       tidytable::select(-sim...2) %>% 
-      tidytable::rename(sim = 'sim...1') %>% 
+      tidytable::rename.(sim = 'sim...1') %>% 
       tidytable::bind_rows.(.r_age_wc) %>% 
       vroom::vroom_write(here::here("output", region, "resampled_age_wc_egoa.csv"), delim = ",")
     r_length_wc %>%
       tidytable::map_df.(., ~as.data.frame(.x), .id = "sim") %>% 
       tidytable::mutate.(region = "wcgoa") %>% 
       tidytable::select(-sim...2) %>% 
-      tidytable::rename(sim = 'sim...1') -> .r_length_wc
+      tidytable::rename.(sim = 'sim...1') -> .r_length_wc
     r_length_e %>%
       tidytable::map_df.(., ~as.data.frame(.x), .id = "sim") %>% 
       tidytable::mutate.(region = "egoa") %>% 
       tidytable::select(-sim...2) %>% 
-      tidytable::rename(sim = 'sim...1') %>% 
+      tidytable::rename.(sim = 'sim...1') %>% 
       tidytable::bind_rows.(.r_length_wc) %>% 
       vroom::vroom_write(here::here("output", region, "resampled_size_wc_egoa.csv"), delim = ",") 
   }
