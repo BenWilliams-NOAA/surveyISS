@@ -1,4 +1,4 @@
-#' primary survey age/length pop'n numbers function
+#' primary survey age/length pop'n numbers function (customized for ai rebs complex)
 #'
 #' @param lfreq_data length frequency data
 #' @param specimen_data age-length specimen data
@@ -10,13 +10,14 @@
 #' @param boot_ages switch for resampling ages (default = FALSE)
 #'
 #' @return
-#' @export srvy_comps
+#' @export srvy_comps_ai_rebs
 #'
 #' @examples
-#' 
-
-srvy_comps <- function(lfreq_data, specimen_data, cpue_data, strata_data, yrs, 
-                       boot_hauls, boot_lengths, boot_ages) {
+#' swo(lfreq, specimen, cpue, strata_data, yrs = 2015, boot_hauls = TRUE,
+#'     boot_lengths = TRUE, length_samples = 100)
+srvy_comps_ai_rebs <- function(lfreq_data, specimen_data, cpue_data, strata_data, yrs, 
+                               boot_hauls, boot_lengths, boot_ages) {
+  
   # globals ----
   # year switch
   if (is.null(yrs)) yrs <- 0
@@ -72,12 +73,16 @@ srvy_comps <- function(lfreq_data, specimen_data, cpue_data, strata_data, yrs,
   lcomp(.lfreq_un) -> .lcomp
   
   # length population ----
-  lpop(.lcomp, .cpue, .lngs) -> .lpop
+  lpop(.lcomp, .cpue, .lngs) %>% 
+    tidytable::mutate.(species_code = 3005012) -> .lpop
   
   # randomize age ----
   if(isTRUE(boot_ages)) {
     boot_age(.agedat) -> .agedat
   }
+  
+  .agedat %>% 
+    tidytable::mutate.(species_code = 3005012) -> .agedat
   
   # age population ----
   apop(.lpop, .agedat) -> .apop

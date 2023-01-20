@@ -3,3 +3,5 @@
 .RData
 .Ruserdata
 database_specs.csv
+output/
+data/

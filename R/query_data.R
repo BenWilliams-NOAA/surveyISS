@@ -116,7 +116,7 @@ query_data <- function(region, species, yrs = NULL, afsc_user, afsc_pwd, nbs = F
     sql_run(afsc, spbss) %>% 
       dplyr::rename_all(tolower) %>% 
       dplyr::mutate(year=as.numeric(substr(as.character(cruise), 1, 4))) %>% 
-      vroom::vroom_write(here::here('data', paste0("specimen_slope", tolower(region), ".csv")), 
+      vroom::vroom_write(here::here('data', paste0("specimen_slope_", tolower(region), ".csv")), 
                          delim = ',')
     
   } else {
@@ -170,7 +170,7 @@ query_data <- function(region, species, yrs = NULL, afsc_user, afsc_pwd, nbs = F
     sql_run(afsc, cpbss) %>% 
       dplyr::rename_all(tolower) %>% 
       vroom::vroom_write(., 
-                         here::here('data', paste0("cpue_slope", tolower(region), ".csv")), 
+                         here::here('data', paste0("cpue_slope_", tolower(region), ".csv")), 
                          delim = ',')
     
   } else {
@@ -260,7 +260,7 @@ query_data <- function(region, species, yrs = NULL, afsc_user, afsc_pwd, nbs = F
     
     sql_run(afsc, rpbs) %>%
       dplyr::rename_all(tolower) %>% 
-      vroom::vroom_write(here::here('data', paste0("race_pop_", tolower(region), ".csv")), 
+      vroom::vroom_write(here::here('data', paste0("race_lpop_", tolower(region), ".csv")), 
                          delim = ',')
     
     rpbss = sql_read('race_pop_bss.sql')
@@ -272,7 +272,7 @@ query_data <- function(region, species, yrs = NULL, afsc_user, afsc_pwd, nbs = F
       dplyr::rename_all(tolower) %>% 
       dplyr:: group_by(year,species_code,length) %>% 
       dplyr::summarise(males=sum(males),females=sum(females),unsexed=sum(unsexed),total=sum(total)) %>%
-      vroom::vroom_write(here::here('data', paste0("race_pop_slope", tolower(region), ".csv")), 
+      vroom::vroom_write(here::here('data', paste0("race_lpop_slope", tolower(region), ".csv")), 
                          delim = ',')
     
   } else {
