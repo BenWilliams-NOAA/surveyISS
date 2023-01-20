@@ -8,7 +8,9 @@
 library(purrr)
 library(tidyverse)
 library(tidytable)
-source_files <- list.files(here::here("R"), "*.R$")
+library(psych)
+
+source_files <- list.files(here::here("R"), "*.R$")[list.files(here::here("R"), "*.R$") != "run_surveyISS.R"]
 map(here::here("R", source_files), source)
 
 # get database username/password
@@ -147,57 +149,51 @@ srvy_iss_ai_rebs(iters = iters, lfreq_data = .lfreq_rebs, specimen_data = .speci
 ##~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 #### run for eastern bering sea stocks
 ##~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-yrs = 1979
-species = c(10110, 10112, 10115, 10130, 10210, 10261, 10285, 21720, 21740, 30060)
-region = 'BS'
-
-query_data(region, species, yrs, afsc_user, afsc_pass, nbs=FALSE)
-
-cpue_data <- vroom::vroom(here::here('data', 'cpue_bs.csv'))
-lfreq_data <- vroom::vroom(here::here('data', 'lfreq_bs.csv'))
-strata_data <- vroom::vroom(here::here('data', 'strata_bs.csv'))
-specimen_data <- vroom::vroom(here::here('data', 'specimen_bs.csv'))
-
-
-#ebs shelf
-cpue_data %>% 
-  tidytable::filter.(!(species_code %in% c(30060))) -> .cpue
-lfreq_data %>% 
-  tidytable::filter.(!(species_code %in% c(30060))) -> .lfreq
-specimen_data %>% 
-  tidytable::filter.(!(species_code %in% c(30060))) -> .specimen
-
-srvy_iss(iters = iters, lfreq_data = .lfreq, specimen_data = .specimen, cpue_data = .cpue, strata_data = strata, 
-         yrs = yrs, boot_hauls = TRUE, boot_lengths = TRUE, boot_ages = TRUE, 
-         region = 'bs', save_orig = TRUE, save_comps = TRUE, save_ess = TRUE, match_orig = TRUE, srvy_type = 'shelf')
-
-
-
-#ebs slope
-cpue_data_s <- vroom::vroom(here::here('data', 'cpue_slope_bs.csv'))
-lfreq_data_s <- vroom::vroom(here::here('data', 'lfreq_slope_bs.csv'))
-strata_data <- vroom::vroom(here::here('data', 'strata_bs.csv'))
-specimen_data_s <- vroom::vroom(here::here('data', 'specimen_slope_bs.csv'))
-
-cpue_data_s %>% 
-  tidytable::filter.(species_code %in% c(10112, 10115,30060)) -> .cpue
-lfreq_data_s %>% 
-  tidytable::filter.(species_code %in% c(10112, 10115,30060)) -> .lfreq
-specimen_data_s %>% 
-  tidytable::filter.(species_code %in% c(10112, 10115,30060)) -> .specimen
-
-srvy_iss(iters = iters, lfreq_data = .lfreq, specimen_data = .specimen, cpue_data = .cpue, strata_data = strata, 
-         yrs = yrs, boot_hauls = TRUE, boot_lengths = TRUE, boot_ages = TRUE, 
-         region = 'bs', save_orig = TRUE, save_comps = TRUE, save_ess = TRUE, match_orig = TRUE, srvy_type = 'slope')
+# 
+# yrs = 1979
+# species = c(10110, 10112, 10115, 10130, 10210, 10261, 10285, 21720, 21740, 30060)
+# region = 'BS'
+# 
+# query_data(region, species, yrs, afsc_user, afsc_pass, nbs=FALSE)
+# 
+# cpue_data <- vroom::vroom(here::here('data', 'cpue_bs.csv'))
+# lfreq_data <- vroom::vroom(here::here('data', 'lfreq_bs.csv'))
+# strata_data <- vroom::vroom(here::here('data', 'strata_bs.csv'))
+# specimen_data <- vroom::vroom(here::here('data', 'specimen_bs.csv'))
+# 
+# #ebs shelf
+# cpue_data %>% 
+#   tidytable::filter.(!(species_code %in% c(30060))) -> .cpue
+# lfreq_data %>% 
+#   tidytable::filter.(!(species_code %in% c(30060))) -> .lfreq
+# specimen_data %>% 
+#   tidytable::filter.(!(species_code %in% c(30060))) -> .specimen
+# 
+# srvy_iss(iters = iters, lfreq_data = .lfreq, specimen_data = .specimen, cpue_data = .cpue, strata_data = strata, 
+#          yrs = yrs, boot_hauls = TRUE, boot_lengths = TRUE, boot_ages = TRUE, 
+#          region = 'bs', save_orig = TRUE, save_comps = TRUE, save_ess = TRUE, match_orig = TRUE, srvy_type = 'shelf')
+# 
+# #ebs slope
+# cpue_data_s <- vroom::vroom(here::here('data', 'cpue_slope_bs.csv'))
+# lfreq_data_s <- vroom::vroom(here::here('data', 'lfreq_slope_bs.csv'))
+# strata_data <- vroom::vroom(here::here('data', 'strata_bs.csv'))
+# specimen_data_s <- vroom::vroom(here::here('data', 'specimen_slope_bs.csv'))
+# 
+# cpue_data_s %>% 
+#   tidytable::filter.(species_code %in% c(10112, 10115,30060)) -> .cpue
+# lfreq_data_s %>% 
+#   tidytable::filter.(species_code %in% c(10112, 10115,30060)) -> .lfreq
+# specimen_data_s %>% 
+#   tidytable::filter.(species_code %in% c(10112, 10115,30060)) -> .specimen
+# 
+# srvy_iss(iters = iters, lfreq_data = .lfreq, specimen_data = .specimen, cpue_data = .cpue, strata_data = strata, 
+#          yrs = yrs, boot_hauls = TRUE, boot_lengths = TRUE, boot_ages = TRUE, 
+#          region = 'bs', save_orig = TRUE, save_comps = TRUE, save_ess = TRUE, match_orig = TRUE, srvy_type = 'slope')
 
 
 ##~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 #### compile afsc trawl survey iss results (across regions)
 ##~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-
-
 
 # For testing run time of 500 iterations
 if(iters < 100){

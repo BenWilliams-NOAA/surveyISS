@@ -24,7 +24,7 @@
 srvy_iss <- function(iters = 1, lfreq_data, specimen_data, cpue_data, strata_data, yrs = NULL, 
                      boot_hauls = FALSE, boot_lengths = FALSE, boot_ages = FALSE, 
                      region = NULL, save_orig = FALSE, save_comps = FALSE, save_ess = FALSE, match_orig = FALSE, srvy_type = NULL){
-    
+  
   # create storage location
   region = tolower(region)
   if(!dir.exists(here::here('output', region))){
@@ -60,7 +60,7 @@ srvy_iss <- function(iters = 1, lfreq_data, specimen_data, cpue_data, strata_dat
     gap_lpop <- vroom::vroom(here::here('data', paste0('race_lpop_', tolower(region), '.csv')))
     match_gap_bs(ogl, gap_lpop, thresh = 0.01, region = region, save = srvy_type)
   }
-
+  
   # run resampling iterations
   rr <- purrr::map(1:iters, ~ srvy_comps(lfreq_data = lfreq_data, 
                                          specimen_data = specimen_data, 
@@ -78,7 +78,7 @@ srvy_iss <- function(iters = 1, lfreq_data, specimen_data, cpue_data, strata_dat
   if(isTRUE(save_comps)) {
     r_age %>%
       tidytable::map_df.(., ~as.data.frame(.x), .id = "sim") %>% 
-    vroom::vroom_write(here::here("output", region, "resampled_age.csv"), delim = ",")
+      vroom::vroom_write(here::here("output", region, "resampled_age.csv"), delim = ",")
     r_length %>%
       tidytable::map_df.(., ~as.data.frame(.x), .id = "sim") %>% 
       vroom::vroom_write(here::here("output", region, "resampled_size.csv"), delim = ",")
@@ -111,13 +111,13 @@ srvy_iss <- function(iters = 1, lfreq_data, specimen_data, cpue_data, strata_dat
                             .by = c(year, species_code, sex)) %>% 
       tidytable::pivot_wider.(names_from = sex,
                               values_from = nss) %>% 
-      tidytable::rename(male = '1',
-                        female = '2',
-                        unsexed = '3') %>% 
+      tidytable::rename.(male = '1',
+                         female = '2',
+                         unsexed = '3') %>% 
       tidytable::mutate.(unsexed = case_when(is.na(unsexed) ~ 0,
                                              !is.na(unsexed) ~ unsexed),
                          total = male + female + unsexed) %>% 
-      tidytable::select(-unsexed) %>% 
+      tidytable::select.(-unsexed) %>% 
       tidytable::pivot_longer.(cols = c(male, female, total),
                                names_to = 'comp_type',
                                values_to = 'nss') -> nss_size
@@ -131,11 +131,11 @@ srvy_iss <- function(iters = 1, lfreq_data, specimen_data, cpue_data, strata_dat
                             .by = c(year, species_code, sex)) %>% 
       tidytable::pivot_wider.(names_from = sex,
                               values_from = hls) %>% 
-      tidytable::rename(male = '1',
-                        female = '2',
-                        unsexed = '3') %>%
-      tidytable::select(-unsexed) %>% 
-      tidytable::left_join(tot_hls) %>% 
+      tidytable::rename.(male = '1',
+                         female = '2',
+                         unsexed = '3') %>%
+      tidytable::select.(-unsexed) %>% 
+      tidytable::left_join.(tot_hls) %>% 
       tidytable::pivot_longer.(cols = c(male, female, total),
                                names_to = 'comp_type',
                                values_to = 'hls') -> hls_size
@@ -146,12 +146,12 @@ srvy_iss <- function(iters = 1, lfreq_data, specimen_data, cpue_data, strata_dat
       dplyr::distinct(year, species_code, ess, iss) %>% 
       tidytable::drop_na.() %>% 
       tidytable::filter.(iss > 0) %>% 
-      tidytable::rename(comp_type = ess) %>% 
+      tidytable::rename.(comp_type = ess) %>% 
       tidytable::mutate.(comp_type = case_when(comp_type == 'ess_f' ~ 'female',
                                                comp_type == 'ess_m' ~ 'male',
                                                comp_type == 'ess_t' ~ 'total')) %>% 
-      tidytable::left_join(nss_size) %>% 
-      tidytable::left_join(hls_size) -> iss_size
+      tidytable::left_join.(nss_size) %>% 
+      tidytable::left_join.(hls_size) -> iss_size
     
     specimen_data %>% 
       tidytable::filter.(!is.na(age)) %>% 
@@ -159,13 +159,13 @@ srvy_iss <- function(iters = 1, lfreq_data, specimen_data, cpue_data, strata_dat
                             .by = c(year, species_code, sex)) %>% 
       tidytable::pivot_wider.(names_from = sex,
                               values_from = nss) %>% 
-      tidytable::rename(male = '1',
-                        female = '2',
-                        unsexed = '3') %>% 
+      tidytable::rename.(male = '1',
+                         female = '2',
+                         unsexed = '3') %>% 
       tidytable::mutate.(unsexed = case_when(is.na(unsexed) ~ 0,
                                              !is.na(unsexed) ~ unsexed),
                          total = male + female + unsexed) %>% 
-      tidytable::select(-unsexed) %>% 
+      tidytable::select.(-unsexed) %>% 
       tidytable::pivot_longer.(cols = c(male, female, total),
                                names_to = 'comp_type',
                                values_to = 'nss') -> nss_age
@@ -181,11 +181,11 @@ srvy_iss <- function(iters = 1, lfreq_data, specimen_data, cpue_data, strata_dat
                             .by = c(year, species_code, sex)) %>% 
       tidytable::pivot_wider.(names_from = sex,
                               values_from = hls) %>% 
-      tidytable::rename(male = '1',
-                        female = '2',
-                        unsexed = '3') %>%
-      tidytable::select(-unsexed) %>% 
-      tidytable::left_join(tot_hls) %>% 
+      tidytable::rename.(male = '1',
+                         female = '2',
+                         unsexed = '3') %>%
+      tidytable::select.(-unsexed) %>% 
+      tidytable::left_join.(tot_hls) %>% 
       tidytable::pivot_longer.(cols = c(male, female, total),
                                names_to = 'comp_type',
                                values_to = 'hls') -> hls_age
@@ -196,22 +196,22 @@ srvy_iss <- function(iters = 1, lfreq_data, specimen_data, cpue_data, strata_dat
       dplyr::distinct(year, species_code, ess, iss) %>% 
       tidytable::drop_na.() %>% 
       tidytable::filter.(iss > 0) %>% 
-      tidytable::rename(comp_type = ess) %>% 
+      tidytable::rename.(comp_type = ess) %>% 
       tidytable::mutate.(comp_type = case_when(comp_type == 'ess_f' ~ 'female',
                                                comp_type == 'ess_m' ~ 'male',
                                                comp_type == 'ess_t' ~ 'total')) %>% 
-      tidytable::left_join(nss_age) %>% 
-      tidytable::left_join(hls_age) -> iss_age
+      tidytable::left_join.(nss_age) %>% 
+      tidytable::left_join.(hls_age) -> iss_age
     
   } else{
-
+    
     ess_size %>% 
       tidytable::mutate.(iss = psych::harmonic.mean(value), 
                          .by = c(year, species_code, ess)) %>%
       dplyr::distinct(year, species_code, ess, iss) %>% 
       tidytable::drop_na.() %>% 
       tidytable::filter.(iss > 0) %>% 
-      tidytable::rename(comp_type = ess) %>% 
+      tidytable::rename.(comp_type = ess) %>% 
       tidytable::mutate.(comp_type = case_when(comp_type == 'ess_f' ~ 'female',
                                                comp_type == 'ess_m' ~ 'male',
                                                comp_type == 'ess_t' ~ 'total')) -> iss_size
@@ -222,7 +222,7 @@ srvy_iss <- function(iters = 1, lfreq_data, specimen_data, cpue_data, strata_dat
       dplyr::distinct(year, species_code, ess, iss) %>% 
       tidytable::drop_na.() %>% 
       tidytable::filter.(iss > 0) %>% 
-      tidytable::rename(comp_type = ess) %>% 
+      tidytable::rename.(comp_type = ess) %>% 
       tidytable::mutate.(comp_type = case_when(comp_type == 'ess_f' ~ 'female',
                                                comp_type == 'ess_m' ~ 'male',
                                                comp_type == 'ess_t' ~ 'total')) -> iss_age
