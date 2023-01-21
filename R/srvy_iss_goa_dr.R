@@ -32,9 +32,14 @@ srvy_iss_goa_dr <- function(iters = 1, lfreq_data, specimen_data, cpue_data, str
   }
   
   # get original values
-  og <- srvy_comps(lfreq_data = lfreq_data, specimen_data = specimen_data, 
-                   cpue_data = cpue_data, strata_data = strata_data, yrs = yrs, 
-                   boot_hauls = FALSE, boot_lengths = FALSE, boot_ages = FALSE)
+  og <- srvy_comps(lfreq_data = lfreq_data, 
+                   specimen_data = specimen_data, 
+                   cpue_data = cpue_data, 
+                   strata_data = strata_data,
+                   yrs = yrs, 
+                   boot_hauls = FALSE, 
+                   boot_lengths = FALSE, 
+                   boot_ages = FALSE)
   oga <- og$age
   oga %>% 
     tidytable::summarize.(males = sum(males),

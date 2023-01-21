@@ -38,9 +38,14 @@ srvy_iss <- function(iters = 1, lfreq_data, specimen_data, cpue_data, strata_dat
   strata_data <- tidytable::as_tidytable(strata_data) 
   
   # get original age/length pop'n values
-  og <- srvy_comps(lfreq_data = lfreq_data, specimen_data = specimen_data, 
-                   cpue_data = cpue_data, strata_data = strata_data, yrs = yrs, 
-                   boot_hauls = FALSE, boot_lengths = FALSE, boot_ages = FALSE)
+  og <- srvy_comps(lfreq_data = lfreq_data, 
+                   specimen_data = specimen_data, 
+                   cpue_data = cpue_data, 
+                   strata_data = strata_data,
+                   yrs = yrs, 
+                   boot_hauls = FALSE, 
+                   boot_lengths = FALSE, 
+                   boot_ages = FALSE)
   oga <- og$age
   ogl <- og$length
   

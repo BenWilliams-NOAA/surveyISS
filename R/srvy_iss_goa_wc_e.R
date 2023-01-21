@@ -55,8 +55,11 @@ srvy_iss_goa_wc_e <- function(iters = 1, lfreq_data, specimen_data, cpue_data, s
   og_wc <- srvy_comps(lfreq_data = subset(.lfreq_data, .lfreq_data$region == "wcgoa"), 
                       specimen_data = subset(.specimen_data, .specimen_data$region == "wcgoa"), 
                       cpue_data = subset(.cpue_data, .cpue_data$region == "wcgoa"),
-                      strata_data = strata_data, yrs = yrs, 
-                      boot_hauls = FALSE, boot_lengths = FALSE, boot_ages = FALSE)
+                      strata_data = strata_data, 
+                      yrs = yrs, 
+                      boot_hauls = FALSE, 
+                      boot_lengths = FALSE, 
+                      boot_ages = FALSE)
   
   oga <- og_wc$age
   oga %>% 
@@ -75,8 +78,11 @@ srvy_iss_goa_wc_e <- function(iters = 1, lfreq_data, specimen_data, cpue_data, s
   og_e <- srvy_comps(lfreq_data = subset(.lfreq_data, .lfreq_data$region == "egoa"), 
                      specimen_data = subset(.specimen_data, .specimen_data$region == "egoa"), 
                      cpue_data = subset(.cpue_data, .cpue_data$region == "egoa"),
-                     strata_data = strata_data, yrs = yrs, 
-                     boot_hauls = FALSE, boot_lengths = FALSE, boot_ages = FALSE)
+                     strata_data = strata_data, 
+                     yrs = yrs, 
+                     boot_hauls = FALSE, 
+                     boot_lengths = FALSE, 
+                     boot_ages = FALSE)
   
   oga <- og_e$age
   oga %>% 
@@ -180,7 +186,7 @@ srvy_iss_goa_wc_e <- function(iters = 1, lfreq_data, specimen_data, cpue_data, s
       tidytable::map_df.(., ~as.data.frame(.x)) %>% 
       tidytable::mutate.(region = "wcgoa") -> .r_length_wc
     r_length_e %>%
-      tidytable::map_df.(., ~as.data.frame(.x), .id = "sim") %>% 
+      tidytable::map_df.(., ~as.data.frame(.x)) %>% 
       tidytable::mutate.(region = "egoa") %>% 
       tidytable::bind_rows.(.r_length_wc) %>% 
       vroom::vroom_write(here::here("output", region, "resampled_size_wc_egoa.csv"), delim = ",") 

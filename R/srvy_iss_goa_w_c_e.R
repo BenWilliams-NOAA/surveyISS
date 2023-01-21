@@ -58,8 +58,11 @@ srvy_iss_goa_w_c_e <- function(iters = 1, lfreq_data, specimen_data, cpue_data, 
   og_w <- srvy_comps(lfreq_data = subset(.lfreq_data, .lfreq_data$region == "wgoa"), 
                      specimen_data = subset(.specimen_data, .specimen_data$region == "wgoa"), 
                      cpue_data = subset(.cpue_data, .cpue_data$region == "wgoa"),
-                     strata_data = strata_data, yrs = yrs, 
-                     boot_hauls = FALSE, boot_lengths = FALSE, boot_ages = FALSE)
+                     strata_data = strata_data, 
+                     yrs = yrs, 
+                     boot_hauls = FALSE, 
+                     boot_lengths = FALSE,
+                     boot_ages = FALSE)
   
   oga <- og_w$age
   oga %>% 
@@ -78,8 +81,11 @@ srvy_iss_goa_w_c_e <- function(iters = 1, lfreq_data, specimen_data, cpue_data, 
   og_c <- srvy_comps(lfreq_data = subset(.lfreq_data, .lfreq_data$region == "cgoa"), 
                      specimen_data = subset(.specimen_data, .specimen_data$region == "cgoa"), 
                      cpue_data = subset(.cpue_data, .cpue_data$region == "cgoa"),
-                     strata_data = strata_data, yrs = yrs, 
-                     boot_hauls = FALSE, boot_lengths = FALSE, boot_ages = FALSE)
+                     strata_data = strata_data, 
+                     yrs = yrs, 
+                     boot_hauls = FALSE, 
+                     boot_lengths = FALSE,
+                     boot_ages = FALSE)
   
   oga <- og_c$age
   oga %>% 
@@ -98,8 +104,11 @@ srvy_iss_goa_w_c_e <- function(iters = 1, lfreq_data, specimen_data, cpue_data, 
   og_e <- srvy_comps(lfreq_data = subset(.lfreq_data, .lfreq_data$region == "egoa"), 
                      specimen_data = subset(.specimen_data, .specimen_data$region == "egoa"), 
                      cpue_data = subset(.cpue_data, .cpue_data$region == "egoa"),
-                     strata_data = strata_data, yrs = yrs, 
-                     boot_hauls = FALSE, boot_lengths = FALSE, boot_ages = FALSE)
+                     strata_data = strata_data, 
+                     yrs = yrs, 
+                     boot_hauls = FALSE, 
+                     boot_lengths = FALSE,
+                     boot_ages = FALSE)
   
   oga <- og_e$age
   oga %>% 
