@@ -53,9 +53,20 @@ lfreq %>%
 specimen %>% 
   tidytable::filter.(!(species_code %in% c(30050, 30051, 30052, 30150, 30152, 10261, 10262, 10200))) -> .specimen
 
-srvy_iss(iters = iters, lfreq_data = .lfreq, specimen_data = .specimen, cpue_data = .cpue, strata_data = strata, 
-        yrs = yrs, boot_hauls = TRUE, boot_lengths = TRUE, boot_ages = TRUE, 
-        region = 'goa', save_orig = TRUE, save_comps = TRUE, save_ess = TRUE, match_orig = TRUE)
+srvy_iss(iters = iters, 
+         lfreq_data = .lfreq,
+         specimen_data = .specimen, 
+         cpue_data = .cpue, 
+         strata_data = strata, 
+         yrs = yrs, 
+         boot_hauls = TRUE, 
+         boot_lengths = TRUE, 
+         boot_ages = TRUE, 
+         region = 'goa', 
+         save_orig = TRUE, 
+         save_comps = TRUE,
+         save_ess = TRUE,
+         match_orig = TRUE)
 
 # run for goa rougheye-blackspotted stock complex
 cpue %>% 
@@ -65,9 +76,20 @@ lfreq %>%
 specimen %>% 
   tidytable::filter.(species_code %in% c(30050, 30051, 30052)) -> .specimen_rebs
 
-srvy_iss_goa_rebs(iters = iters, lfreq_data = .lfreq_rebs, specimen_data = .specimen_rebs, cpue_data = .cpue_rebs, strata_data = strata, 
-                yrs = yrs, boot_hauls = TRUE, boot_lengths = TRUE, boot_ages = TRUE, 
-                region = 'goa', save_orig = TRUE, save_comps = TRUE, save_ess = TRUE, match_orig = FALSE)
+srvy_iss_goa_rebs(iters = iters,
+                  lfreq_data = .lfreq_rebs,
+                  specimen_data = .specimen_rebs,
+                  cpue_data = .cpue_rebs,
+                  strata_data = strata, 
+                  yrs = yrs,
+                  boot_hauls = TRUE, 
+                  boot_lengths = TRUE, 
+                  boot_ages = TRUE, 
+                  region = 'goa', 
+                  save_orig = TRUE, 
+                  save_comps = TRUE,
+                  save_ess = TRUE, 
+                  match_orig = FALSE)
 
 # run for goa dusky stock (has different historical species codes)
 cpue %>% 
@@ -77,9 +99,20 @@ lfreq %>%
 specimen %>% 
   tidytable::filter.(species_code %in% c(30150, 30152)) -> .specimen_dr
 
-srvy_iss_goa_dr(iters = iters, lfreq_data = .lfreq_dr, specimen_data = .specimen_dr, cpue_data = .cpue_dr, strata_data = strata, 
-                yrs = yrs, boot_hauls = TRUE, boot_lengths = TRUE, boot_ages = TRUE, 
-                region = 'goa', save_orig = TRUE, save_comps = TRUE, save_ess = TRUE, match_orig = FALSE)
+srvy_iss_goa_dr(iters = iters, 
+                lfreq_data = .lfreq_dr, 
+                specimen_data = .specimen_dr,
+                cpue_data = .cpue_dr, 
+                strata_data = strata, 
+                yrs = yrs,
+                boot_hauls = TRUE, 
+                boot_lengths = TRUE, 
+                boot_ages = TRUE, 
+                region = 'goa', 
+                save_orig = TRUE, 
+                save_comps = TRUE,
+                save_ess = TRUE, 
+                match_orig = FALSE)
 
 # run for goa northern/southern rock sole
 cpue %>% 
@@ -89,9 +122,20 @@ lfreq %>%
 specimen %>% 
   tidytable::filter.(species_code %in% c(10261, 10262)) -> .specimen_nsrs
 
-srvy_iss_goa_w_c_e(iters = iters, lfreq_data = .lfreq_nsrs, specimen_data = .specimen_nsrs, cpue_data = .cpue_nsrs, strata_data = strata, 
-                   yrs = yrs, boot_hauls = TRUE, boot_lengths = TRUE, boot_ages = TRUE, 
-                   region = 'goa', save_orig = TRUE, save_comps = TRUE, save_ess = TRUE, match_orig = FALSE)
+srvy_iss_goa_w_c_e(iters = iters, 
+                   lfreq_data = .lfreq_nsrs, 
+                   specimen_data = .specimen_nsrs, 
+                   cpue_data = .cpue_nsrs, 
+                   strata_data = strata, 
+                   yrs = yrs,
+                   boot_hauls = TRUE, 
+                   boot_lengths = TRUE, 
+                   boot_ages = TRUE, 
+                   region = 'goa', 
+                   save_orig = TRUE, 
+                   save_comps = TRUE,
+                   save_ess = TRUE, 
+                   match_orig = FALSE)
 
 # Run for GOA rex sole
 cpue %>% 
@@ -101,10 +145,20 @@ lfreq %>%
 specimen %>% 
   tidytable::filter.(species_code %in% c(10200)) -> .specimen_rex
 
-srvy_iss_goa_wc_e(iters = iters, lfreq_data = .lfreq_rex, specimen_data = .specimen_rex, cpue_data = .cpue_rex, strata_data = strata, 
-                  yrs = yrs, boot_hauls = TRUE, boot_lengths = TRUE, boot_ages = TRUE, 
-                  region = 'goa', save_orig = TRUE, save_comps = TRUE, save_ess = TRUE, match_orig = FALSE)
-
+srvy_iss_goa_wc_e(iters = iters, 
+                  lfreq_data = .lfreq_rex, 
+                  specimen_data = .specimen_rex, 
+                  cpue_data = .cpue_rex, 
+                  strata_data = strata, 
+                  yrs = yrs,
+                  boot_hauls = TRUE, 
+                  boot_lengths = TRUE, 
+                  boot_ages = TRUE, 
+                  region = 'goa', 
+                  save_orig = TRUE, 
+                  save_comps = TRUE,
+                  save_ess = TRUE, 
+                  match_orig = FALSE)
 
 ##~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 #### run for aleutian islands stocks
@@ -129,9 +183,20 @@ lfreq %>%
 specimen %>% 
   tidytable::filter.(!(species_code %in% c(30050, 30051, 30052))) -> .specimen
 
-srvy_iss(iters = iters, lfreq_data = .lfreq, specimen_data = .specimen, cpue_data = .cpue, strata_data = strata, 
-         yrs = yrs, boot_hauls = TRUE, boot_lengths = TRUE, boot_ages = TRUE, 
-         region = 'ai', save_orig = TRUE, save_comps = TRUE, save_ess = TRUE, match_orig = TRUE)
+srvy_iss(iters = iters, 
+         lfreq_data = .lfreq, 
+         specimen_data = .specimen, 
+         cpue_data = .cpue, 
+         strata_data = strata, 
+         yrs = yrs, 
+         boot_hauls = TRUE, 
+         boot_lengths = TRUE, 
+         boot_ages = TRUE, 
+         region = 'ai', 
+         save_orig = TRUE, 
+         save_comps = TRUE, 
+         save_ess = TRUE,
+         match_orig = TRUE)
 
 # Run for AI REBS stock complex
 cpue %>% 
@@ -141,9 +206,20 @@ lfreq %>%
 specimen %>% 
   tidytable::filter.(species_code %in% c(30050, 30051, 30052)) -> .specimen_rebs
 
-srvy_iss_ai_rebs(iters = iters, lfreq_data = .lfreq_rebs, specimen_data = .specimen_rebs, cpue_data = .cpue_rebs, strata_data = strata, 
-                 yrs = yrs, boot_hauls = TRUE, boot_lengths = TRUE, boot_ages = TRUE, 
-                 region = 'ai', save_orig = TRUE, save_comps = TRUE, save_ess = TRUE, match_orig = FALSE)
+srvy_iss_ai_rebs(iters = iters,
+                 lfreq_data = .lfreq_rebs, 
+                 specimen_data = .specimen_rebs, 
+                 cpue_data = .cpue_rebs, 
+                 strata_data = strata, 
+                 yrs = yrs, 
+                 boot_hauls = TRUE, 
+                 boot_lengths = TRUE, 
+                 boot_ages = TRUE, 
+                 region = 'ai', 
+                 save_orig = TRUE,
+                 save_comps = TRUE,
+                 save_ess = TRUE, 
+                 match_orig = FALSE)
 
 
 ##~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -169,9 +245,21 @@ srvy_iss_ai_rebs(iters = iters, lfreq_data = .lfreq_rebs, specimen_data = .speci
 # specimen_data %>% 
 #   tidytable::filter.(!(species_code %in% c(30060))) -> .specimen
 # 
-# srvy_iss(iters = iters, lfreq_data = .lfreq, specimen_data = .specimen, cpue_data = .cpue, strata_data = strata, 
-#          yrs = yrs, boot_hauls = TRUE, boot_lengths = TRUE, boot_ages = TRUE, 
-#          region = 'bs', save_orig = TRUE, save_comps = TRUE, save_ess = TRUE, match_orig = TRUE, srvy_type = 'shelf')
+# srvy_iss(iters = iters, 
+#          lfreq_data = .lfreq, 
+#          specimen_data = .specimen, 
+#          cpue_data = .cpue, 
+#          strata_data = strata,
+#          yrs = yrs, 
+#          boot_hauls = TRUE,
+#          boot_lengths = TRUE, 
+#          boot_ages = TRUE,
+#          region = 'bs', 
+#          save_orig = TRUE, 
+#          save_comps = TRUE, 
+#          save_ess = TRUE, 
+#          match_orig = TRUE, 
+#          srvy_type = 'shelf')
 # 
 # #ebs slope
 # cpue_data_s <- vroom::vroom(here::here('data', 'cpue_slope_bs.csv'))
@@ -186,9 +274,21 @@ srvy_iss_ai_rebs(iters = iters, lfreq_data = .lfreq_rebs, specimen_data = .speci
 # specimen_data_s %>% 
 #   tidytable::filter.(species_code %in% c(10112, 10115,30060)) -> .specimen
 # 
-# srvy_iss(iters = iters, lfreq_data = .lfreq, specimen_data = .specimen, cpue_data = .cpue, strata_data = strata, 
-#          yrs = yrs, boot_hauls = TRUE, boot_lengths = TRUE, boot_ages = TRUE, 
-#          region = 'bs', save_orig = TRUE, save_comps = TRUE, save_ess = TRUE, match_orig = TRUE, srvy_type = 'slope')
+# srvy_iss(iters = iters, 
+#          lfreq_data = .lfreq, 
+#          specimen_data = .specimen, 
+#          cpue_data = .cpue, 
+#          strata_data = strata,
+#          yrs = yrs, 
+#          boot_hauls = TRUE, 
+#          boot_lengths = TRUE,
+#          boot_ages = TRUE,
+#          region = 'bs', 
+#          save_orig = TRUE, 
+#          save_comps = TRUE,
+#          save_ess = TRUE,
+#          match_orig = TRUE, 
+#          srvy_type = 'slope')
 
 
 ##~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -198,7 +298,7 @@ srvy_iss_ai_rebs(iters = iters, lfreq_data = .lfreq_rebs, specimen_data = .speci
 # For testing run time of 500 iterations
 if(iters < 100){
   end <- Sys.time()
-  runtime <- (end - st)/iters * 500
+  runtime <- (end - st) / iters * 500 / 60
   runtime
 }
 

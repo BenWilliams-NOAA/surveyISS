@@ -224,37 +224,24 @@ srvy_iss_goa_w_c_e <- function(iters = 1, lfreq_data, specimen_data, cpue_data, 
   # if desired, write out resampled comp data
   if(isTRUE(save_comps)) {
     r_age_w %>%
-      tidytable::map_df.(., ~as.data.frame(.x), .id = "sim") %>% 
-      tidytable::mutate.(region = "wgoa") %>% 
-      tidytable::select.(-sim...2) %>% 
-      tidytable::rename.(sim = 'sim...1') -> .r_age_w
+      tidytable::map_df.(., ~as.data.frame(.x)) %>% 
+      tidytable::mutate.(region = "wgoa") -> .r_age_w
     r_age_c %>%
-      tidytable::map_df.(., ~as.data.frame(.x), .id = "sim") %>% 
-      tidytable::mutate.(region = "cgoa") %>% 
-      tidytable::select.(-sim...2) %>% 
-      tidytable::rename.(sim = 'sim...1') -> .r_age_c
+      tidytable::map_df.(., ~as.data.frame(.x)) -> .r_age_c
     r_age_e %>%
-      tidytable::map_df.(., ~as.data.frame(.x), .id = "sim") %>% 
+      tidytable::map_df.(., ~as.data.frame(.x)) %>% 
       tidytable::mutate.(region = "egoa") %>% 
-      tidytable::select.(-sim...2) %>% 
-      tidytable::rename.(sim = 'sim...1') %>% 
       tidytable::bind_rows.(.r_age_w, .r_age_c) %>% 
       vroom::vroom_write(here::here("output", region, "resampled_age_w_c_egoa.csv"), delim = ",")
     r_length_w %>%
-      tidytable::map_df.(., ~as.data.frame(.x), .id = "sim") %>% 
-      tidytable::mutate.(region = "wgoa") %>% 
-      tidytable::select.(-sim...2) %>% 
-      tidytable::rename.(sim = 'sim...1') -> .r_length_w
+      tidytable::map_df.(., ~as.data.frame(.x)) %>% 
+      tidytable::mutate.(region = "wgoa") -> .r_length_w
     r_length_c %>%
-      tidytable::map_df.(., ~as.data.frame(.x), .id = "sim") %>% 
-      tidytable::mutate.(region = "cgoa") %>% 
-      tidytable::select.(-sim...2) %>% 
-      tidytable::rename.(sim = 'sim...1') -> .r_length_c
+      tidytable::map_df.(., ~as.data.frame(.x)) %>% 
+      tidytable::mutate.(region = "cgoa") -> .r_length_c
     r_length_e %>%
-      tidytable::map_df.(., ~as.data.frame(.x), .id = "sim") %>% 
+      tidytable::map_df.(., ~as.data.frame(.x)) %>% 
       tidytable::mutate.(region = "egoa") %>% 
-      tidytable::select.(-sim...2) %>% 
-      tidytable::rename.(sim = 'sim...1') %>% 
       tidytable::bind_rows.(.r_length_w, .r_length_c) %>% 
       vroom::vroom_write(here::here("output", region, "resampled_size_w_c_egoa.csv"), delim = ",") 
   }
