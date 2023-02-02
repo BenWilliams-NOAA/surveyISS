@@ -50,9 +50,13 @@ srvy_iss <- function(iters = 1, lfreq_data, specimen_data, cpue_data, strata_dat
   ogl <- og$length
   
   # if desired, write original age/length pop'n estimates
-  if(isTRUE(save_orig)){
+  if(isTRUE(save_orig) & region != 'bs'){
     vroom::vroom_write(oga, file = here::here("output", region, "orig_age.csv"), delim = ",")
     vroom::vroom_write(ogl, file = here::here("output", region, "orig_length.csv"), delim = ",")
+  }
+  if(isTRUE(save_orig) & region == 'bs'){
+    vroom::vroom_write(oga, file = here::here("output", region, paste0("orig_age_", srvy_type, ".csv")), delim = ",")
+    vroom::vroom_write(ogl, file = here::here("output", region, paste0("orig_length_", srvy_type, ".csv")), delim = ",")
   }
   
   # if desired, match original age/length pop'n values with GAP output
@@ -62,9 +66,12 @@ srvy_iss <- function(iters = 1, lfreq_data, specimen_data, cpue_data, strata_dat
     match_gap(oga, ogl, gap_apop, gap_lpop, thresh = 0.01, region = region)
   }
   if(isTRUE(match_orig) & region == 'bs'){
-    gap_lpop <- vroom::vroom(here::here('data', paste0('race_lpop_', tolower(region), '.csv')))
-    match_gap_bs(ogl, gap_lpop, thresh = 0.01, region = region, save = srvy_type)
-  }
+    if(isTRUE(srvy_type == 'shelf'))
+      gap_lpop <- vroom::vroom(here::here('data', paste0('race_lpop_', tolower(region), '.csv')))
+    match_gap_bs(ogl, gap_lpop, thresh = 0.01, region = region, save = srvy_type)} else{
+      gap_lpop <- vroom::vroom(here::here('data', paste0('race_lpop_slope_', tolower(region), '.csv')))
+      match_gap_bs(ogl, gap_lpop, thresh = 0.01, region = region, save = srvy_type)
+    }
   
   # run resampling iterations
   rr <- purrr::map(1:iters, ~ srvy_comps(lfreq_data = lfreq_data, 
@@ -80,13 +87,21 @@ srvy_iss <- function(iters = 1, lfreq_data, specimen_data, cpue_data, strata_dat
   r_length <- do.call(mapply, c(list, rr, SIMPLIFY = FALSE))$length
   
   # if desired, write out resampled comp data
-  if(isTRUE(save_comps)) {
+  if(isTRUE(save_comps) & region != 'bs') {
     r_age %>%
       tidytable::map_df.(., ~as.data.frame(.x), .id = "sim") %>% 
       vroom::vroom_write(here::here("output", region, "resampled_age.csv"), delim = ",")
     r_length %>%
       tidytable::map_df.(., ~as.data.frame(.x), .id = "sim") %>% 
       vroom::vroom_write(here::here("output", region, "resampled_size.csv"), delim = ",")
+  }
+  if(isTRUE(save_comps) & region == 'bs') {
+    r_age %>%
+      tidytable::map_df.(., ~as.data.frame(.x), .id = "sim") %>% 
+      vroom::vroom_write(here::here("output", region, paste0("resampled_age_", srvy_type, ".csv")), delim = ",")
+    r_length %>%
+      tidytable::map_df.(., ~as.data.frame(.x), .id = "sim") %>% 
+      vroom::vroom_write(here::here("output", region, paste0("resampled_size_", srvy_type, ".csv")), delim = ",")
   }
   
   # compute effective sample size of bootstrapped age/length
@@ -98,19 +113,19 @@ srvy_iss <- function(iters = 1, lfreq_data, specimen_data, cpue_data, strata_dat
     tidytable::map_df.(., ~as.data.frame(.x), .id = "sim") -> ess_size
   
   # if desired, Write iterated effective sample size results
-  if(isTRUE(save_ess)) {
-    vroom::vroom_write(ess_age, 
-                       here::here("output", region, "iter_ess_ag.csv"), 
-                       delim = ",")
-    vroom::vroom_write(ess_size, 
-                       here::here("output", region, "iter_ess_sz.csv"), 
-                       delim = ",")
+  if(isTRUE(save_ess) & region != 'bs') {
+    vroom::vroom_write(ess_age, here::here("output", region, "iter_ess_ag.csv"), delim = ",")
+    vroom::vroom_write(ess_size, here::here("output", region, "iter_ess_sz.csv"), delim = ",")
+  }
+  if(isTRUE(save_ess) & region == 'bs') {
+    vroom::vroom_write(ess_age, here::here("output", region, paste0("iter_ess_ag_", srvy_type, ".csv")), delim = ",")
+    vroom::vroom_write(ess_size, here::here("output", region, paste0("iter_ess_sz_", srvy_type, ".csv")), delim = ",")
   }
   
   # compute harmonic mean of iterated effective sample size, which is the input sample size (iss)
   #  also add nominal sample size (nss) and number of hauls (hls) as column (for goa and ai)
   
-  if(region != 'BS'){
+  if(region != 'bs'){
     lfreq_data %>% 
       tidytable::summarise.(nss = sum(frequency),
                             .by = c(year, species_code, sex)) %>% 
@@ -236,11 +251,12 @@ srvy_iss <- function(iters = 1, lfreq_data, specimen_data, cpue_data, strata_dat
   }
   
   # write input sample size results
-  vroom::vroom_write(iss_age, 
-                     here::here("output", region, "iss_ag.csv"), 
-                     delim = ",")
-  vroom::vroom_write(iss_size, 
-                     here::here("output", region, "iss_sz.csv"), 
-                     delim = ",")
+  if(region != 'bs'){
+    vroom::vroom_write(iss_age, here::here("output", region, "iss_ag.csv"), delim = ",")
+    vroom::vroom_write(iss_size, here::here("output", region, "iss_sz.csv"), delim = ",")
+  } else{
+    vroom::vroom_write(iss_age, here::here("output", region, paste0("iss_ag_", srvy_type, ".csv")), delim = ",")
+    vroom::vroom_write(iss_size, here::here("output", region, paste0("iss_sz_", srvy_type, ".csv")), delim = ",")
+  }
   
 }

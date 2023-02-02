@@ -21,8 +21,9 @@ match_gap_bs <- function(ogl, gap_lpop, thresh = 0.01, region = NULL, save = NUL
   
   gap_lpop %>% 
     rename.(gap_males = males, gap_females = females, gap_unsexed = unsexed, gap_total = total) %>% 
-    select.(-summary_area) %>% 
+    select.(year, species_code, length, gap_males, gap_females, gap_unsexed, gap_total) %>% 
     left_join.(.lpop) %>% 
+    filter.(!is.na(total)) %>% 
     mutate.(match_males_num = abs(gap_males - males)/gap_males,
             match_females_num = abs(gap_females - females)/gap_females,
             match_unsexed_num = abs(gap_unsexed - unsexed)/gap_unsexed,
@@ -43,8 +44,9 @@ match_gap_bs <- function(ogl, gap_lpop, thresh = 0.01, region = NULL, save = NUL
   
   gap_lpop %>% 
     rename.(gap_males = males, gap_females = females, gap_unsexed = unsexed, gap_total = total) %>% 
-    select.(-summary_area) %>% 
+    select.(year, species_code, length, gap_males, gap_females, gap_unsexed, gap_total) %>% 
     left_join.(.lpop) %>% 
+    filter.(!is.na(total)) %>% 
     select.(-gap_unsexed, -unsexed) %>% 
     mutate.(gap_males = gap_males / sum(gap_males, na.rm = TRUE),
             gap_females = gap_females / sum(gap_females, na.rm = TRUE),

@@ -9,6 +9,7 @@ library(purrr)
 library(tidyverse)
 library(tidytable)
 library(psych)
+library(sumfish)
 
 source_files <- list.files(here::here("R"), "*.R$")[list.files(here::here("R"), "*.R$") != "run_surveyISS.R"]
 map(here::here("R", source_files), source)
@@ -38,7 +39,11 @@ species = c(10110, 10130, 10180, 20510, 21720, 21740, 30060, 30420, 30050, 30051
 
 region = 'GOA'
 
-query_data(region, species, yrs, afsc_user, afsc_pass)
+query_data(region,
+           species,
+           yrs, 
+           afsc_user,
+           afsc_pass)
 
 cpue <- vroom::vroom(here::here('data', 'cpue_goa.csv'))
 lfreq <- vroom::vroom(here::here('data', 'lfreq_goa.csv'))
@@ -168,7 +173,11 @@ yrs = 1991
 species = c(10110, 10112, 21720, 21740, 21921, 30060, 30420, 30050, 30051, 30052)
 region = 'AI'
 
-query_data(region, species, yrs, afsc_user, afsc_pass)
+query_data(region,
+           species, 
+           yrs, 
+           afsc_user,
+           afsc_pass)
 
 cpue <- vroom::vroom(here::here('data', 'cpue_ai.csv'))
 lfreq <- vroom::vroom(here::here('data', 'lfreq_ai.csv'))
@@ -225,70 +234,82 @@ srvy_iss_ai_rebs(iters = iters,
 ##~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 #### run for eastern bering sea stocks
 ##~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-# 
-# yrs = 1979
-# species = c(10110, 10112, 10115, 10130, 10210, 10261, 10285, 21720, 21740, 30060)
-# region = 'BS'
-# 
-# query_data(region, species, yrs, afsc_user, afsc_pass, nbs=FALSE)
-# 
-# cpue_data <- vroom::vroom(here::here('data', 'cpue_bs.csv'))
-# lfreq_data <- vroom::vroom(here::here('data', 'lfreq_bs.csv'))
-# strata_data <- vroom::vroom(here::here('data', 'strata_bs.csv'))
-# specimen_data <- vroom::vroom(here::here('data', 'specimen_bs.csv'))
-# 
-# #ebs shelf
-# cpue_data %>% 
-#   tidytable::filter.(!(species_code %in% c(30060))) -> .cpue
-# lfreq_data %>% 
-#   tidytable::filter.(!(species_code %in% c(30060))) -> .lfreq
-# specimen_data %>% 
-#   tidytable::filter.(!(species_code %in% c(30060))) -> .specimen
-# 
-# srvy_iss(iters = iters, 
-#          lfreq_data = .lfreq, 
-#          specimen_data = .specimen, 
-#          cpue_data = .cpue, 
-#          strata_data = strata,
-#          yrs = yrs, 
-#          boot_hauls = TRUE,
-#          boot_lengths = TRUE, 
-#          boot_ages = TRUE,
-#          region = 'bs', 
-#          save_orig = TRUE, 
-#          save_comps = TRUE, 
-#          save_ess = TRUE, 
-#          match_orig = TRUE, 
-#          srvy_type = 'shelf')
-# 
-# #ebs slope
-# cpue_data_s <- vroom::vroom(here::here('data', 'cpue_slope_bs.csv'))
-# lfreq_data_s <- vroom::vroom(here::here('data', 'lfreq_slope_bs.csv'))
-# strata_data <- vroom::vroom(here::here('data', 'strata_bs.csv'))
-# specimen_data_s <- vroom::vroom(here::here('data', 'specimen_slope_bs.csv'))
-# 
-# cpue_data_s %>% 
-#   tidytable::filter.(species_code %in% c(10112, 10115,30060)) -> .cpue
-# lfreq_data_s %>% 
-#   tidytable::filter.(species_code %in% c(10112, 10115,30060)) -> .lfreq
-# specimen_data_s %>% 
-#   tidytable::filter.(species_code %in% c(10112, 10115,30060)) -> .specimen
-# 
-# srvy_iss(iters = iters, 
-#          lfreq_data = .lfreq, 
-#          specimen_data = .specimen, 
-#          cpue_data = .cpue, 
-#          strata_data = strata,
-#          yrs = yrs, 
-#          boot_hauls = TRUE, 
-#          boot_lengths = TRUE,
-#          boot_ages = TRUE,
-#          region = 'bs', 
-#          save_orig = TRUE, 
-#          save_comps = TRUE,
-#          save_ess = TRUE,
-#          match_orig = TRUE, 
-#          srvy_type = 'slope')
+
+yrs = 1979
+species = c(10110, 10112, 10115, 10130, 10210, 10261, 10285, 21720, 21740, 30060)
+region = 'BS'
+
+query_data(region,
+           species,
+           yrs, 
+           afsc_user,
+           afsc_pass,
+           nbs = FALSE,
+           bs_slope = FALSE)
+
+cpue <- vroom::vroom(here::here('data', 'cpue_bs.csv'))
+lfreq <- vroom::vroom(here::here('data', 'lfreq_bs.csv'))
+strata <- vroom::vroom(here::here('data', 'strata_bs_mb.csv'))
+specimen <- vroom::vroom(here::here('data', 'specimen_bs.csv'))
+
+#ebs shelf
+cpue %>%
+  tidytable::filter.(!(species_code %in% c(30060))) -> .cpue
+lfreq %>%
+  tidytable::filter.(!(species_code %in% c(30060))) -> .lfreq
+specimen %>%
+  tidytable::filter.(!(species_code %in% c(30060))) -> .specimen
+
+srvy_iss(iters = iters,
+         lfreq_data = .lfreq,
+         specimen_data = .specimen,
+         cpue_data = .cpue,
+         strata_data = strata,
+         yrs = yrs,
+         boot_hauls = TRUE,
+         boot_lengths = TRUE,
+         boot_ages = TRUE,
+         region = 'bs',
+         save_orig = TRUE,
+         save_comps = TRUE,
+         save_ess = TRUE,
+         match_orig = TRUE,
+         srvy_type = 'shelf')
+
+#ebs slope
+
+yrs = 2002
+species = c(10110, 10112, 10115,30060)
+region = 'BS'
+
+query_data(region,
+           species,
+           yrs, 
+           afsc_user,
+           afsc_pass,
+           nbs = FALSE,
+           bs_slope = TRUE)
+
+cpue_data_s <- vroom::vroom(here::here('data', 'cpue_slope_bs.csv'))
+lfreq_data_s <- vroom::vroom(here::here('data', 'lfreq_slope_bs.csv'))
+strata_data_s <- vroom::vroom(here::here('data', 'strata_slope_bs_mb.csv'))
+specimen_data_s <- vroom::vroom(here::here('data', 'specimen_slope_bs.csv'))
+
+srvy_iss(iters = iters,
+         lfreq_data = lfreq_data_s,
+         specimen_data = specimen_data_s,
+         cpue_data = cpue_data_s,
+         strata_data = strata_data_s,
+         yrs = yrs,
+         boot_hauls = TRUE,
+         boot_lengths = TRUE,
+         boot_ages = TRUE,
+         region = 'bs',
+         save_orig = TRUE,
+         save_comps = TRUE,
+         save_ess = TRUE,
+         match_orig = TRUE,
+         srvy_type = 'slope')
 
 
 ##~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~

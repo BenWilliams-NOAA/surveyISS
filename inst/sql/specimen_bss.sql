@@ -14,4 +14,4 @@ WHERE racebase.specimen.species_code
 AND racebase.specimen.region
 -- insert region
 AND racebase.haul.vessel IN (57,134,94,178)
-AND racebase.haul.cruise IN (200202,200401,200801,201201,201601)
+AND racebase.haul.cruise IN (200202,200401,200801,201001,201201,201601)
