@@ -3,5 +3,7 @@
 .RData
 .Ruserdata
 database_specs.csv
-output/
+output/ai/
+output/bs/
+output/goa/
 data/

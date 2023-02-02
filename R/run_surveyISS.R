@@ -10,6 +10,8 @@ library(tidyverse)
 library(tidytable)
 library(psych)
 library(sumfish)
+library(vroom)
+library(here)
 
 source_files <- list.files(here::here("R"), "*.R$")[list.files(here::here("R"), "*.R$") != "run_surveyISS.R"]
 map(here::here("R", source_files), source)
@@ -235,8 +237,9 @@ srvy_iss_ai_rebs(iters = iters,
 #### run for eastern bering sea stocks
 ##~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
+#ebs shelf
 yrs = 1979
-species = c(10110, 10112, 10115, 10130, 10210, 10261, 10285, 21720, 21740, 30060)
+species = c(10110, 10112, 10115, 10130, 10210, 10261, 10285, 21720, 21740)
 region = 'BS'
 
 query_data(region,
@@ -252,18 +255,10 @@ lfreq <- vroom::vroom(here::here('data', 'lfreq_bs.csv'))
 strata <- vroom::vroom(here::here('data', 'strata_bs_mb.csv'))
 specimen <- vroom::vroom(here::here('data', 'specimen_bs.csv'))
 
-#ebs shelf
-cpue %>%
-  tidytable::filter.(!(species_code %in% c(30060))) -> .cpue
-lfreq %>%
-  tidytable::filter.(!(species_code %in% c(30060))) -> .lfreq
-specimen %>%
-  tidytable::filter.(!(species_code %in% c(30060))) -> .specimen
-
 srvy_iss(iters = iters,
-         lfreq_data = .lfreq,
-         specimen_data = .specimen,
-         cpue_data = .cpue,
+         lfreq_data = lfreq,
+         specimen_data = specimen,
+         cpue_data = cpue,
          strata_data = strata,
          yrs = yrs,
          boot_hauls = TRUE,
@@ -315,6 +310,79 @@ srvy_iss(iters = iters,
 ##~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 #### compile afsc trawl survey iss results (across regions)
 ##~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+# compile bs
+vroom::vroom(here::here('output', 'bs', 'iss_ag_shelf.csv')) %>% 
+  rename.('iss_age' = iss) %>% 
+  left_join.(vroom::vroom(here::here('output', 'bs', 'iss_sz_shelf.csv'))) %>% 
+  rename.('iss_length' = iss) %>% 
+  mutate.(region = 'bs_shelf') %>% 
+  bind_rows.(vroom::vroom(here::here('output', 'bs', 'iss_ag_slope.csv')) %>% 
+               rename.('iss_age' = iss) %>% 
+               left_join.(vroom::vroom(here::here('output', 'bs', 'iss_sz_slope.csv'))) %>% 
+               rename.('iss_length' = iss) %>% 
+               mutate.(region = 'bs_slope')) -> bs
+
+# compile ai
+vroom::vroom(here::here('output', 'ai', 'iss_ag.csv')) %>% 
+  rename.('iss_age' = iss) %>% 
+  select.(-nss, -hls) %>% 
+  left_join.(vroom::vroom(here::here('output', 'ai', 'iss_sz.csv'))) %>% 
+  select.(-nss, -hls) %>% 
+  rename.('iss_length' = iss) %>% 
+  mutate.(region = 'ai') %>% 
+  bind_rows.(vroom::vroom(here::here('output', 'ai', 'iss_ag_rebs.csv')) %>% 
+               rename.('iss_age' = iss) %>% 
+               select.(-nss, -hls) %>% 
+               left_join.(vroom::vroom(here::here('output', 'ai', 'iss_sz_rebs.csv'))) %>% 
+               select.(-nss, -hls) %>% 
+               rename.('iss_length' = iss) %>% 
+               mutate.(region = 'ai')) -> ai
+
+# compile goa
+vroom::vroom(here::here('output', 'goa', 'iss_ag.csv')) %>% 
+  rename.('iss_age' = iss) %>% 
+  select.(-nss, -hls) %>% 
+  left_join.(vroom::vroom(here::here('output', 'goa', 'iss_sz.csv'))) %>% 
+  select.(-nss, -hls) %>% 
+  rename.('iss_length' = iss) %>% 
+  mutate.(region = 'goa') %>% 
+  bind_rows.(vroom::vroom(here::here('output', 'goa', 'iss_ag_rebs.csv')) %>% 
+               rename.('iss_age' = iss) %>% 
+               select.(-nss, -hls) %>% 
+               left_join.(vroom::vroom(here::here('output', 'goa', 'iss_sz_rebs.csv'))) %>% 
+               select.(-nss, -hls) %>% 
+               rename.('iss_length' = iss) %>% 
+               mutate.(region = 'goa')) %>% 
+  bind_rows.(vroom::vroom(here::here('output', 'goa', 'iss_ag_dr.csv')) %>% 
+               rename.('iss_age' = iss) %>% 
+               select.(-nss, -hls) %>% 
+               left_join.(vroom::vroom(here::here('output', 'goa', 'iss_sz_dr.csv'))) %>% 
+               select.(-nss, -hls) %>% 
+               rename.('iss_length' = iss) %>% 
+               mutate.(region = 'goa')) %>% 
+  bind_rows.(vroom::vroom(here::here('output', 'goa', 'iss_ag_w_c_egoa.csv')) %>% 
+               rename.('iss_age' = iss) %>% 
+               select.(-nss, -hls) %>% 
+               left_join.(vroom::vroom(here::here('output', 'goa', 'iss_sz_w_c_egoa.csv'))) %>% 
+               select.(-nss, -hls) %>% 
+               rename.('iss_length' = iss)) %>% 
+  bind_rows.(vroom::vroom(here::here('output', 'goa', 'iss_ag_wc_egoa.csv')) %>% 
+               rename.('iss_age' = iss) %>% 
+               select.(-nss, -hls) %>% 
+               left_join.(vroom::vroom(here::here('output', 'goa', 'iss_sz_wc_egoa.csv'))) %>% 
+               select.(-nss, -hls) %>% 
+               rename.('iss_length' = iss)) -> goa
+
+# compile all and write results
+goa %>% 
+  bind_rows.(ai) %>% 
+  bind_rows.(bs) %>% 
+  vroom::vroom_write(., 
+                     here::here('output', 'afsc_iss.csv'), 
+                     delim = ',')
+
+
 
 # For testing run time of 500 iterations
 if(iters < 100){
