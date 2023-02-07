@@ -5,15 +5,19 @@
 #' @param specimen_data input dataframe
 #' @param cpue_data input dataframe
 #' @param strata_data input dataframe
+#' @param r_t input dataframe
 #' @param yrs any year filter >= (default = NULL)
 #' @param boot_hauls resample hauls w/replacement (default = FALSE)
 #' @param boot_lengths resample lengths w/replacement (default = FALSE)
 #' @param boot_ages resample ages w/replacement (default = FALSE)
+#' @param al_var include age-length variability (default = FALSE)
+#' @param age_err include ageing error (default = FALSE)
 #' @param region region will create a folder and place results in said folder
 #' @param save_orig save the original comps (default = FALSE)
 #' @param save_comps save the resampled comps (default = FALSE)
 #' @param save_ess save the iterated effective sample sizes (default = FALSE)
-#' @param match_gap match the computed values to gap output (default = FALSE)
+#' @param match_orig match the computed values to gap output (default = FALSE)
+#' @param srvy_type only for bering sea survey, denotes whether it's the shelf or slope survey (default = NULL)
 #'
 #' @return
 #' @export srvy_iss_goa_w_c_e
@@ -21,9 +25,9 @@
 #' @examples
 #' 
 #'
-srvy_iss_goa_w_c_e <- function(iters = 1, lfreq_data, specimen_data, cpue_data, strata_data, yrs = NULL, 
-                               boot_hauls = FALSE, boot_lengths = FALSE, boot_ages = FALSE, 
-                               region = NULL, save_orig = FALSE, save_comps = FALSE, save_ess = FALSE, match_orig = FALSE){
+srvy_iss_goa_w_c_e <- function(iters = 1, lfreq_data, specimen_data, cpue_data, strata_data, r_t, yrs = NULL, 
+                               boot_hauls = FALSE, boot_lengths = FALSE, boot_ages = FALSE, al_var = FALSE, age_err = FALSE,
+                               region = NULL, save_orig = FALSE, save_comps = FALSE, save_ess = FALSE, match_orig = FALSE, srvy_type = NULL){
   
   # create storage location
   region = tolower(region)
@@ -59,10 +63,13 @@ srvy_iss_goa_w_c_e <- function(iters = 1, lfreq_data, specimen_data, cpue_data, 
                      specimen_data = subset(.specimen_data, .specimen_data$region == "wgoa"), 
                      cpue_data = subset(.cpue_data, .cpue_data$region == "wgoa"),
                      strata_data = strata_data, 
+                     r_t = r_t,
                      yrs = yrs, 
                      boot_hauls = FALSE, 
-                     boot_lengths = FALSE,
-                     boot_ages = FALSE)
+                     boot_lengths = FALSE, 
+                     boot_ages = FALSE,
+                     al_var = FALSE,
+                     age_err = FALSE)
   
   oga <- og_w$age
   oga %>% 
@@ -82,10 +89,13 @@ srvy_iss_goa_w_c_e <- function(iters = 1, lfreq_data, specimen_data, cpue_data, 
                      specimen_data = subset(.specimen_data, .specimen_data$region == "cgoa"), 
                      cpue_data = subset(.cpue_data, .cpue_data$region == "cgoa"),
                      strata_data = strata_data, 
+                     r_t = r_t,
                      yrs = yrs, 
                      boot_hauls = FALSE, 
-                     boot_lengths = FALSE,
-                     boot_ages = FALSE)
+                     boot_lengths = FALSE, 
+                     boot_ages = FALSE,
+                     al_var = FALSE,
+                     age_err = FALSE)
   
   oga <- og_c$age
   oga %>% 
@@ -105,10 +115,13 @@ srvy_iss_goa_w_c_e <- function(iters = 1, lfreq_data, specimen_data, cpue_data, 
                      specimen_data = subset(.specimen_data, .specimen_data$region == "egoa"), 
                      cpue_data = subset(.cpue_data, .cpue_data$region == "egoa"),
                      strata_data = strata_data, 
+                     r_t = r_t,
                      yrs = yrs, 
                      boot_hauls = FALSE, 
-                     boot_lengths = FALSE,
-                     boot_ages = FALSE)
+                     boot_lengths = FALSE, 
+                     boot_ages = FALSE,
+                     al_var = FALSE,
+                     age_err = FALSE)
   
   oga <- og_e$age
   oga %>% 
@@ -151,10 +164,13 @@ srvy_iss_goa_w_c_e <- function(iters = 1, lfreq_data, specimen_data, cpue_data, 
                                          specimen_data = subset(.specimen_data, .specimen_data$region == "wgoa"), 
                                          cpue_data = subset(.cpue_data, .cpue_data$region == "wgoa"), 
                                          strata_data = strata_data, 
+                                         r_t = r_t,
                                          yrs = yrs, 
                                          boot_hauls = boot_hauls, 
                                          boot_lengths = boot_lengths, 
-                                         boot_ages = boot_ages))
+                                         boot_ages = boot_ages,
+                                         al_var = al_var,
+                                         age_err = age_err))
   
   r_age <- do.call(mapply, c(list, rr, SIMPLIFY = FALSE))$age
   r_age %>% 
@@ -179,10 +195,13 @@ srvy_iss_goa_w_c_e <- function(iters = 1, lfreq_data, specimen_data, cpue_data, 
                                          specimen_data = subset(.specimen_data, .specimen_data$region == "cgoa"), 
                                          cpue_data = subset(.cpue_data, .cpue_data$region == "cgoa"), 
                                          strata_data = strata_data, 
+                                         r_t = r_t,
                                          yrs = yrs, 
                                          boot_hauls = boot_hauls, 
                                          boot_lengths = boot_lengths, 
-                                         boot_ages = boot_ages))
+                                         boot_ages = boot_ages,
+                                         al_var = al_var,
+                                         age_err = age_err))
   
   r_age <- do.call(mapply, c(list, rr, SIMPLIFY = FALSE))$age
   r_age %>% 
@@ -207,10 +226,13 @@ srvy_iss_goa_w_c_e <- function(iters = 1, lfreq_data, specimen_data, cpue_data, 
                                          specimen_data = subset(.specimen_data, .specimen_data$region == "egoa"), 
                                          cpue_data = subset(.cpue_data, .cpue_data$region == "egoa"), 
                                          strata_data = strata_data, 
+                                         r_t = r_t,
                                          yrs = yrs, 
                                          boot_hauls = boot_hauls, 
                                          boot_lengths = boot_lengths, 
-                                         boot_ages = boot_ages))
+                                         boot_ages = boot_ages,
+                                         al_var = al_var,
+                                         age_err = age_err))
   
   r_age <- do.call(mapply, c(list, rr, SIMPLIFY = FALSE))$age
   r_age %>% 

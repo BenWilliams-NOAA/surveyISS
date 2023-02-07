@@ -93,14 +93,14 @@ lfreq %>%
 specimen %>% 
   tidytable::filter.(species_code %in% c(30050, 30051, 30052)) -> .specimen_rebs
 read_test %>% 
-  tidytable::filter.(species_code %in% c(30050, 30051, 30052)) -> .read_test
+  tidytable::filter.(species_code %in% c(30050, 30051, 30052)) -> .read_test_rebs
 
 srvy_iss_goa_rebs(iters = iters,
                   lfreq_data = .lfreq_rebs,
                   specimen_data = .specimen_rebs,
                   cpue_data = .cpue_rebs,
                   strata_data = strata, 
-                  r_t = .read_test,
+                  r_t = .read_test_rebs,
                   yrs = yrs,
                   boot_hauls = TRUE, 
                   boot_lengths = TRUE, 
@@ -120,12 +120,15 @@ lfreq %>%
   tidytable::filter.(species_code %in% c(30150, 30152)) -> .lfreq_dr
 specimen %>% 
   tidytable::filter.(species_code %in% c(30150, 30152)) -> .specimen_dr
+read_test %>% 
+  tidytable::filter.(species_code %in% c(30150, 30152)) -> .read_test_dr
 
 srvy_iss_goa_dr(iters = iters, 
                 lfreq_data = .lfreq_dr, 
                 specimen_data = .specimen_dr,
                 cpue_data = .cpue_dr, 
                 strata_data = strata, 
+                r_t = .read_test_dr,
                 yrs = yrs,
                 boot_hauls = TRUE, 
                 boot_lengths = TRUE, 
@@ -145,12 +148,16 @@ lfreq %>%
   tidytable::filter.(species_code %in% c(10261, 10262)) -> .lfreq_nsrs
 specimen %>% 
   tidytable::filter.(species_code %in% c(10261, 10262)) -> .specimen_nsrs
+read_test %>% 
+  tidytable::filter.(species_code %in% c(10261, 10262)) -> .read_test_nsrs
+
 
 srvy_iss_goa_w_c_e(iters = iters, 
                    lfreq_data = .lfreq_nsrs, 
                    specimen_data = .specimen_nsrs, 
                    cpue_data = .cpue_nsrs, 
                    strata_data = strata, 
+                   r_t = .read_test_nsrs,
                    yrs = yrs,
                    boot_hauls = TRUE, 
                    boot_lengths = TRUE, 
@@ -170,12 +177,15 @@ lfreq %>%
   tidytable::filter.(species_code %in% c(10200)) -> .lfreq_rex
 specimen %>% 
   tidytable::filter.(species_code %in% c(10200)) -> .specimen_rex
+read_test %>% 
+  tidytable::filter.(species_code %in% c(10200)) -> .read_test_rex
 
 srvy_iss_goa_wc_e(iters = iters, 
                   lfreq_data = .lfreq_rex, 
                   specimen_data = .specimen_rex, 
                   cpue_data = .cpue_rex, 
                   strata_data = strata, 
+                  r_t = .read_test_rex,
                   yrs = yrs,
                   boot_hauls = TRUE, 
                   boot_lengths = TRUE, 
@@ -206,6 +216,11 @@ cpue <- vroom::vroom(here::here('data', 'cpue_ai.csv'))
 lfreq <- vroom::vroom(here::here('data', 'lfreq_ai.csv'))
 strata <- vroom::vroom(here::here('data', 'strata_ai.csv'))
 specimen <- vroom::vroom(here::here('data', 'specimen_ai.csv'))
+read_test <- vroom::vroom(here::here('data', 'reader_tester.csv')) %>% 
+  dplyr::rename_all(tolower) %>% 
+  tidytable::select.(species_code, region, read_age, test_age) %>% 
+  tidytable::rename.(age = 'read_age') %>% 
+  tidytable::filter.(species_code %in% species)
 
 # Run for all species (and subsetting out REBS so we don't have two places with those results)
 cpue %>% 
@@ -214,12 +229,15 @@ lfreq %>%
   tidytable::filter.(!(species_code %in% c(30050, 30051, 30052))) -> .lfreq
 specimen %>% 
   tidytable::filter.(!(species_code %in% c(30050, 30051, 30052))) -> .specimen
+read_test %>% 
+  tidytable::filter.(!(species_code %in% c(30050, 30051, 30052))) -> .read_test
 
 srvy_iss(iters = iters, 
          lfreq_data = .lfreq, 
          specimen_data = .specimen, 
          cpue_data = .cpue, 
          strata_data = strata, 
+         r_t = .read_test,
          yrs = yrs, 
          boot_hauls = TRUE, 
          boot_lengths = TRUE, 
@@ -239,12 +257,15 @@ lfreq %>%
   tidytable::filter.(species_code %in% c(30050, 30051, 30052)) -> .lfreq_rebs
 specimen %>% 
   tidytable::filter.(species_code %in% c(30050, 30051, 30052)) -> .specimen_rebs
+read_test %>% 
+  tidytable::filter.(species_code %in% c(30050, 30051, 30052)) -> .read_test_rebs
 
 srvy_iss_ai_rebs(iters = iters,
                  lfreq_data = .lfreq_rebs, 
                  specimen_data = .specimen_rebs, 
                  cpue_data = .cpue_rebs, 
-                 strata_data = strata, 
+                 strata_data = strata,
+                 r_t = .read_test_rebs, 
                  yrs = yrs, 
                  boot_hauls = TRUE, 
                  boot_lengths = TRUE, 
@@ -279,12 +300,18 @@ cpue <- vroom::vroom(here::here('data', 'cpue_bs.csv'))
 lfreq <- vroom::vroom(here::here('data', 'lfreq_bs.csv'))
 strata <- vroom::vroom(here::here('data', 'strata_bs_mb.csv'))
 specimen <- vroom::vroom(here::here('data', 'specimen_bs.csv'))
+read_test <- vroom::vroom(here::here('data', 'reader_tester.csv')) %>% 
+  dplyr::rename_all(tolower) %>% 
+  tidytable::select.(species_code, region, read_age, test_age) %>% 
+  tidytable::rename.(age = 'read_age') %>% 
+  tidytable::filter.(species_code %in% species)
 
 srvy_iss(iters = iters,
          lfreq_data = lfreq,
          specimen_data = specimen,
          cpue_data = cpue,
          strata_data = strata,
+         r_t = .read_test,
          yrs = yrs,
          boot_hauls = TRUE,
          boot_lengths = TRUE,
@@ -316,12 +343,18 @@ cpue_data_s <- vroom::vroom(here::here('data', 'cpue_slope_bs.csv'))
 lfreq_data_s <- vroom::vroom(here::here('data', 'lfreq_slope_bs.csv'))
 strata_data_s <- vroom::vroom(here::here('data', 'strata_slope_bs_mb.csv'))
 specimen_data_s <- vroom::vroom(here::here('data', 'specimen_slope_bs.csv'))
+read_test <- vroom::vroom(here::here('data', 'reader_tester.csv')) %>% 
+  dplyr::rename_all(tolower) %>% 
+  tidytable::select.(species_code, region, read_age, test_age) %>% 
+  tidytable::rename.(age = 'read_age') %>% 
+  tidytable::filter.(species_code %in% species)
 
 srvy_iss(iters = iters,
          lfreq_data = lfreq_data_s,
          specimen_data = specimen_data_s,
          cpue_data = cpue_data_s,
          strata_data = strata_data_s,
+         r_t = .read_test,
          yrs = yrs,
          boot_hauls = TRUE,
          boot_lengths = TRUE,
