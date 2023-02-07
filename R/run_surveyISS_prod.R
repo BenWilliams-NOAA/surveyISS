@@ -1,4 +1,4 @@
-# example script to obtain age/length input sample size
+# example script to obtain age/length input sample size for production run
 
 # load surveyISS library
 #devtools::install_github("afsc-assessments/surveyISS", force = TRUE)
@@ -51,6 +51,11 @@ cpue <- vroom::vroom(here::here('data', 'cpue_goa.csv'))
 lfreq <- vroom::vroom(here::here('data', 'lfreq_goa.csv'))
 strata <- vroom::vroom(here::here('data', 'strata_goa.csv'))
 specimen <- vroom::vroom(here::here('data', 'specimen_goa.csv'))
+read_test <- vroom::vroom(here::here('data', 'reader_tester.csv')) %>% 
+  dplyr::rename_all(tolower) %>% 
+  tidytable::select.(species_code, region, read_age, test_age) %>% 
+  tidytable::rename.(age = 'read_age') %>% 
+  tidytable::filter.(species_code %in% species)
 
 # run for all species (and subsetting out special cases so we don't have two places with those results)
 cpue %>% 
@@ -59,16 +64,21 @@ lfreq %>%
   tidytable::filter.(!(species_code %in% c(30050, 30051, 30052, 30150, 30152, 10261, 10262, 10200))) -> .lfreq
 specimen %>% 
   tidytable::filter.(!(species_code %in% c(30050, 30051, 30052, 30150, 30152, 10261, 10262, 10200))) -> .specimen
+read_test %>% 
+  tidytable::filter.(!(species_code %in% c(30050, 30051, 30052, 30150, 30152, 10261, 10262, 10200))) -> .read_test
 
 srvy_iss(iters = iters, 
          lfreq_data = .lfreq,
          specimen_data = .specimen, 
          cpue_data = .cpue, 
-         strata_data = strata, 
+         strata_data = strata,
+         r_t = .read_test,
          yrs = yrs, 
          boot_hauls = TRUE, 
          boot_lengths = TRUE, 
-         boot_ages = TRUE, 
+         boot_ages = TRUE,
+         al_var = FALSE,
+         age_err = FALSE,
          region = 'goa', 
          save_orig = TRUE, 
          save_comps = TRUE,
@@ -82,16 +92,21 @@ lfreq %>%
   tidytable::filter.(species_code %in% c(30050, 30051, 30052)) -> .lfreq_rebs
 specimen %>% 
   tidytable::filter.(species_code %in% c(30050, 30051, 30052)) -> .specimen_rebs
+read_test %>% 
+  tidytable::filter.(species_code %in% c(30050, 30051, 30052)) -> .read_test
 
 srvy_iss_goa_rebs(iters = iters,
                   lfreq_data = .lfreq_rebs,
                   specimen_data = .specimen_rebs,
                   cpue_data = .cpue_rebs,
                   strata_data = strata, 
+                  r_t = .read_test,
                   yrs = yrs,
                   boot_hauls = TRUE, 
                   boot_lengths = TRUE, 
                   boot_ages = TRUE, 
+                  al_var = FALSE,
+                  age_err = FALSE,
                   region = 'goa', 
                   save_orig = TRUE, 
                   save_comps = TRUE,
@@ -114,7 +129,9 @@ srvy_iss_goa_dr(iters = iters,
                 yrs = yrs,
                 boot_hauls = TRUE, 
                 boot_lengths = TRUE, 
-                boot_ages = TRUE, 
+                boot_ages = TRUE,  
+                al_var = FALSE,
+                age_err = FALSE,
                 region = 'goa', 
                 save_orig = TRUE, 
                 save_comps = TRUE,
@@ -137,7 +154,9 @@ srvy_iss_goa_w_c_e(iters = iters,
                    yrs = yrs,
                    boot_hauls = TRUE, 
                    boot_lengths = TRUE, 
-                   boot_ages = TRUE, 
+                   boot_ages = TRUE,  
+                   al_var = FALSE,
+                   age_err = FALSE,
                    region = 'goa', 
                    save_orig = TRUE, 
                    save_comps = TRUE,
@@ -160,7 +179,9 @@ srvy_iss_goa_wc_e(iters = iters,
                   yrs = yrs,
                   boot_hauls = TRUE, 
                   boot_lengths = TRUE, 
-                  boot_ages = TRUE, 
+                  boot_ages = TRUE,  
+                  al_var = FALSE,
+                  age_err = FALSE,
                   region = 'goa', 
                   save_orig = TRUE, 
                   save_comps = TRUE,
@@ -203,6 +224,8 @@ srvy_iss(iters = iters,
          boot_hauls = TRUE, 
          boot_lengths = TRUE, 
          boot_ages = TRUE, 
+         al_var = FALSE,
+         age_err = FALSE, 
          region = 'ai', 
          save_orig = TRUE, 
          save_comps = TRUE, 
@@ -226,6 +249,8 @@ srvy_iss_ai_rebs(iters = iters,
                  boot_hauls = TRUE, 
                  boot_lengths = TRUE, 
                  boot_ages = TRUE, 
+                 al_var = FALSE,
+                 age_err = FALSE, 
                  region = 'ai', 
                  save_orig = TRUE,
                  save_comps = TRUE,
@@ -263,7 +288,9 @@ srvy_iss(iters = iters,
          yrs = yrs,
          boot_hauls = TRUE,
          boot_lengths = TRUE,
-         boot_ages = TRUE,
+         boot_ages = TRUE, 
+         al_var = FALSE,
+         age_err = FALSE,
          region = 'bs',
          save_orig = TRUE,
          save_comps = TRUE,
@@ -298,7 +325,9 @@ srvy_iss(iters = iters,
          yrs = yrs,
          boot_hauls = TRUE,
          boot_lengths = TRUE,
-         boot_ages = TRUE,
+         boot_ages = TRUE, 
+         al_var = FALSE,
+         age_err = FALSE,
          region = 'bs',
          save_orig = TRUE,
          save_comps = TRUE,

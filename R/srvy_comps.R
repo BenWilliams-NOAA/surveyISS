@@ -4,10 +4,13 @@
 #' @param specimen_data age-length specimen data
 #' @param cpue_data abundance by length data 
 #' @param strata_data strata and associated area 
+#' @param r_t reader/tester ageing data 
 #' @param yrs age filter returns years >= (default = NULL)
 #' @param boot_hauls switch for resampling hauls (default = FALSE)
 #' @param boot_lengths switch for resampling lengths (default = FALSE)
 #' @param boot_ages switch for resampling ages (default = FALSE)
+#' @param al_var switch for including age-length variability (default = FALSE)
+#' @param age_err switch for including ageing error (default = FALSE)
 #'
 #' @return
 #' @export srvy_comps
@@ -15,8 +18,8 @@
 #' @examples
 #' 
 
-srvy_comps <- function(lfreq_data, specimen_data, cpue_data, strata_data, yrs, 
-                       boot_hauls, boot_lengths, boot_ages) {
+srvy_comps <- function(lfreq_data, specimen_data, cpue_data, strata_data, r_t, yrs, 
+                       boot_hauls, boot_lengths, boot_ages, al_var, age_err) {
   # globals ----
   # year switch
   if (is.null(yrs)) yrs <- 0
@@ -77,6 +80,16 @@ srvy_comps <- function(lfreq_data, specimen_data, cpue_data, strata_data, yrs,
   # randomize age ----
   if(isTRUE(boot_ages)) {
     boot_age(.agedat) -> .agedat
+  }
+  
+  # add age-length error ----
+  if(isTRUE(al_var)) {
+    al_variab(.agedat) -> .agedat
+  }
+  
+  # add ageing error ----
+  if(isTRUE(age_err)) {
+    age_error(.agedat, r_t) -> .agedat
   }
   
   # age population ----
