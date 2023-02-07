@@ -13,7 +13,7 @@ library(sumfish)
 library(vroom)
 library(here)
 
-source_files <- list.files(here::here("R"), "*.R$")[list.files(here::here("R"), "*.R$") != "run_surveyISS.R"]
+source_files <- list.files(here::here("R"), "*.R$")[list.files(here::here("R"), "*.R$") != c("run_surveyISS_prod.R", "run_surveyISS_exp.R")]
 map(here::here("R", source_files), source)
 
 # get database username/password

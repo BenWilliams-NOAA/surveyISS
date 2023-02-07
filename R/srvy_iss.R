@@ -50,7 +50,7 @@ srvy_iss <- function(iters = 1, lfreq_data, specimen_data, cpue_data, strata_dat
                    boot_hauls = FALSE, 
                    boot_lengths = FALSE, 
                    boot_ages = FALSE,
-                   al_Var = FALSE,
+                   al_var = FALSE,
                    age_err = FALSE)
   oga <- og$age
   ogl <- og$length
