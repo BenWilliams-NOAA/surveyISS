@@ -8,6 +8,9 @@
 #' @examples
 boot_age <- function(age_dat) {
 
+  # combine sex length age to common id - bootstrao based on year, species, haul
+  # then split back apart
+  
   age_dat %>%
     tidytable::mutate.(sex_ln_ag = paste0(sex, "-", length, "-", age)) %>%
     tidytable::mutate(sex_ln_ag = sample(sex_ln_ag, .N, replace = TRUE), 
