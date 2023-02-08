@@ -8,10 +8,9 @@
 #' @examples
 boot_haul <- function(cpue_data) {
   
-  cpue_data %>%
-    dplyr::group_by(year, species_code) %>%
-    dplyr::distinct(hauljoin) %>%
-    tidytable::as_tidytable(.) %>%
-    .[, hauljoin := hauljoin[sample.int(.N, .N, replace = TRUE)],
-      by = c('year', 'species_code')]
+  cpue_data %>% 
+    tidytable::select(year, species_code, hauljoin) %>% 
+    tidytable::distinct() %>% 
+    tidytable::mutate(hauljoin = sample(hauljoin, .N, replace = TRUE),
+                      .by = c(year, species_code))
 }
