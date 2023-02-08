@@ -28,10 +28,8 @@ srvy_comps <- function(lfreq_data, specimen_data, cpue_data, strata_data, r_t, y
   # complete cases by length/sex/strata for all years
   lfreq_data %>%
       tidytable::filter.(year >= yrs) %>% 
-      tibble::as_tibble() %>% 
-      dplyr::group_by(species_code) %>%
-      dplyr::distinct(length, year) %>%
-      tidyr::expand(length, year) -> .lngs
+      tidytable::distinct(year, species_code, length) %>% 
+      tidytable::expand(year, length, .by = species_code) -> .lngs
   
   # first pass of filtering
   data.table::setDT(cpue_data) %>%
