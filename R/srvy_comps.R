@@ -82,7 +82,7 @@ srvy_comps <- function(lfreq_data, specimen_data, cpue_data, strata_data, r_t, y
     boot_age(.agedat) -> .agedat
   }
   
-  # add age-length error ----
+  # add age-length variability ----
   if(isTRUE(al_var)) {
     al_variab(.agedat) -> .agedat
   }
