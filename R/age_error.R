@@ -22,11 +22,11 @@ age_error <- function(age_dat, r_t) {
               tidytable::mutate(new_age = sample(test_age, .N, replace = TRUE), 
                                 .by = c(age, species_code))
           ) %>% 
-    tidytable::slice_head(n = 1, .by = id) -> agerr
+    tidytable::slice_sample(n = 1, .by = id) -> agerr
   
   # remove the old ages, replace with new ones and bind back with samples that were not tested
   agerr %>% 
-    tidytable::select(-age, age = new_age) %>% 
+    tidytable::select(-age, -test_age, -region, age = new_age) %>% 
     tidytable::bind_rows(anti_join(age_dat, agerr, by = "id")) %>% 
     tidytable::select(-id)
 

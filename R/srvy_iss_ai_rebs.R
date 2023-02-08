@@ -17,7 +17,6 @@
 #' @param save_comps save the resampled comps (default = FALSE)
 #' @param save_ess save the iterated effective sample sizes (default = FALSE)
 #' @param match_orig match the computed values to gap output (default = FALSE)
-#' @param srvy_type only for bering sea survey, denotes whether it's the shelf or slope survey (default = NULL)
 #'
 #' @return
 #' @export srvy_iss_ai_rebs
@@ -27,7 +26,7 @@
 #'
 srvy_iss_ai_rebs <- function(iters = 1, lfreq_data, specimen_data, cpue_data, strata_data, r_t, yrs = NULL, 
                              boot_hauls = FALSE, boot_lengths = FALSE, boot_ages = FALSE, al_var = FALSE, age_err = FALSE,
-                             region = NULL, save_orig = FALSE, save_comps = FALSE, save_ess = FALSE, match_orig = FALSE, srvy_type = NULL){
+                             region = NULL, save_orig = FALSE, save_comps = FALSE, save_ess = FALSE, match_orig = FALSE){
   
   # create storage location
   region = tolower(region)
