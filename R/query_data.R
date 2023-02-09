@@ -6,7 +6,7 @@
 #' @param afsc_user afsc database username
 #' @param afsc_pwd afsc database password
 #' @param nbs switch to include northern Bering Sea data (default: FALSE)
-#' @param nbs switch to query data from bs slope survey (default: FALSE)
+#' @param bs_slope switch to query data from bs slope survey (default: FALSE)
 #'
 #' @return
 #' @export query_data
