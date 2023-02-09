@@ -32,7 +32,6 @@ ess_size <- function(sim_data, og_data) {
                        ess_t = sum(prop_t * (1 - prop_t)) / sum((prop_t - og_t)^2),
                        .by = c(year, species_code)) %>%
     tidytable::pivot_longer.(cols = c(ess_f, ess_m, ess_t), names_to = "ess") %>%
-    dplyr::group_by(year, species_code, ess, value) %>%
-    dplyr::distinct(value)
+    tidytable::distinct(year, species_code, ess, value)
 
 }
