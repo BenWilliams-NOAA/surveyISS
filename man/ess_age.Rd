@@ -4,14 +4,12 @@
 \alias{ess_age}
 \title{calculate effective sample size for age comps}
 \usage{
-ess_age(sim_data, og_data, strata)
+ess_age(sim_data, og_data)
 }
 \arguments{
 \item{sim_data}{list of abundance by age data}
 
 \item{og_data}{original abundance by age data (single list)}
-
-\item{strata}{switch to perform analysis at regional or strata level (default = NULL)}
 }
 \description{
 calculate effective sample size for age comps

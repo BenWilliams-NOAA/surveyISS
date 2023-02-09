@@ -4,7 +4,15 @@
 \alias{query_data}
 \title{query racebase}
 \usage{
-query_data(region, species, yrs = NULL, afsc_user, afsc_pwd, nbs = FALSE)
+query_data(
+  region,
+  species,
+  yrs = NULL,
+  afsc_user,
+  afsc_pwd,
+  nbs = FALSE,
+  bs_slope = FALSE
+)
 }
 \arguments{
 \item{region}{specific region for data ('GOA', 'AI')}
@@ -18,6 +26,8 @@ query_data(region, species, yrs = NULL, afsc_user, afsc_pwd, nbs = FALSE)
 \item{afsc_pwd}{afsc database password}
 
 \item{nbs}{switch to include northern Bering Sea data (default: FALSE)}
+
+\item{bs_slope}{switch to query data from bs slope survey (default: FALSE)}
 }
 \description{
 query racebase
