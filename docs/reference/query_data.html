@@ -44,7 +44,15 @@
     </div>
 
     <div id="ref-usage">
-    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">query_data</span><span class="op">(</span><span class="va">region</span>, <span class="va">species</span>, yrs <span class="op">=</span> <span class="cn">NULL</span>, <span class="va">afsc_user</span>, <span class="va">afsc_pwd</span>, nbs <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span></code></pre></div>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">query_data</span><span class="op">(</span></span>
+<span>  <span class="va">region</span>,</span>
+<span>  <span class="va">species</span>,</span>
+<span>  yrs <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  <span class="va">afsc_user</span>,</span>
+<span>  <span class="va">afsc_pwd</span>,</span>
+<span>  nbs <span class="op">=</span> <span class="cn">FALSE</span>,</span>
+<span>  bs_slope <span class="op">=</span> <span class="cn">FALSE</span></span>
+<span><span class="op">)</span></span></code></pre></div>
     </div>
 
     <div id="arguments">
@@ -72,18 +80,20 @@
 <dt>nbs</dt>
 <dd><p>switch to include northern Bering Sea data (default: FALSE)</p></dd>
 
+
+<dt>bs_slope</dt>
+<dd><p>switch to query data from bs slope survey (default: FALSE)</p></dd>
+
 </dl></div>
 
     <div id="ref-examples">
     <h2>Examples</h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="fu">query_date</span><span class="op">(</span>region <span class="op">=</span> <span class="st">'AI'</span>, </span></span>
-<span class="r-in"><span>           species <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">30060</span>,<span class="fl">21740</span>,<span class="fl">10110</span>,<span class="fl">30420</span>,<span class="fl">21921</span>,<span class="fl">21720</span>,<span class="fl">10130</span>,<span class="fl">30020</span><span class="op">)</span>,</span></span>
-<span class="r-in"><span>           yrs <span class="op">=</span> <span class="fl">2015</span>,</span></span>
-<span class="r-in"><span>           afsc_user <span class="op">=</span> <span class="st">'your_username'</span>,</span></span>
-<span class="r-in"><span>           afsc_pwd <span class="op">=</span> <span class="st">'your_password'</span><span class="op">)</span></span></span>
-<span class="r-err co"><span class="r-pr">#&gt;</span> <span class="error">Error in query_date(region = "AI", species = c(30060, 21740, 10110, 30420,     21921, 21720, 10130, 30020), yrs = 2015, afsc_user = "your_username",     afsc_pwd = "your_password"):</span> could not find function "query_date"</span>
-<span class="r-in"><span>           </span></span>
-</code></pre></div>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">query_date</span><span class="op">(</span>region <span class="op">=</span> <span class="st">'AI'</span>, </span>
+<span>           species <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">30060</span>,<span class="fl">21740</span>,<span class="fl">10110</span>,<span class="fl">30420</span>,<span class="fl">21921</span>,<span class="fl">21720</span>,<span class="fl">10130</span>,<span class="fl">30020</span><span class="op">)</span>,</span>
+<span>           yrs <span class="op">=</span> <span class="fl">2015</span>,</span>
+<span>           afsc_user <span class="op">=</span> <span class="st">'your_username'</span>,</span>
+<span>           afsc_pwd <span class="op">=</span> <span class="st">'your_password'</span><span class="op">)</span></span>
+<span>           </span></code></pre></div>
     </div>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">

@@ -10,6 +10,12 @@
     <loc>/index.html</loc>
   </url>
   <url>
+    <loc>/reference/age_error.html</loc>
+  </url>
+  <url>
+    <loc>/reference/al_variab.html</loc>
+  </url>
+  <url>
     <loc>/reference/apop.html</loc>
   </url>
   <url>
@@ -37,6 +43,12 @@
     <loc>/reference/lpop.html</loc>
   </url>
   <url>
+    <loc>/reference/match_gap.html</loc>
+  </url>
+  <url>
+    <loc>/reference/match_gap_bs.html</loc>
+  </url>
+  <url>
     <loc>/reference/pipe.html</loc>
   </url>
   <url>
@@ -44,5 +56,32 @@
   </url>
   <url>
     <loc>/reference/sample.html</loc>
+  </url>
+  <url>
+    <loc>/reference/srvy_comps.html</loc>
+  </url>
+  <url>
+    <loc>/reference/srvy_comps_ai_rebs.html</loc>
+  </url>
+  <url>
+    <loc>/reference/srvy_iss.html</loc>
+  </url>
+  <url>
+    <loc>/reference/srvy_iss_ai_rebs.html</loc>
+  </url>
+  <url>
+    <loc>/reference/srvy_iss_exp.html</loc>
+  </url>
+  <url>
+    <loc>/reference/srvy_iss_goa_dr.html</loc>
+  </url>
+  <url>
+    <loc>/reference/srvy_iss_goa_rebs.html</loc>
+  </url>
+  <url>
+    <loc>/reference/srvy_iss_goa_wc_e.html</loc>
+  </url>
+  <url>
+    <loc>/reference/srvy_iss_goa_w_c_e.html</loc>
   </url>
 </urlset>
