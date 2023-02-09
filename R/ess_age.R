@@ -18,14 +18,8 @@ ess_age <- function(sim_data, og_data){
   sim_data %>% 
     tidytable::mutate.(total = unsexed + males + females) %>% 
     tidytable::full_join.(og) %>% 
-    tidytable::mutate.(og_unsexed = case_when.(is.na(og_unsexed) ~ 0, !is.na(og_unsexed) ~ og_unsexed),
-                       og_males = case_when.(is.na(og_males) ~ 0, !is.na(og_males) ~ og_males),
-                       og_females = case_when.(is.na(og_females) ~ 0, !is.na(og_females) ~ og_females),
-                       og_total = case_when.(is.na(og_total) ~ 0, !is.na(og_total) ~ og_total),
-                       unsexed = case_when.(is.na(unsexed) ~ 0, !is.na(unsexed) ~ unsexed),
-                       males = case_when.(is.na(males) ~ 0, !is.na(males) ~ males),
-                       females = case_when.(is.na(females) ~ 0, !is.na(females) ~ females),
-                       total = case_when.(is.na(total) ~ 0, !is.na(total) ~ total)) %>%
+    tidytable::replace_na(list(og_unsexed = 0, og_males = 0, og_females = 0, og_total = 0, 
+                               unsexed = 0, males = 0, females = 0, total = 0)) %>%
     tidytable::mutate.(og_m = og_males / sum(og_males),
                        og_f = og_females / sum(og_females),
                        og_t = og_total/sum(og_total),
