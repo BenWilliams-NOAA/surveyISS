@@ -27,13 +27,13 @@ srvy_comps_ai_rebs <- function(lfreq_data, specimen_data, cpue_data, strata_data
   
   # prep data ----
   # complete cases by length/sex/strata for all years
+  
   lfreq_data %>%
       tidytable::filter.(year >= yrs) %>% 
-      tibble::as_tibble() %>% 
-      dplyr::group_by(species_code) %>%
-      dplyr::distinct(length, year) %>%
-      tidyr::expand(length, year) -> .lngs
+      tidytable::distinct(year, species_code, length) %>% 
+      tidytable::expand(year, length, .by = species_code) -> .lngs
   
+
   # first pass of filtering
   data.table::setDT(cpue_data) %>%
     tidytable::filter.(year >= yrs) %>% 
