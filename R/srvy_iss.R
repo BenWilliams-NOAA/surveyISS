@@ -13,9 +13,7 @@
 #' @param al_var include age-length variability (default = FALSE)
 #' @param age_err include ageing error (default = FALSE)
 #' @param region region will create a folder and place results in said folder
-#' @param save_orig save the original comps (default = FALSE)
-#' @param save_comps save the resampled comps (default = FALSE)
-#' @param save_ess save the iterated effective sample sizes (default = FALSE)
+#' @param save_interm save the intermediate results: original comps, resampled comps (default = FALSE)
 #' @param match_orig match the computed values to gap output (default = FALSE)
 #' @param srvy_type only for bering sea survey, denotes whether it's the shelf or slope survey (default = NULL)
 #'
@@ -26,7 +24,7 @@
 
 srvy_iss <- function(iters = 1, lfreq_data, specimen_data, cpue_data, strata_data, r_t, yrs = NULL, 
                      boot_hauls = FALSE, boot_lengths = FALSE, boot_ages = FALSE, al_var = FALSE, age_err = FALSE,
-                     region = NULL, save_orig = FALSE, save_comps = FALSE, save_ess = FALSE, match_orig = FALSE, srvy_type = NULL){
+                     region = NULL, save_interm = FALSE, match_orig = FALSE, srvy_type = NULL){
   
   # create storage location
   region = tolower(region)
@@ -54,16 +52,6 @@ srvy_iss <- function(iters = 1, lfreq_data, specimen_data, cpue_data, strata_dat
                    age_err = FALSE)
   oga <- og$age
   ogl <- og$length
-  
-  # if desired, write original age/length pop'n estimates
-  if(isTRUE(save_orig) & region != 'bs'){
-    vroom::vroom_write(oga, file = here::here("output", region, "orig_age.csv"), delim = ",")
-    vroom::vroom_write(ogl, file = here::here("output", region, "orig_length.csv"), delim = ",")
-  }
-  if(isTRUE(save_orig) & region == 'bs'){
-    vroom::vroom_write(oga, file = here::here("output", region, paste0("orig_age_", srvy_type, ".csv")), delim = ",")
-    vroom::vroom_write(ogl, file = here::here("output", region, paste0("orig_length_", srvy_type, ".csv")), delim = ",")
-  }
   
   # if desired, match original age/length pop'n values with GAP output
   if(isTRUE(match_orig) & region != 'bs'){
@@ -96,8 +84,10 @@ srvy_iss <- function(iters = 1, lfreq_data, specimen_data, cpue_data, strata_dat
   r_age <- do.call(mapply, c(list, rr, SIMPLIFY = FALSE))$age
   r_length <- do.call(mapply, c(list, rr, SIMPLIFY = FALSE))$length
   
-  # if desired, write out resampled comp data
-  if(isTRUE(save_comps) & region != 'bs') {
+  # if desired, write out intermediate results
+  if(isTRUE(save_interm) & region != 'bs') {
+    vroom::vroom_write(oga, file = here::here("output", region, "orig_age.csv"), delim = ",")
+    vroom::vroom_write(ogl, file = here::here("output", region, "orig_length.csv"), delim = ",")
     r_length %>%
       tidytable::map_df.(., ~as.data.frame(.x), .id = "sim") %>% 
       vroom::vroom_write(here::here("output", region, "resampled_size.csv"), delim = ",")
@@ -105,7 +95,9 @@ srvy_iss <- function(iters = 1, lfreq_data, specimen_data, cpue_data, strata_dat
       tidytable::map_df.(., ~as.data.frame(.x), .id = "sim") %>% 
       vroom::vroom_write(here::here("output", region, "resampled_age.csv"), delim = ",")
   }
-  if(isTRUE(save_comps) & region == 'bs') {
+  if(isTRUE(save_interm) & region == 'bs') {
+    vroom::vroom_write(oga, file = here::here("output", region, paste0("orig_age_", srvy_type, ".csv")), delim = ",")
+    vroom::vroom_write(ogl, file = here::here("output", region, paste0("orig_length_", srvy_type, ".csv")), delim = ",")
     r_length %>%
       tidytable::map_df.(., ~as.data.frame(.x), .id = "sim") %>% 
       vroom::vroom_write(here::here("output", region, paste0("resampled_size_", srvy_type, ".csv")), delim = ",")
@@ -121,17 +113,7 @@ srvy_iss <- function(iters = 1, lfreq_data, specimen_data, cpue_data, strata_dat
   r_length %>%
     tidytable::map.(., ~ess_size(sim_data = .x, og_data = ogl)) %>%
     tidytable::map_df.(., ~as.data.frame(.x), .id = "sim") -> ess_size
-  
-  # if desired, Write iterated effective sample size results
-  if(isTRUE(save_ess) & region != 'bs') {
-    vroom::vroom_write(ess_size, here::here("output", region, "iter_ess_sz.csv"), delim = ",")
-    vroom::vroom_write(ess_age, here::here("output", region, "iter_ess_ag.csv"), delim = ",")
-  }
-  if(isTRUE(save_ess) & region == 'bs') {
-    vroom::vroom_write(ess_size, here::here("output", region, paste0("iter_ess_sz_", srvy_type, ".csv")), delim = ",")
-    vroom::vroom_write(ess_age, here::here("output", region, paste0("iter_ess_ag_", srvy_type, ".csv")), delim = ",")
-  }
-  
+
   # compute harmonic mean of iterated effective sample size, which is the input sample size (iss)
   #  also add nominal sample size (nss) and number of hauls (hls) as column (for goa and ai)
   
@@ -260,9 +242,13 @@ srvy_iss <- function(iters = 1, lfreq_data, specimen_data, cpue_data, strata_dat
   
   # write input sample size results
   if(region != 'bs'){
+    vroom::vroom_write(ess_size, here::here("output", region, "iter_ess_sz.csv"), delim = ",")
+    vroom::vroom_write(ess_age, here::here("output", region, "iter_ess_ag.csv"), delim = ",")
     vroom::vroom_write(iss_size, here::here("output", region, "iss_sz.csv"), delim = ",")    
     vroom::vroom_write(iss_age, here::here("output", region, "iss_ag.csv"), delim = ",")
   } else{
+    vroom::vroom_write(ess_size, here::here("output", region, paste0("iter_ess_sz_", srvy_type, ".csv")), delim = ",")
+    vroom::vroom_write(ess_age, here::here("output", region, paste0("iter_ess_ag_", srvy_type, ".csv")), delim = ",")
     vroom::vroom_write(iss_size, here::here("output", region, paste0("iss_sz_", srvy_type, ".csv")), delim = ",") 
     vroom::vroom_write(iss_age, here::here("output", region, paste0("iss_ag_", srvy_type, ".csv")), delim = ",")
   }

@@ -9,7 +9,6 @@ library(purrr)
 library(tidyverse)
 library(tidytable)
 library(psych)
-library(sumfish)
 library(vroom)
 library(here)
 
@@ -41,11 +40,11 @@ species = c(10110, 10130, 10180, 20510, 21720, 21740, 30060, 30420, 30050, 30051
 
 region = 'GOA'
 
-query_data(region,
-           species,
-           yrs, 
-           afsc_user,
-           afsc_pass)
+# query_data(region,
+#            species,
+#            yrs, 
+#            afsc_user,
+#            afsc_pass)
 
 cpue <- vroom::vroom(here::here('data', 'cpue_goa.csv'))
 lfreq <- vroom::vroom(here::here('data', 'lfreq_goa.csv'))
@@ -80,9 +79,7 @@ srvy_iss(iters = iters,
          al_var = FALSE,
          age_err = FALSE,
          region = 'goa', 
-         save_orig = TRUE, 
-         save_comps = TRUE,
-         save_ess = TRUE,
+         save_interm = TRUE,
          match_orig = TRUE)
 
 # run for goa rougheye-blackspotted stock complex
@@ -108,10 +105,8 @@ srvy_iss_goa_rebs(iters = iters,
                   al_var = FALSE,
                   age_err = FALSE,
                   region = 'goa', 
-                  save_orig = TRUE, 
-                  save_comps = TRUE,
-                  save_ess = TRUE, 
-                  match_orig = FALSE)
+                  save_interm = TRUE,
+                  match_orig = TRUE)
 
 # run for goa dusky stock (has different historical species codes)
 cpue %>% 
@@ -136,10 +131,8 @@ srvy_iss_goa_dr(iters = iters,
                 al_var = FALSE,
                 age_err = FALSE,
                 region = 'goa', 
-                save_orig = TRUE, 
-                save_comps = TRUE,
-                save_ess = TRUE, 
-                match_orig = FALSE)
+                save_interm = TRUE,
+                match_orig = TRUE)
 
 # run for goa northern/southern rock sole
 cpue %>% 
@@ -165,10 +158,8 @@ srvy_iss_goa_w_c_e(iters = iters,
                    al_var = FALSE,
                    age_err = FALSE,
                    region = 'goa', 
-                   save_orig = TRUE, 
-                   save_comps = TRUE,
-                   save_ess = TRUE, 
-                   match_orig = FALSE)
+                   save_interm = TRUE,
+                   match_orig = TRUE)
 
 # Run for GOA rex sole
 cpue %>% 
@@ -193,10 +184,8 @@ srvy_iss_goa_wc_e(iters = iters,
                   al_var = FALSE,
                   age_err = FALSE,
                   region = 'goa', 
-                  save_orig = TRUE, 
-                  save_comps = TRUE,
-                  save_ess = TRUE, 
-                  match_orig = FALSE)
+                  save_interm = TRUE,
+                  match_orig = TRUE)
 
 ##~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 #### run for aleutian islands stocks
@@ -206,11 +195,11 @@ yrs = 1991
 species = c(10110, 10112, 21720, 21740, 21921, 30060, 30420, 30050, 30051, 30052)
 region = 'AI'
 
-query_data(region,
-           species, 
-           yrs, 
-           afsc_user,
-           afsc_pass)
+# query_data(region,
+#            species, 
+#            yrs, 
+#            afsc_user,
+#            afsc_pass)
 
 cpue <- vroom::vroom(here::here('data', 'cpue_ai.csv'))
 lfreq <- vroom::vroom(here::here('data', 'lfreq_ai.csv'))
@@ -245,9 +234,7 @@ srvy_iss(iters = iters,
          al_var = FALSE,
          age_err = FALSE, 
          region = 'ai', 
-         save_orig = TRUE, 
-         save_comps = TRUE, 
-         save_ess = TRUE,
+         save_interm = TRUE,
          match_orig = TRUE)
 
 # Run for AI REBS stock complex
@@ -273,10 +260,8 @@ srvy_iss_ai_rebs(iters = iters,
                  al_var = FALSE,
                  age_err = FALSE, 
                  region = 'ai', 
-                 save_orig = TRUE,
-                 save_comps = TRUE,
-                 save_ess = TRUE, 
-                 match_orig = FALSE)
+                 save_interm = TRUE,
+                 match_orig = TRUE)
 
 
 ##~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -288,13 +273,13 @@ yrs = 1979
 species = c(10110, 10112, 10115, 10130, 10210, 10261, 10285, 21720, 21740)
 region = 'BS'
 
-query_data(region,
-           species,
-           yrs, 
-           afsc_user,
-           afsc_pass,
-           nbs = FALSE,
-           bs_slope = FALSE)
+# query_data(region,
+#            species,
+#            yrs, 
+#            afsc_user,
+#            afsc_pass,
+#            nbs = FALSE,
+#            bs_slope = FALSE)
 
 cpue <- vroom::vroom(here::here('data', 'cpue_bs.csv'))
 lfreq <- vroom::vroom(here::here('data', 'lfreq_bs.csv'))
@@ -318,10 +303,8 @@ srvy_iss(iters = iters,
          boot_ages = TRUE, 
          al_var = FALSE,
          age_err = FALSE,
-         region = 'bs',
-         save_orig = TRUE,
-         save_comps = TRUE,
-         save_ess = TRUE,
+         region = 'bs', 
+         save_interm = TRUE,
          match_orig = TRUE,
          srvy_type = 'shelf')
 
@@ -331,13 +314,13 @@ yrs = 2002
 species = c(10110, 10112, 10115,30060)
 region = 'BS'
 
-query_data(region,
-           species,
-           yrs, 
-           afsc_user,
-           afsc_pass,
-           nbs = FALSE,
-           bs_slope = TRUE)
+# query_data(region,
+#            species,
+#            yrs, 
+#            afsc_user,
+#            afsc_pass,
+#            nbs = FALSE,
+#            bs_slope = TRUE)
 
 cpue_data_s <- vroom::vroom(here::here('data', 'cpue_slope_bs.csv'))
 lfreq_data_s <- vroom::vroom(here::here('data', 'lfreq_slope_bs.csv'))
@@ -361,10 +344,8 @@ srvy_iss(iters = iters,
          boot_ages = TRUE, 
          al_var = FALSE,
          age_err = FALSE,
-         region = 'bs',
-         save_orig = TRUE,
-         save_comps = TRUE,
-         save_ess = TRUE,
+         region = 'bs', 
+         save_interm = TRUE,
          match_orig = TRUE,
          srvy_type = 'slope')
 

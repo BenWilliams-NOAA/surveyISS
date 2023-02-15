@@ -13,9 +13,7 @@
 #' @param al_var include age-length variability (default = FALSE)
 #' @param age_err include ageing error (default = FALSE)
 #' @param region region will create a folder and place results in said folder
-#' @param save_orig save the original comps (default = FALSE)
-#' @param save_comps save the resampled comps (default = FALSE)
-#' @param save_ess save the iterated effective sample sizes (default = FALSE)
+#' @param save_interm save the intermediate results: original comps, resampled comps (default = FALSE)
 #' @param match_orig match the computed values to gap output (default = FALSE)
 #'
 #' @return
@@ -26,7 +24,7 @@
 #'
 srvy_iss_goa_dr <- function(iters = 1, lfreq_data, specimen_data, cpue_data, strata_data, r_t, yrs = NULL, 
                             boot_hauls = FALSE, boot_lengths = FALSE, boot_ages = FALSE, al_var = FALSE, age_err = FALSE,
-                            region = NULL, save_orig = FALSE, save_comps = FALSE, save_ess = FALSE, match_orig = FALSE){
+                            region = NULL, save_interm = FALSE, match_orig = FALSE){
   
   # create storage location
   region = tolower(region)
@@ -60,13 +58,7 @@ srvy_iss_goa_dr <- function(iters = 1, lfreq_data, specimen_data, cpue_data, str
                           unsexed = sum(unsexed),
                           .by = c(year, length)) %>% 
     tidytable::mutate.(species_code = 301502) -> ogl_c
-  
-  # if desired, write original age/length pop'n estimates
-  if(isTRUE(save_orig)){
-    vroom::vroom_write(oga, file = here::here("output", region, "orig_age_dr.csv"), delim = ",")
-    vroom::vroom_write(ogl, file = here::here("output", region, "orig_length_dr.csv"), delim = ",")
-  }
-  
+
   # currently, due to the complex nature of how we do our complexes we do not match with gap output
   
   # run resampling iterations
@@ -102,8 +94,10 @@ srvy_iss_goa_dr <- function(iters = 1, lfreq_data, specimen_data, cpue_data, str
     tidytable::mutate.(species_code = 301502) %>% 
     split(., .[,'sim']) -> r_length_cmplx
   
-  # if desired, write out resampled comp data
-  if(isTRUE(save_comps)) {
+  # if desired, write out intermediate results
+  if(isTRUE(save_interm)) {
+    vroom::vroom_write(oga, file = here::here("output", region, "orig_age_dr.csv"), delim = ",")
+    vroom::vroom_write(ogl, file = here::here("output", region, "orig_length_dr.csv"), delim = ",")
     r_age %>%
       tidytable::map_df.(., ~as.data.frame(.x), .id = "sim") %>% 
       vroom::vroom_write(here::here("output", region, "resampled_age_dr.csv"), delim = ",")
@@ -120,16 +114,7 @@ srvy_iss_goa_dr <- function(iters = 1, lfreq_data, specimen_data, cpue_data, str
   r_length_cmplx %>%
     tidytable::map.(., ~ess_size(sim_data = .x, og_data = ogl_c)) %>%
     tidytable::map_df.(., ~as.data.frame(.x), .id = "sim") -> ess_size
-  
-  # if desired, Write iterated effective sample size results
-  if(isTRUE(save_ess)) {
-    vroom::vroom_write(ess_age, 
-                       here::here("output", region, "iter_ess_ag_dr.csv"), 
-                       delim = ",")
-    vroom::vroom_write(ess_size, 
-                       here::here("output", region, "iter_ess_sz_dr.csv"), 
-                       delim = ",")
-  }
+
   
   # compute harmonic mean of iterated effective sample size, which is the input sample size
   #  also add nominal sample size (nss) and number of hauls (hls) as column
@@ -225,7 +210,13 @@ srvy_iss_goa_dr <- function(iters = 1, lfreq_data, specimen_data, cpue_data, str
     tidytable::left_join.(nss_age) %>% 
     tidytable::left_join.(hls_age) -> iss_age
   
-  # write input sample size results
+  # write effective & input sample size results
+  vroom::vroom_write(ess_age, 
+                     here::here("output", region, "iter_ess_ag_dr.csv"), 
+                     delim = ",")
+  vroom::vroom_write(ess_size, 
+                     here::here("output", region, "iter_ess_sz_dr.csv"), 
+                     delim = ",")
   vroom::vroom_write(iss_age, 
                      here::here("output", region, "iss_ag_dr.csv"), 
                      delim = ",")

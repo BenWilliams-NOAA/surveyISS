@@ -13,9 +13,7 @@
 #' @param al_var include age-length variability (default = FALSE)
 #' @param age_err include ageing error (default = FALSE)
 #' @param region region will create a folder and place results in said folder
-#' @param save_orig save the original comps (default = FALSE)
-#' @param save_comps save the resampled comps (default = FALSE)
-#' @param save_ess save the iterated effective sample sizes (default = FALSE)
+#' @param save_interm save the intermediate results: original comps, resampled comps (default = FALSE)
 #' @param match_orig match the computed values to gap output (default = FALSE)
 #' @param srvy_type only for bering sea survey, denotes whether it's the shelf or slope survey (default = NULL)
 #'
@@ -26,7 +24,7 @@
 
 srvy_iss_exp <- function(iters = 1, lfreq_data, specimen_data, cpue_data, strata_data, r_t, yrs = NULL, 
                      boot_hauls = FALSE, boot_lengths = FALSE, boot_ages = FALSE, al_var = FALSE, age_err = FALSE,
-                     region = NULL, save_orig = FALSE, save_comps = FALSE, save_ess = FALSE, match_orig = FALSE, srvy_type = NULL){
+                     region = NULL, save_interm = FALSE, match_orig = FALSE, srvy_type = NULL){
   
   # create storage location
   if(isTRUE(age_err) & !dir.exists(here::here('output', region, 'agerr'))){
@@ -76,22 +74,22 @@ srvy_iss_exp <- function(iters = 1, lfreq_data, specimen_data, cpue_data, strata
   r_age <- do.call(mapply, c(list, rr, SIMPLIFY = FALSE))$age
   r_length <- do.call(mapply, c(list, rr, SIMPLIFY = FALSE))$length
   
-  # if desired, write out resampled comp data
-  if(isTRUE(save_comps) & region != 'bs' & isTRUE(al_var) & !isTRUE(age_err)) {
+  # if desired, write out intermediate results
+  if(isTRUE(save_interm) & region != 'bs' & isTRUE(al_var) & !isTRUE(age_err)) {
     r_length %>%
       tidytable::map_df.(., ~as.data.frame(.x), .id = "sim") %>% 
       vroom::vroom_write(here::here("output", region, "alvar", "resampled_size.csv"), delim = ",")
     r_age %>%
       tidytable::map_df.(., ~as.data.frame(.x), .id = "sim") %>% 
       vroom::vroom_write(here::here("output", region, "alvar", "resampled_age.csv"), delim = ",")
-  } else if(isTRUE(save_comps) & region != 'bs' & !isTRUE(al_var) & isTRUE(age_err)) {
+  } else if(isTRUE(save_interm) & region != 'bs' & !isTRUE(al_var) & isTRUE(age_err)) {
     r_length %>%
       tidytable::map_df.(., ~as.data.frame(.x), .id = "sim") %>% 
       vroom::vroom_write(here::here("output", region, "agerr", "resampled_size.csv"), delim = ",")
     r_age %>%
       tidytable::map_df.(., ~as.data.frame(.x), .id = "sim") %>% 
       vroom::vroom_write(here::here("output", region, "agerr", "resampled_age.csv"), delim = ",")
-  } else if(isTRUE(save_comps) & region != 'bs' & isTRUE(al_var) & isTRUE(age_err)) {
+  } else if(isTRUE(save_interm) & region != 'bs' & isTRUE(al_var) & isTRUE(age_err)) {
     r_length %>%
       tidytable::map_df.(., ~as.data.frame(.x), .id = "sim") %>% 
       vroom::vroom_write(here::here("output", region, "alvar_agerr", "resampled_size.csv"), delim = ",")
@@ -100,21 +98,21 @@ srvy_iss_exp <- function(iters = 1, lfreq_data, specimen_data, cpue_data, strata
       vroom::vroom_write(here::here("output", region, "alvar_agerr", "resampled_age.csv"), delim = ",")
   }
   
-  if(isTRUE(save_comps) & region == 'bs' & isTRUE(al_var) & !isTRUE(age_err)) {
+  if(isTRUE(save_interm) & region == 'bs' & isTRUE(al_var) & !isTRUE(age_err)) {
     r_length %>%
       tidytable::map_df.(., ~as.data.frame(.x), .id = "sim") %>% 
       vroom::vroom_write(here::here("output", region, "alvar", paste0("resampled_size_", srvy_type, ".csv")), delim = ",")
     r_age %>%
       tidytable::map_df.(., ~as.data.frame(.x), .id = "sim") %>% 
       vroom::vroom_write(here::here("output", region, "alvar", paste0("resampled_age_", srvy_type, ".csv")), delim = ",")
-  } else if(isTRUE(save_comps) & region == 'bs' & !isTRUE(al_var) & isTRUE(age_err)) {
+  } else if(isTRUE(save_interm) & region == 'bs' & !isTRUE(al_var) & isTRUE(age_err)) {
     r_length %>%
       tidytable::map_df.(., ~as.data.frame(.x), .id = "sim") %>% 
       vroom::vroom_write(here::here("output", region, "agerr", paste0("resampled_size_", srvy_type, ".csv")), delim = ",")
     r_age %>%
       tidytable::map_df.(., ~as.data.frame(.x), .id = "sim") %>% 
       vroom::vroom_write(here::here("output", region, "agerr", paste0("resampled_age_", srvy_type, ".csv")), delim = ",")
-  } else if(isTRUE(save_comps) & region == 'bs' & isTRUE(al_var) & isTRUE(age_err)) {
+  } else if(isTRUE(save_interm) & region == 'bs' & isTRUE(al_var) & isTRUE(age_err)) {
     r_length %>%
       tidytable::map_df.(., ~as.data.frame(.x), .id = "sim") %>% 
       vroom::vroom_write(here::here("output", region, "alvar_agerr", paste0("resampled_size_", srvy_type, ".csv")), delim = ",")
@@ -131,24 +129,24 @@ srvy_iss_exp <- function(iters = 1, lfreq_data, specimen_data, cpue_data, strata
     tidytable::map.(., ~ess_size(sim_data = .x, og_data = ogl)) %>%
     tidytable::map_df.(., ~as.data.frame(.x), .id = "sim") -> ess_size
   
-  # if desired, Write iterated effective sample size results
-  if(isTRUE(save_ess) & region != 'bs' & isTRUE(al_var) & !isTRUE(age_err)) {
+  # Write iterated effective sample size results
+  if(region != 'bs' & isTRUE(al_var) & !isTRUE(age_err)) {
     vroom::vroom_write(ess_size, here::here("output", region, "alvar", "iter_ess_sz.csv"), delim = ",")
     vroom::vroom_write(ess_age, here::here("output", region, "alvar", "iter_ess_ag.csv"), delim = ",")
-  } else if(isTRUE(save_ess) & region != 'bs' & !isTRUE(al_var) & isTRUE(age_err)) {
+  } else if(region != 'bs' & !isTRUE(al_var) & isTRUE(age_err)) {
     vroom::vroom_write(ess_size, here::here("output", region, "agerr", "iter_ess_sz.csv"), delim = ",")
     vroom::vroom_write(ess_age, here::here("output", region, "agerr", "iter_ess_ag.csv"), delim = ",")
-  } else if(isTRUE(save_ess) & region != 'bs' & isTRUE(al_var) & isTRUE(age_err)) {
+  } else if(region != 'bs' & isTRUE(al_var) & isTRUE(age_err)) {
     vroom::vroom_write(ess_size, here::here("output", region, "alvar_agerr", "iter_ess_sz.csv"), delim = ",")
     vroom::vroom_write(ess_age, here::here("output", region, "alvar_agerr", "iter_ess_ag.csv"), delim = ",")
   }
-  if(isTRUE(save_ess) & region == 'bs' & isTRUE(al_var) & !isTRUE(age_err)) {
+  if(region == 'bs' & isTRUE(al_var) & !isTRUE(age_err)) {
     vroom::vroom_write(ess_size, here::here("output", region, "alvar", paste0("iter_ess_sz_", srvy_type, ".csv")), delim = ",")
     vroom::vroom_write(ess_age, here::here("output", region, "alvar", paste0("iter_ess_ag_", srvy_type, ".csv")), delim = ",")
-  } else if(isTRUE(save_ess) & region == 'bs' & !isTRUE(al_var) & isTRUE(age_err)) {
+  } else if(region == 'bs' & !isTRUE(al_var) & isTRUE(age_err)) {
     vroom::vroom_write(ess_size, here::here("output", region, "agerr", paste0("iter_ess_sz_", srvy_type, ".csv")), delim = ",")
     vroom::vroom_write(ess_age, here::here("output", region, "agerr", paste0("iter_ess_ag_", srvy_type, ".csv")), delim = ",")
-  } else if(isTRUE(save_ess) & region == 'bs' & isTRUE(al_var) & isTRUE(age_err)) {
+  } else if(region == 'bs' & isTRUE(al_var) & isTRUE(age_err)) {
     vroom::vroom_write(ess_size, here::here("output", region, "alvar_agerr", paste0("iter_ess_sz_", srvy_type, ".csv")), delim = ",")
     vroom::vroom_write(ess_age, here::here("output", region, "alvar_agerr", paste0("iter_ess_ag_", srvy_type, ".csv")), delim = ",")
   }

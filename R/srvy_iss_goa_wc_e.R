@@ -13,9 +13,7 @@
 #' @param al_var include age-length variability (default = FALSE)
 #' @param age_err include ageing error (default = FALSE)
 #' @param region region will create a folder and place results in said folder
-#' @param save_orig save the original comps (default = FALSE)
-#' @param save_comps save the resampled comps (default = FALSE)
-#' @param save_ess save the iterated effective sample sizes (default = FALSE)
+#' @param save_interm save the intermediate results: original comps, resampled comps (default = FALSE)
 #' @param match_orig match the computed values to gap output (default = FALSE)
 #'
 #' @return
@@ -26,7 +24,7 @@
 #'
 srvy_iss_goa_wc_e <- function(iters = 1, lfreq_data, specimen_data, cpue_data, strata_data, r_t, yrs = NULL, 
                               boot_hauls = FALSE, boot_lengths = FALSE, boot_ages = FALSE, al_var = FALSE, age_err = FALSE,
-                              region = NULL, save_orig = FALSE, save_comps = FALSE, save_ess = FALSE, match_orig = FALSE){
+                              region = NULL, save_interm = FALSE, match_orig = FALSE){
   
   # create storage location
   region = tolower(region)
@@ -119,12 +117,6 @@ srvy_iss_goa_wc_e <- function(iters = 1, lfreq_data, specimen_data, cpue_data, s
     tidytable::mutate.(region = "egoa") %>% 
     tidytable::bind_rows.(.ogl_wc) -> ogl
   
-  # if desired, write original age/length pop'n estimates
-  if(isTRUE(save_orig)){
-    vroom::vroom_write(oga, file = here::here("output", region, "orig_age_w_c_egoa.csv"), delim = ",")
-    vroom::vroom_write(ogl, file = here::here("output", region, "orig_length_w_c_egoa.csv"), delim = ",")
-  }
-  
   # run iterations for western & central goa
   rr <- purrr::map(1:iters, ~ srvy_comps(lfreq_data = subset(.lfreq_data, .lfreq_data$region == "wcgoa"), 
                                          specimen_data = subset(.specimen_data, .specimen_data$region == "wcgoa"), 
@@ -187,8 +179,10 @@ srvy_iss_goa_wc_e <- function(iters = 1, lfreq_data, specimen_data, cpue_data, s
                           .by = c(sim, year, length, species_code)) %>% 
     split(., .[,'sim']) -> r_length_e
   
-  # if desired, write out resampled comp data
-  if(isTRUE(save_comps)) {
+  # if desired, write out intermediate results
+  if(isTRUE(save_interm)) {
+    vroom::vroom_write(oga, file = here::here("output", region, "orig_age_w_c_egoa.csv"), delim = ",")
+    vroom::vroom_write(ogl, file = here::here("output", region, "orig_length_w_c_egoa.csv"), delim = ",")
     r_age_wc %>%
       tidytable::map_df.(., ~as.data.frame(.x)) %>% 
       tidytable::mutate.(region = "wcgoa") -> .r_age_wc
@@ -235,16 +229,6 @@ srvy_iss_goa_wc_e <- function(iters = 1, lfreq_data, specimen_data, cpue_data, s
   ess_size_e %>% 
     tidytable::mutate.(region = "egoa") %>% 
     tidytable::bind_rows.(.ess_size_wc) -> ess_size
-  
-  # if desired, Write iterated effective sample size results
-  if(isTRUE(save_ess)) {
-    vroom::vroom_write(ess_age, 
-                       here::here("output", region, "iter_ess_ag_w_c_egoa.csv"), 
-                       delim = ",")
-    vroom::vroom_write(ess_size, 
-                       here::here("output", region, "iter_ess_sz_w_c_egoa.csv"), 
-                       delim = ",")
-  }
   
   # compute harmonic mean of iterated effective sample size, which is the input sample size (iss)
   #  also add nominal sample size (nss) and number of hauls (hls) as column
@@ -359,6 +343,12 @@ srvy_iss_goa_wc_e <- function(iters = 1, lfreq_data, specimen_data, cpue_data, s
     tidytable::left_join.(hls_age) -> iss_age
   
   # write input sample size results
+  vroom::vroom_write(ess_age, 
+                     here::here("output", region, "iter_ess_ag_w_c_egoa.csv"), 
+                     delim = ",")
+  vroom::vroom_write(ess_size, 
+                     here::here("output", region, "iter_ess_sz_w_c_egoa.csv"), 
+                     delim = ",")
   vroom::vroom_write(iss_age, 
                      here::here("output", region, "iss_ag_wc_egoa.csv"), 
                      delim = ",")
