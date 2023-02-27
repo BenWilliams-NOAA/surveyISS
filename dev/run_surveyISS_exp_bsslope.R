@@ -29,11 +29,9 @@ if(iters < 100){
   st <- Sys.time()
 }
 
-# ##~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-# #### run for eastern bering sea stocks
-# ##~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+# run for eastern bering sea stocks ----
 
-# #ebs slope
+# ebs slope
 
 yrs = 2002
 species = c(10110, 10112, 10115,30060)
@@ -112,7 +110,7 @@ srvy_iss_exp(iters = iters,
              srvy_type = 'slope')
 
 
-# For testing run time of 500 iterations
+# For testing run time of 500 iterations ----
 if(iters < 100){
   end <- Sys.time()
   runtime <- (end - st) / iters * 500 / 60

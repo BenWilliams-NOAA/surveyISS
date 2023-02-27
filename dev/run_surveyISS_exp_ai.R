@@ -29,9 +29,7 @@ if(iters < 100){
   st <- Sys.time()
 }
 
-# ##~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-# #### run for aleutian islands stocks
-# ##~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+# run for aleutian islands stocks ----
 
 yrs = 1991
 species = c(10110, 10112, 21720, 21740, 21921, 30060, 30420, 30050, 30051, 30052)
@@ -122,7 +120,7 @@ srvy_iss_exp(iters = iters,
 # specimen %>% 
 #   tidytable::filter.(species_code %in% c(30050, 30051, 30052)) -> .specimen_rebs
 
-# For testing run time of 500 iterations
+# For testing run time of 500 iterations ----
 if(iters < 100){
   end <- Sys.time()
   runtime <- (end - st) / iters * 500 / 60

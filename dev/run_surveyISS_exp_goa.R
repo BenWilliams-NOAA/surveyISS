@@ -29,14 +29,12 @@ if(iters < 100){
   st <- Sys.time()
 }
 
-##~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-#### run for gulf of alaska stocks
-##~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+# run for gulf of alaska stocks ----
 
 # pull data for Tier 3 species in Gulf of Alaska (1990 on)
 yrs = 1990
 species = c(10110, 10130, 10180, 20510, 21720, 21740, 30060, 30420, 30050, 30051, 30052, 30150, 30152, 10261, 10262, 10200)
-#species = c(21740, 30060) # pollock and pop for testing
+# species = c(21740, 30060) # pollock and pop for testing
 
 region = 'GOA'
 
@@ -155,7 +153,7 @@ srvy_iss_exp(iters = iters,
 #   tidytable::filter.(species_code %in% c(10200)) -> .specimen_rex
 # 
 
-# For testing run time of 500 iterations
+# For testing run time of 500 iterations ----
 if(iters < 100){
   end <- Sys.time()
   runtime <- (end - st) / iters * 500 / 60

@@ -29,9 +29,7 @@ if(iters < 100){
   st <- Sys.time()
 }
 
-##~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-#### run for gulf of alaska stocks
-##~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+# run for gulf of alaska stocks ----
 
 # pull data for Tier 3 species in Gulf of Alaska (1990 on)
 yrs = 1990
@@ -187,9 +185,7 @@ srvy_iss_goa_wc_e(iters = iters,
                   save_interm = TRUE,
                   match_orig = TRUE)
 
-##~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-#### run for aleutian islands stocks
-##~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+# run for aleutian islands stocks ----
 
 yrs = 1991
 species = c(10110, 10112, 21720, 21740, 21921, 30060, 30420, 30050, 30051, 30052)
@@ -263,12 +259,9 @@ srvy_iss_ai_rebs(iters = iters,
                  save_interm = TRUE,
                  match_orig = TRUE)
 
+# run for eastern bering sea stocks ----
 
-##~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-#### run for eastern bering sea stocks
-##~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-#ebs shelf
+# ebs shelf
 yrs = 1979
 species = c(10110, 10112, 10115, 10130, 10210, 10261, 10285, 21720, 21740)
 region = 'BS'
@@ -308,7 +301,7 @@ srvy_iss(iters = iters,
          match_orig = TRUE,
          srvy_type = 'shelf')
 
-#ebs slope
+# ebs slope
 
 yrs = 2002
 species = c(10110, 10112, 10115,30060)
@@ -350,9 +343,7 @@ srvy_iss(iters = iters,
          srvy_type = 'slope')
 
 
-##~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-#### compile afsc trawl survey iss results (across regions)
-##~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+# compile afsc trawl survey iss results (across regions) ----
 
 # compile bs
 vroom::vroom(here::here('output', 'bs', 'iss_ag_shelf.csv')) %>% 
@@ -427,7 +418,7 @@ goa %>%
 
 
 
-# For testing run time of 500 iterations
+# For testing run time of 500 iterations ----
 if(iters < 100){
   end <- Sys.time()
   runtime <- (end - st) / iters * 500 / 60

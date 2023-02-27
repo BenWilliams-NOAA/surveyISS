@@ -15,9 +15,7 @@ library(here)
 source_files <- list.files(here::here("R"), "*.R$")
 map(here::here("R", source_files), source)
 
-# ##~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-# #### compile afsc trawl survey iss results (across regions)
-# ##~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+# compile afsc trawl survey iss results (across regions) ----
 
 # compile bs
 vroom::vroom(here::here('output', 'bs', 'iss_ag_shelf.csv')) %>%

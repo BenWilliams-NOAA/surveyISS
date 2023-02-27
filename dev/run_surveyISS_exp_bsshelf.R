@@ -29,11 +29,9 @@ if(iters < 100){
   st <- Sys.time()
 }
 
-# ##~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-# #### run for eastern bering sea stocks
-# ##~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+# run for eastern bering sea stocks ----
 
-#ebs shelf
+# ebs shelf
 yrs = 1979
 species = c(10110, 10112, 10115, 10130, 10210, 10261, 10285, 21720, 21740)
 region = 'BS'
@@ -111,7 +109,7 @@ srvy_iss_exp(iters = iters,
              srvy_type = 'shelf')
 
 
-# For testing run time of 500 iterations
+# For testing run time of 500 iterations ----
 if(iters < 100){
   end <- Sys.time()
   runtime <- (end - st) / iters * 500 / 60
