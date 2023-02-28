@@ -49,18 +49,27 @@ srvy_comps <- function(lfreq_data, specimen_data, cpue_data, strata_data, r_t, y
   
   # randomize hauls ----  
   if(isTRUE(boot_hauls)) {
-    boot_haul(.cpue) -> .hls
+    boot_haul(.cpue) %>% 
+      tidytable::mutate.(hauljoin_unq = .I) -> .hls
     
     .hls %>% 
-      tidytable::left_join.(.cpue) -> .cpue
+      tidytable::left_join.(.cpue) %>% 
+      tidytable::rename(hauljoin_orig = 'hauljoin',
+                        hauljoin = 'hauljoin_unq') -> .cpue
     .hls %>% 
-      tidytable::left_join.(.lfreq) -> .lfreq
+      tidytable::left_join.(.lfreq) %>% 
+      tidytable::rename(hauljoin_orig = 'hauljoin',
+                        hauljoin = 'hauljoin_unq') -> .lfreq
     .hls %>% 
       tidytable::left_join.(.lfreq_un) %>% 
-      tidytable::drop_na.() -> .lfreq_un
+      tidytable::drop_na.() %>% 
+      tidytable::rename(hauljoin_orig = 'hauljoin',
+                        hauljoin = 'hauljoin_unq') -> .lfreq_un
     .hls %>% 
       tidytable::left_join.(.agedat) %>% 
-      tidytable::drop_na.() -> .agedat
+      tidytable::drop_na.() %>% 
+      tidytable::rename(hauljoin_orig = 'hauljoin',
+                        hauljoin = 'hauljoin_unq') -> .agedat
     
   } 
   
