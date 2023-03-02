@@ -22,7 +22,7 @@ afsc_pass = db$password[db$database == "AFSC"]
 
 # set number of desired bootstrap iterations (suggested here: 10 for testing, 500 for running)
 # iters = 500
-iters = 10
+iters = 5
 
 # for testing run time
 if(iters < 100){
@@ -64,41 +64,7 @@ specimen %>%
 read_test %>% 
   tidytable::filter.(!(species_code %in% c(30050, 30051, 30052, 30150, 30152, 10261, 10262, 10200))) -> .read_test
 
-# run with age-length variability
-srvy_iss_exp(iters = iters, 
-             lfreq_data = .lfreq,
-             specimen_data = .specimen, 
-             cpue_data = .cpue, 
-             strata_data = strata,
-             r_t = .read_test,
-             yrs = yrs, 
-             boot_hauls = TRUE, 
-             boot_lengths = TRUE, 
-             boot_ages = TRUE,
-             al_var = TRUE,
-             age_err = FALSE,
-             region = 'goa', 
-             save_interm = FALSE,
-             match_orig = FALSE)
-
-# run with ageing error
-srvy_iss_exp(iters = iters, 
-             lfreq_data = .lfreq,
-             specimen_data = .specimen, 
-             cpue_data = .cpue, 
-             strata_data = strata,
-             r_t = .read_test,
-             yrs = yrs, 
-             boot_hauls = TRUE, 
-             boot_lengths = TRUE, 
-             boot_ages = TRUE,
-             al_var = FALSE,
-             age_err = TRUE,
-             region = 'goa', 
-             save_interm = FALSE,
-             match_orig = FALSE)
-
-# run with age-length variability and ageing error
+# run adding ageing error and growth variability
 srvy_iss_exp(iters = iters, 
              lfreq_data = .lfreq,
              specimen_data = .specimen, 

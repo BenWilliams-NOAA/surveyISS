@@ -45,53 +45,17 @@ region = 'BS'
 #            nbs = FALSE,
 #            bs_slope = TRUE)
 
-cpue_data_s <- vroom::vroom(here::here('data', 'cpue_slope_bs.csv'))
-lfreq_data_s <- vroom::vroom(here::here('data', 'lfreq_slope_bs.csv'))
-strata_data_s <- vroom::vroom(here::here('data', 'strata_slope_bs_mb.csv'))
-specimen_data_s <- vroom::vroom(here::here('data', 'specimen_slope_bs.csv'))
+cpue <- vroom::vroom(here::here('data', 'cpue_slope_bs.csv'))
+lfreq <- vroom::vroom(here::here('data', 'lfreq_slope_bs.csv'))
+strata <- vroom::vroom(here::here('data', 'strata_slope_bs_mb.csv'))
+specimen <- vroom::vroom(here::here('data', 'specimen_slope_bs.csv'))
 read_test <- vroom::vroom(here::here('data', 'reader_tester.csv')) %>% 
   dplyr::rename_all(tolower) %>% 
   tidytable::select.(species_code, region, read_age, test_age) %>% 
   tidytable::rename.(age = 'read_age') %>% 
   tidytable::filter.(species_code %in% species)
 
-# run with age-length variability
-srvy_iss_exp(iters = iters, 
-             lfreq_data = lfreq,
-             specimen_data = specimen, 
-             cpue_data = cpue, 
-             strata_data = strata,
-             r_t = read_test,
-             yrs = yrs, 
-             boot_hauls = TRUE, 
-             boot_lengths = TRUE, 
-             boot_ages = TRUE,
-             al_var = TRUE,
-             age_err = FALSE,
-             region = 'bs', 
-             save_interm = FALSE,
-             match_orig = FALSE,
-             srvy_type = 'slope')
-
-# run with ageing error
-srvy_iss_exp(iters = iters, 
-             lfreq_data = lfreq,
-             specimen_data = specimen, 
-             cpue_data = cpue, 
-             strata_data = strata,
-             r_t = read_test,
-             yrs = yrs, 
-             boot_hauls = TRUE, 
-             boot_lengths = TRUE, 
-             boot_ages = TRUE,
-             al_var = FALSE,
-             age_err = TRUE,
-             region = 'bs', 
-             save_interm = FALSE,
-             match_orig = FALSE,
-             srvy_type = 'slope')
-
-# run with age-length variability and ageing error
+# run adding ageing error and growth variability
 srvy_iss_exp(iters = iters, 
              lfreq_data = lfreq,
              specimen_data = specimen, 
@@ -108,7 +72,6 @@ srvy_iss_exp(iters = iters,
              save_interm = FALSE,
              match_orig = FALSE,
              srvy_type = 'slope')
-
 
 # For testing run time of 500 iterations ----
 if(iters < 100){
