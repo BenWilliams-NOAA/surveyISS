@@ -18,6 +18,7 @@ ess_age <- function(sim_data, og_data){
   sim_data %>% 
     tidytable::mutate.(total = unsexed + males + females) %>% 
     tidytable::full_join.(og) %>% 
+    tidytable::drop_na() %>% 
     tidytable::replace_na(list(og_unsexed = 0, og_males = 0, og_females = 0, og_total = 0, 
                                unsexed = 0, males = 0, females = 0, total = 0)) %>%
     tidytable::mutate.(og_m = og_males / sum(og_males),
@@ -26,13 +27,13 @@ ess_age <- function(sim_data, og_data){
                        prop_m = males / sum(males),
                        prop_f = females / sum(females),
                        prop_t = total/sum(total),
-                       .by = c(year, species_code)) %>% 
+                       .by = c(year, species_code, type)) %>% 
     tidytable::mutate.(ess_f = sum(prop_f * (1 - prop_f)) / sum((prop_f - og_f)^2),
                        ess_m = sum(prop_m * (1 - prop_m)) / sum((prop_m - og_m)^2),
                        ess_t = sum(prop_t * (1 - prop_t)) / sum((prop_t - og_t)^2),
-                       .by = c(year, species_code)) %>%
-    tidytable::select.(year, species_code, age, ess_f, ess_m, ess_t) %>% 
+                       .by = c(year, species_code, type)) %>%
+    tidytable::select.(year, species_code, type, age, ess_f, ess_m, ess_t) %>% 
     tidytable::pivot_longer.(cols = c(ess_f, ess_m, ess_t), names_to = "ess") %>%
-    tidytable::distinct(year, species_code, ess, value) 
-
+    tidytable::distinct(year, species_code, type, ess, value) 
+  
 }

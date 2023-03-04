@@ -65,13 +65,15 @@ srvy_iss_goa_wc_e <- function(iters = 1, lfreq_data, specimen_data, cpue_data, s
                       al_var = FALSE,
                       age_err = FALSE)
   
-  oga <- og_wc$age
+  oga <- og_wc$age %>% 
+    select(-type)
   oga %>% 
     tidytable::summarize.(males = sum(males),
                           females = sum(females),
                           unsexed = sum(unsexed),
                           .by = c(year, age, species_code)) -> oga_wc
-  ogl <- og_wc$length
+  ogl <- og_wc$length %>% 
+    select(-type)
   ogl %>% 
     tidytable::summarize.(males = sum(males),
                           females = sum(females),
@@ -91,13 +93,15 @@ srvy_iss_goa_wc_e <- function(iters = 1, lfreq_data, specimen_data, cpue_data, s
                      al_var = FALSE,
                      age_err = FALSE)
   
-  oga <- og_e$age
+  oga <- og_e$age %>% 
+    select(-type)
   oga %>% 
     tidytable::summarize.(males = sum(males),
                           females = sum(females),
                           unsexed = sum(unsexed),
                           .by = c(year, age, species_code)) -> oga_e
-  ogl <- og_e$length
+  ogl <- og_e$length %>% 
+    select(-type)
   ogl %>% 
     tidytable::summarize.(males = sum(males),
                           females = sum(females),
@@ -136,7 +140,7 @@ srvy_iss_goa_wc_e <- function(iters = 1, lfreq_data, specimen_data, cpue_data, s
     tidytable::summarize.(males = sum(males),
                           females = sum(females),
                           unsexed = sum(unsexed),
-                          .by = c(sim, year, age, species_code)) %>% 
+                          .by = c(sim, year, age, species_code, type)) %>% 
     split(., .[,'sim']) -> r_age_wc
   
   r_length <- do.call(mapply, c(list, rr, SIMPLIFY = FALSE))$length
@@ -145,7 +149,7 @@ srvy_iss_goa_wc_e <- function(iters = 1, lfreq_data, specimen_data, cpue_data, s
     tidytable::summarize.(males = sum(males),
                           females = sum(females),
                           unsexed = sum(unsexed),
-                          .by = c(sim, year, length, species_code)) %>% 
+                          .by = c(sim, year, length, species_code, type)) %>% 
     split(., .[,'sim']) -> r_length_wc
   
   # run iterations for eastern goa
@@ -167,7 +171,7 @@ srvy_iss_goa_wc_e <- function(iters = 1, lfreq_data, specimen_data, cpue_data, s
     tidytable::summarize.(males = sum(males),
                           females = sum(females),
                           unsexed = sum(unsexed),
-                          .by = c(sim, year, age, species_code)) %>% 
+                          .by = c(sim, year, age, species_code, type)) %>% 
     split(., .[,'sim']) -> r_age_e
   
   r_length <- do.call(mapply, c(list, rr, SIMPLIFY = FALSE))$length
@@ -176,7 +180,7 @@ srvy_iss_goa_wc_e <- function(iters = 1, lfreq_data, specimen_data, cpue_data, s
     tidytable::summarize.(males = sum(males),
                           females = sum(females),
                           unsexed = sum(unsexed),
-                          .by = c(sim, year, length, species_code)) %>% 
+                          .by = c(sim, year, length, species_code, type)) %>% 
     split(., .[,'sim']) -> r_length_e
   
   # if desired, write out intermediate results
@@ -204,19 +208,35 @@ srvy_iss_goa_wc_e <- function(iters = 1, lfreq_data, specimen_data, cpue_data, s
   # compute effective sample size of bootstrapped age/length by subregion
   r_age_wc %>%
     tidytable::map.(., ~ess_age(sim_data = .x, og_data = oga_wc)) %>% 
-    tidytable::map_df.(., ~as.data.frame(.x), .id = "sim") -> ess_age_wc
+    tidytable::map_df.(., ~as.data.frame(.x), .id = "sim") %>% 
+    tidytable::rename(comp_type = ess) %>% 
+    tidytable::mutate.(comp_type = tidytable::case_when(comp_type == 'ess_f' ~ 'female',
+                                                        comp_type == 'ess_m' ~ 'male',
+                                                        comp_type == 'ess_t' ~ 'total')) -> ess_age_wc
   
   r_length_wc %>%
     tidytable::map.(., ~ess_size(sim_data = .x, og_data = ogl_wc)) %>%
-    tidytable::map_df.(., ~as.data.frame(.x), .id = "sim") -> ess_size_wc
+    tidytable::map_df.(., ~as.data.frame(.x), .id = "sim") %>% 
+    tidytable::rename(comp_type = ess) %>% 
+    tidytable::mutate.(comp_type = tidytable::case_when(comp_type == 'ess_f' ~ 'female',
+                                                        comp_type == 'ess_m' ~ 'male',
+                                                        comp_type == 'ess_t' ~ 'total')) -> ess_size_wc
   
   r_age_e %>%
     tidytable::map.(., ~ess_age(sim_data = .x, og_data = oga_e)) %>% 
-    tidytable::map_df.(., ~as.data.frame(.x), .id = "sim") -> ess_age_e
+    tidytable::map_df.(., ~as.data.frame(.x), .id = "sim") %>% 
+    tidytable::rename(comp_type = ess) %>% 
+    tidytable::mutate.(comp_type = tidytable::case_when(comp_type == 'ess_f' ~ 'female',
+                                                        comp_type == 'ess_m' ~ 'male',
+                                                        comp_type == 'ess_t' ~ 'total')) -> ess_age_e
   
   r_length_e %>%
     tidytable::map.(., ~ess_size(sim_data = .x, og_data = ogl_e)) %>%
-    tidytable::map_df.(., ~as.data.frame(.x), .id = "sim") -> ess_size_e
+    tidytable::map_df.(., ~as.data.frame(.x), .id = "sim") %>% 
+    tidytable::rename(comp_type = ess) %>% 
+    tidytable::mutate.(comp_type = tidytable::case_when(comp_type == 'ess_f' ~ 'female',
+                                                        comp_type == 'ess_m' ~ 'male',
+                                                        comp_type == 'ess_t' ~ 'total')) -> ess_size_e
   
   ess_age_wc %>% 
     tidytable::mutate.(region = "wcgoa") -> .ess_age_wc
@@ -231,116 +251,23 @@ srvy_iss_goa_wc_e <- function(iters = 1, lfreq_data, specimen_data, cpue_data, s
     tidytable::bind_rows.(.ess_size_wc) -> ess_size
   
   # compute harmonic mean of iterated effective sample size, which is the input sample size (iss)
-  #  also add nominal sample size (nss) and number of hauls (hls) as column
+  ess_age %>% 
+    tidytable::summarise(iss = psych::harmonic.mean(value, na.rm=T),
+                         .by = c(year, species_code, comp_type, type, region)) %>% 
+    tidytable::filter.(iss > 0) %>% 
+    tidytable::pivot_wider(names_from = type, values_from = iss) -> iss_age
   
-  .lfreq_data %>% 
-    tidytable::summarise.(nss = sum(frequency),
-                          .by = c(year, species_code, sex, region)) %>% 
-    tidytable::pivot_wider.(names_from = sex,
-                            values_from = nss) %>% 
-    tidytable::rename.(male = '1',
-                       female = '2',
-                       unsexed = '3') %>% 
-    tidytable::mutate.(unsexed = case_when(is.na(unsexed) ~ 0,
-                                           !is.na(unsexed) ~ unsexed),
-                       male = case_when(is.na(male) ~ 0,
-                                        !is.na(male) ~ male),
-                       female = case_when(is.na(female) ~ 0,
-                                          !is.na(female) ~ female),
-                       total = male + female + unsexed) %>% 
-    tidytable::select.(-unsexed) %>% 
-    tidytable::pivot_longer.(cols = c(male, female, total),
-                             names_to = 'comp_type',
-                             values_to = 'nss') -> nss_size
-  
-  .lfreq_data %>% 
-    tidytable::summarise.(total = length(unique(hauljoin)),
-                          .by = c(year, species_code, region)) -> tot_hls
-  
-  .lfreq_data %>% 
-    tidytable::summarise.(hls = length(unique(hauljoin)),
-                          .by = c(year, species_code, sex, region)) %>% 
-    tidytable::pivot_wider.(names_from = sex,
-                            values_from = hls) %>% 
-    tidytable::rename.(male = '1',
-                       female = '2',
-                       unsexed = '3') %>%
-    tidytable::select.(-unsexed) %>% 
-    tidytable::mutate.(male = case_when(is.na(male) ~ 0,
-                                        !is.na(male) ~ male),
-                       female = case_when(is.na(female) ~ 0,
-                                          !is.na(female) ~ female)) %>% 
-    tidytable::left_join.(tot_hls) %>% 
-    tidytable::pivot_longer.(cols = c(male, female, total),
-                             names_to = 'comp_type',
-                             values_to = 'hls') -> hls_size
+  ess_age %>%
+    tidytable::pivot_wider(names_from = type, values_from = value) -> ess_age
   
   ess_size %>% 
-    tidytable::mutate.(iss = psych::harmonic.mean(value), 
-                       .by = c(year, species_code, ess, region)) %>%
-    dplyr::distinct(year, species_code, region, ess, iss) %>% 
-    tidytable::drop_na.() %>% 
+    tidytable::summarise(iss = psych::harmonic.mean(value, na.rm=T),
+                         .by = c(year, species_code, comp_type, type, region)) %>% 
     tidytable::filter.(iss > 0) %>% 
-    tidytable::rename.(comp_type = ess) %>% 
-    tidytable::mutate.(comp_type = case_when(comp_type == 'ess_f' ~ 'female',
-                                             comp_type == 'ess_m' ~ 'male',
-                                             comp_type == 'ess_t' ~ 'total')) %>% 
-    tidytable::left_join.(nss_size) %>% 
-    tidytable::left_join.(hls_size) -> iss_size
+    tidytable::pivot_wider(names_from = type, values_from = iss) -> iss_size
   
-  .specimen_data %>% 
-    tidytable::filter.(!is.na(age)) %>% 
-    tidytable::summarise.(nss = length(age),
-                          .by = c(year, species_code, sex, region)) %>% 
-    tidytable::pivot_wider.(names_from = sex,
-                            values_from = nss) %>% 
-    tidytable::rename.(male = '1',
-                       female = '2',
-                       unsexed = '3') %>% 
-    tidytable::mutate.(unsexed = case_when(is.na(unsexed) ~ 0,
-                                           !is.na(unsexed) ~ unsexed),
-                       male = case_when(is.na(male) ~ 0,
-                                        !is.na(male) ~ male),
-                       female = case_when(is.na(female) ~ 0,
-                                          !is.na(female) ~ female),
-                       total = male + female + unsexed) %>% 
-    tidytable::select.(-unsexed) %>% 
-    tidytable::pivot_longer.(cols = c(male, female, total),
-                             names_to = 'comp_type',
-                             values_to = 'nss') -> nss_age
-  
-  .specimen_data %>% 
-    tidytable::filter.(!is.na(age)) %>%
-    tidytable::summarise.(total = length(unique(hauljoin)),
-                          .by = c(year, species_code, region)) -> tot_hls
-  
-  .specimen_data %>% 
-    tidytable::filter.(!is.na(age)) %>% 
-    tidytable::summarise.(hls = length(unique(hauljoin)),
-                          .by = c(year, species_code, sex, region)) %>% 
-    tidytable::pivot_wider.(names_from = sex,
-                            values_from = hls) %>% 
-    tidytable::rename.(male = '1',
-                       female = '2',
-                       unsexed = '3') %>%
-    tidytable::select.(-unsexed) %>% 
-    tidytable::left_join.(tot_hls) %>% 
-    tidytable::pivot_longer.(cols = c(male, female, total),
-                             names_to = 'comp_type',
-                             values_to = 'hls') -> hls_age
-  
-  ess_age %>% 
-    tidytable::mutate.(iss = psych::harmonic.mean(value), 
-                       .by = c(year, species_code, ess, region)) %>%
-    dplyr::distinct(year, species_code, region, ess, iss) %>% 
-    tidytable::drop_na.() %>% 
-    tidytable::filter.(iss > 0) %>% 
-    tidytable::rename.(comp_type = ess) %>% 
-    tidytable::mutate.(comp_type = case_when(comp_type == 'ess_f' ~ 'female',
-                                             comp_type == 'ess_m' ~ 'male',
-                                             comp_type == 'ess_t' ~ 'total')) %>% 
-    tidytable::left_join.(nss_age) %>% 
-    tidytable::left_join.(hls_age) -> iss_age
+  ess_size %>%
+    tidytable::pivot_wider(names_from = type, values_from = value) -> ess_size
   
   # write input sample size results
   vroom::vroom_write(ess_age, 
