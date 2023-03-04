@@ -70,18 +70,6 @@ specimen %>%
 read_test %>% 
   tidytable::filter.(!(species_code %in% c(30050, 30051, 30052, 30150, 30152, 10261, 10262, 10200))) -> .read_test
 
-iters = iters
-lfreq_data = .lfreq
-specimen_data = .specimen
-cpue_data = .cpue
-strata_data = strata
-r_t = .read_test
-
-
-
-
-
-
 # run adding ageing error and growth variability
 srvy_iss(iters = iters, 
          lfreq_data = .lfreq,
