@@ -21,8 +21,8 @@ afsc_user = db$username[db$database == "AFSC"]
 afsc_pass = db$password[db$database == "AFSC"]
 
 # set number of desired bootstrap iterations (suggested here: 10 for testing, 500 for running)
-#iters = 500
-iters = 2
+# iters = 500
+iters = 5
 
 # for testing run time
 if(iters < 100){
@@ -78,7 +78,8 @@ srvy_iss(iters = iters,
          age_err = FALSE,
          region = 'goa', 
          save_interm = TRUE,
-         match_orig = TRUE)
+         match_orig = TRUE,
+         save = 'prod')
 
 # run for goa rougheye-blackspotted stock complex
 cpue %>% 
@@ -104,7 +105,8 @@ srvy_iss_goa_rebs(iters = iters,
                   age_err = FALSE,
                   region = 'goa', 
                   save_interm = TRUE,
-                  match_orig = TRUE)
+                  match_orig = TRUE,
+                  save = 'prod')
 
 # run for goa dusky stock (has different historical species codes)
 cpue %>% 
@@ -130,7 +132,8 @@ srvy_iss_goa_dr(iters = iters,
                 age_err = FALSE,
                 region = 'goa', 
                 save_interm = TRUE,
-                match_orig = TRUE)
+                match_orig = TRUE,
+                save = 'prod')
 
 # run for goa northern/southern rock sole
 cpue %>% 
@@ -157,7 +160,8 @@ srvy_iss_goa_w_c_e(iters = iters,
                    age_err = FALSE,
                    region = 'goa', 
                    save_interm = TRUE,
-                   match_orig = TRUE)
+                   match_orig = TRUE,
+                   save = 'prod')
 
 # Run for GOA rex sole
 cpue %>% 
@@ -183,7 +187,8 @@ srvy_iss_goa_wc_e(iters = iters,
                   age_err = FALSE,
                   region = 'goa', 
                   save_interm = TRUE,
-                  match_orig = TRUE)
+                  match_orig = TRUE,
+                  save = 'prod')
 
 # For testing run time of 500 iterations ----
 if(iters < 100){

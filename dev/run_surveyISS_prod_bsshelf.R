@@ -21,8 +21,8 @@ afsc_user = db$username[db$database == "AFSC"]
 afsc_pass = db$password[db$database == "AFSC"]
 
 # set number of desired bootstrap iterations (suggested here: 10 for testing, 500 for running)
-#iters = 500
-iters = 2
+# iters = 500
+iters = 5
 
 # for testing run time
 if(iters < 100){
@@ -69,7 +69,8 @@ srvy_iss(iters = iters,
          region = 'bs', 
          save_interm = TRUE,
          match_orig = TRUE,
-         srvy_type = 'shelf')
+         srvy_type = 'shelf',
+         save = 'prod')
 
 # For testing run time of 500 iterations ----
 if(iters < 100){

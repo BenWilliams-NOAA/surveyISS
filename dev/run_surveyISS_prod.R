@@ -22,7 +22,7 @@ afsc_pass = db$password[db$database == "AFSC"]
 
 # set number of desired bootstrap iterations (suggested here: 10 for testing, 500 for running)
 #iters = 500
-iters = 2
+iters = 5
 
 # for testing run time
 if(iters < 100){
@@ -78,7 +78,8 @@ srvy_iss(iters = iters,
          age_err = FALSE,
          region = 'goa', 
          save_interm = TRUE,
-         match_orig = TRUE)
+         match_orig = TRUE,
+         save = 'prod')
 
 # run for goa rougheye-blackspotted stock complex
 cpue %>% 
@@ -104,7 +105,8 @@ srvy_iss_goa_rebs(iters = iters,
                   age_err = FALSE,
                   region = 'goa', 
                   save_interm = TRUE,
-                  match_orig = TRUE)
+                  match_orig = TRUE,
+                  save = 'prod')
 
 # run for goa dusky stock (has different historical species codes)
 cpue %>% 
@@ -130,7 +132,8 @@ srvy_iss_goa_dr(iters = iters,
                 age_err = FALSE,
                 region = 'goa', 
                 save_interm = TRUE,
-                match_orig = TRUE)
+                match_orig = TRUE,
+                save = 'prod')
 
 # run for goa northern/southern rock sole
 cpue %>% 
@@ -157,7 +160,8 @@ srvy_iss_goa_w_c_e(iters = iters,
                    age_err = FALSE,
                    region = 'goa', 
                    save_interm = TRUE,
-                   match_orig = TRUE)
+                   match_orig = TRUE,
+                   save = 'prod')
 
 # Run for GOA rex sole
 cpue %>% 
@@ -183,7 +187,8 @@ srvy_iss_goa_wc_e(iters = iters,
                   age_err = FALSE,
                   region = 'goa', 
                   save_interm = TRUE,
-                  match_orig = TRUE)
+                  match_orig = TRUE,
+                  save = 'prod')
 
 # run for aleutian islands stocks ----
 
@@ -231,7 +236,8 @@ srvy_iss(iters = iters,
          age_err = FALSE, 
          region = 'ai', 
          save_interm = TRUE,
-         match_orig = TRUE)
+         match_orig = TRUE,
+         save = 'prod')
 
 # Run for AI REBS stock complex
 cpue %>% 
@@ -257,7 +263,8 @@ srvy_iss_ai_rebs(iters = iters,
                  age_err = FALSE, 
                  region = 'ai', 
                  save_interm = TRUE,
-                 match_orig = TRUE)
+                 match_orig = TRUE,
+                 save = 'prod')
 
 # run for eastern bering sea stocks ----
 
@@ -299,7 +306,8 @@ srvy_iss(iters = iters,
          region = 'bs', 
          save_interm = TRUE,
          match_orig = TRUE,
-         srvy_type = 'shelf')
+         srvy_type = 'shelf',
+         save = 'prod')
 
 # ebs slope
 
@@ -340,20 +348,21 @@ srvy_iss(iters = iters,
          region = 'bs', 
          save_interm = TRUE,
          match_orig = TRUE,
-         srvy_type = 'slope')
+         srvy_type = 'slope',
+         save = 'prod')
 
 
 # compile afsc trawl survey iss results (across regions) ----
 
 # compile bs
-vroom::vroom(here::here('output', 'bs', 'iss_ag_shelf.csv')) %>% 
+vroom::vroom(here::here('output', 'bs', 'prod_iss_ag_shelf.csv')) %>% 
   tidytable::rename.('iss_age' = base) %>% 
-  tidytable::left_join.(vroom::vroom(here::here('output', 'bs', 'iss_sz_shelf.csv'))) %>% 
+  tidytable::left_join.(vroom::vroom(here::here('output', 'bs', 'prod_iss_sz_shelf.csv'))) %>% 
   tidytable::rename.('iss_length' = base) %>% 
   tidytable::mutate.(region = 'bs_shelf') %>% 
-  tidytable::bind_rows.(vroom::vroom(here::here('output', 'bs', 'iss_ag_slope.csv')) %>% 
+  tidytable::bind_rows.(vroom::vroom(here::here('output', 'bs', 'prod_iss_ag_slope.csv')) %>% 
                           tidytable::rename.('iss_age' = base) %>% 
-                          tidytable::left_join.(vroom::vroom(here::here('output', 'bs', 'iss_sz_slope.csv'))) %>% 
+                          tidytable::left_join.(vroom::vroom(here::here('output', 'bs', 'prod_iss_sz_slope.csv'))) %>% 
                           tidytable::rename.('iss_length' = base) %>% 
                           tidytable::mutate.(region = 'bs_slope')) -> bs
 
@@ -363,9 +372,9 @@ vroom::vroom(here::here('output', 'ai', 'iss_ag.csv')) %>%
   tidytable::left_join.(vroom::vroom(here::here('output', 'ai', 'iss_sz.csv'))) %>% 
   tidytable::rename.('iss_length' = base) %>% 
   tidytable::mutate.(region = 'ai') %>% 
-  tidytable::bind_rows.(vroom::vroom(here::here('output', 'ai', 'iss_ag_rebs.csv')) %>% 
+  tidytable::bind_rows.(vroom::vroom(here::here('output', 'ai', 'prod_iss_ag_rebs.csv')) %>% 
                tidytable::rename.('iss_age' = base) %>% 
-               tidytable::left_join.(vroom::vroom(here::here('output', 'ai', 'iss_sz_rebs.csv'))) %>% 
+               tidytable::left_join.(vroom::vroom(here::here('output', 'ai', 'prod_iss_sz_rebs.csv'))) %>% 
                tidytable::rename.('iss_length' = base) %>% 
                tidytable::mutate.(region = 'ai')) -> ai
 
@@ -375,23 +384,23 @@ vroom::vroom(here::here('output', 'goa', 'iss_ag.csv')) %>%
   tidytable::left_join.(vroom::vroom(here::here('output', 'goa', 'iss_sz.csv'))) %>% 
   tidytable::rename.('iss_length' = base) %>% 
   tidytable::mutate.(region = 'goa') %>% 
-  tidytable::bind_rows.(vroom::vroom(here::here('output', 'goa', 'iss_ag_rebs.csv')) %>% 
+  tidytable::bind_rows.(vroom::vroom(here::here('output', 'goa', 'prod_iss_ag_rebs.csv')) %>% 
                           tidytable::rename.('iss_age' = base) %>%
-                          tidytable::left_join.(vroom::vroom(here::here('output', 'goa', 'iss_sz_rebs.csv'))) %>% 
+                          tidytable::left_join.(vroom::vroom(here::here('output', 'goa', 'prod_iss_sz_rebs.csv'))) %>% 
                           tidytable::rename.('iss_length' = base) %>% 
                           tidytable::mutate.(region = 'goa')) %>% 
-  tidytable::bind_rows.(vroom::vroom(here::here('output', 'goa', 'iss_ag_dr.csv')) %>% 
+  tidytable::bind_rows.(vroom::vroom(here::here('output', 'goa', 'prod_iss_ag_dr.csv')) %>% 
                           tidytable::rename.('iss_age' = base) %>% 
-                          tidytable::left_join.(vroom::vroom(here::here('output', 'goa', 'iss_sz_dr.csv'))) %>% 
+                          tidytable::left_join.(vroom::vroom(here::here('output', 'goa', 'prod_iss_sz_dr.csv'))) %>% 
                           tidytable::rename.('iss_length' = base) %>% 
                           tidytable::mutate.(region = 'goa')) %>% 
-  tidytable::bind_rows.(vroom::vroom(here::here('output', 'goa', 'iss_ag_w_c_egoa.csv')) %>% 
+  tidytable::bind_rows.(vroom::vroom(here::here('output', 'goa', 'prod_iss_ag_w_c_egoa.csv')) %>% 
                           tidytable::rename.('iss_age' = base) %>% 
-                          tidytable::left_join.(vroom::vroom(here::here('output', 'goa', 'iss_sz_w_c_egoa.csv'))) %>% 
+                          tidytable::left_join.(vroom::vroom(here::here('output', 'goa', 'prod_iss_sz_w_c_egoa.csv'))) %>% 
                           tidytable::rename.('iss_length' = base)) %>% 
-  tidytable::bind_rows.(vroom::vroom(here::here('output', 'goa', 'iss_ag_wc_egoa.csv')) %>% 
+  tidytable::bind_rows.(vroom::vroom(here::here('output', 'goa', 'prod_iss_ag_wc_egoa.csv')) %>% 
                           tidytable::rename.('iss_age' = base) %>% 
-                          tidytable::left_join.(vroom::vroom(here::here('output', 'goa', 'iss_sz_wc_egoa.csv'))) %>% 
+                          tidytable::left_join.(vroom::vroom(here::here('output', 'goa', 'prod_iss_sz_wc_egoa.csv'))) %>% 
                           tidytable::rename.('iss_length' = base)) -> goa
 
 # compile all and write results

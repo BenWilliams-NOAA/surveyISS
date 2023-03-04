@@ -21,8 +21,8 @@ afsc_user = db$username[db$database == "AFSC"]
 afsc_pass = db$password[db$database == "AFSC"]
 
 # set number of desired bootstrap iterations (suggested here: 10 for testing, 500 for running)
-#iters = 500
-iters = 2
+# iters = 500
+iters = 5
 
 # for testing run time
 if(iters < 100){
@@ -75,7 +75,8 @@ srvy_iss(iters = iters,
          age_err = FALSE, 
          region = 'ai', 
          save_interm = TRUE,
-         match_orig = TRUE)
+         match_orig = TRUE,
+         save = 'prod')
 
 # Run for AI REBS stock complex
 cpue %>% 
@@ -101,7 +102,8 @@ srvy_iss_ai_rebs(iters = iters,
                  age_err = FALSE, 
                  region = 'ai', 
                  save_interm = TRUE,
-                 match_orig = TRUE)
+                 match_orig = TRUE,
+                 save = 'prod')
 
 # For testing run time of 500 iterations ----
 if(iters < 100){

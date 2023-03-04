@@ -21,8 +21,8 @@ afsc_user = db$username[db$database == "AFSC"]
 afsc_pass = db$password[db$database == "AFSC"]
 
 # set number of desired bootstrap iterations (suggested here: 10 for testing, 500 for running)
-#iters = 500
-iters = 2
+# iters = 500
+iters = 5
 
 # for testing run time
 if(iters < 100){
@@ -31,7 +31,6 @@ if(iters < 100){
 
 
 # run for eastern bering sea stocks ----
-# ebs slope
 
 yrs = 2002
 species = c(10110, 10112, 10115,30060)
@@ -70,7 +69,8 @@ srvy_iss(iters = iters,
          region = 'bs', 
          save_interm = TRUE,
          match_orig = TRUE,
-         srvy_type = 'slope')
+         srvy_type = 'slope',
+         save = 'prod')
 
 # For testing run time of 500 iterations ----
 if(iters < 100){

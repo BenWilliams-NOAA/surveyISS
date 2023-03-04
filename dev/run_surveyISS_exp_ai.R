@@ -32,7 +32,11 @@ if(iters < 100){
 # run for aleutian islands stocks ----
 
 yrs = 1990
-species = c(10110, 10112, 21720, 21740, 21921, 30060, 30420, 30050, 30051, 30052)
+# species = c(10110, 10112, 21720, 21740, 21921, 30060, 30420, 30050, 30051, 30052)
+species = c(10110, 30420)
+# species = c(21720, 21921)
+# species = c(21740, 10112, 30060)
+
 region = 'AI'
 
 # query_data(region,
@@ -41,10 +45,13 @@ region = 'AI'
 #            afsc_user,
 #            afsc_pass)
 
-cpue <- vroom::vroom(here::here('data', 'cpue_ai.csv'))
-lfreq <- vroom::vroom(here::here('data', 'lfreq_ai.csv'))
+cpue <- vroom::vroom(here::here('data', 'cpue_ai.csv')) %>% 
+  tidytable::filter(species_code %in% species)
+lfreq <- vroom::vroom(here::here('data', 'lfreq_ai.csv')) %>% 
+  tidytable::filter(species_code %in% species)
 strata <- vroom::vroom(here::here('data', 'strata_ai.csv'))
-specimen <- vroom::vroom(here::here('data', 'specimen_ai.csv'))
+specimen <- vroom::vroom(here::here('data', 'specimen_ai.csv')) %>% 
+  tidytable::filter(species_code %in% species)
 read_test <- vroom::vroom(here::here('data', 'reader_tester.csv')) %>% 
   dplyr::rename_all(tolower) %>% 
   tidytable::select.(species_code, region, read_age, test_age) %>% 
@@ -62,21 +69,22 @@ read_test %>%
   tidytable::filter.(!(species_code %in% c(30050, 30051, 30052))) -> .read_test
 
 # run adding ageing error and growth variability
-srvy_iss_exp(iters = iters, 
-             lfreq_data = .lfreq,
-             specimen_data = .specimen, 
-             cpue_data = .cpue, 
-             strata_data = strata,
-             r_t = .read_test,
-             yrs = yrs, 
-             boot_hauls = TRUE, 
-             boot_lengths = TRUE, 
-             boot_ages = TRUE,
-             al_var = TRUE,
-             age_err = TRUE,
-             region = 'ai', 
-             save_interm = FALSE,
-             match_orig = FALSE)
+srvy_iss(iters = iters, 
+         lfreq_data = .lfreq,
+         specimen_data = .specimen, 
+         cpue_data = .cpue, 
+         strata_data = strata,
+         r_t = .read_test,
+         yrs = yrs, 
+         boot_hauls = TRUE, 
+         boot_lengths = TRUE, 
+         boot_ages = TRUE,
+         al_var = TRUE,
+         age_err = TRUE,
+         region = 'ai', 
+         save_interm = FALSE,
+         match_orig = FALSE,
+         save = "spec1")
 
 # # Run for AI REBS stock complex
 # cpue %>% 

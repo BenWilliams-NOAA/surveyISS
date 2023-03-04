@@ -34,6 +34,10 @@ if(iters < 100){
 # ebs shelf
 yrs = 1979
 species = c(10110, 10112, 10115, 10130, 10210, 10261, 10285, 21720, 21740)
+species = c(10110, 10261, 10285)
+species = c(10210, 10310)
+species = c(21720, 10115)
+species = c(21740, 10112)
 region = 'BS'
 
 # query_data(region,
@@ -44,10 +48,13 @@ region = 'BS'
 #            nbs = FALSE,
 #            bs_slope = FALSE)
 
-cpue <- vroom::vroom(here::here('data', 'cpue_bs.csv'))
-lfreq <- vroom::vroom(here::here('data', 'lfreq_bs.csv'))
+cpue <- vroom::vroom(here::here('data', 'cpue_bs.csv')) %>% 
+  tidytable::filter(species_code %in% species)
+lfreq <- vroom::vroom(here::here('data', 'lfreq_bs.csv')) %>% 
+  tidytable::filter(species_code %in% species)
 strata <- vroom::vroom(here::here('data', 'strata_bs_mb.csv'))
-specimen <- vroom::vroom(here::here('data', 'specimen_bs.csv'))
+specimen <- vroom::vroom(here::here('data', 'specimen_bs.csv')) %>% 
+  tidytable::filter(species_code %in% species)
 read_test <- vroom::vroom(here::here('data', 'reader_tester.csv')) %>% 
   dplyr::rename_all(tolower) %>% 
   tidytable::select.(species_code, region, read_age, test_age) %>% 
@@ -55,22 +62,23 @@ read_test <- vroom::vroom(here::here('data', 'reader_tester.csv')) %>%
   tidytable::filter.(species_code %in% species)
 
 # run adding ageing error and growth variability
-srvy_iss_exp(iters = iters, 
-             lfreq_data = lfreq,
-             specimen_data = specimen, 
-             cpue_data = cpue, 
-             strata_data = strata,
-             r_t = read_test,
-             yrs = yrs, 
-             boot_hauls = TRUE, 
-             boot_lengths = TRUE, 
-             boot_ages = TRUE,
-             al_var = TRUE,
-             age_err = TRUE,
-             region = 'bs', 
-             save_interm = FALSE,
-             match_orig = FALSE,
-             srvy_type = 'shelf')
+srvy_iss(iters = iters, 
+         lfreq_data = lfreq,
+         specimen_data = specimen, 
+         cpue_data = cpue, 
+         strata_data = strata,
+         r_t = read_test,
+         yrs = yrs, 
+         boot_hauls = TRUE, 
+         boot_lengths = TRUE, 
+         boot_ages = TRUE,
+         al_var = TRUE,
+         age_err = TRUE,
+         region = 'bs', 
+         save_interm = FALSE,
+         match_orig = FALSE,
+         srvy_type = 'shelf',
+         save = 'spec1')
 
 # For testing run time of 500 iterations ----
 if(iters < 100){

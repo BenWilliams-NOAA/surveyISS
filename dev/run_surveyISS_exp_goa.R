@@ -33,8 +33,11 @@ if(iters < 100){
 
 # pull data for Tier 3 species in Gulf of Alaska (1990 on)
 yrs = 1990
-species = c(10110, 10130, 10180, 20510, 21720, 21740, 30060, 30420, 30050, 30051, 30052, 30150, 30152, 10261, 10262, 10200)
-# species = c(21740, 30060) # pollock and pop for testing
+# species = c(10110, 10130, 10180, 20510, 21720, 21740, 30060, 30420, 30050, 30051, 30052, 30150, 30152, 10261, 10262, 10200)
+species = c(10110, 10262, 10261)
+# species = c(30060, 30420, 10180)
+# species = c(21720, 10200)
+# species = c(21740, 10130)
 
 region = 'GOA'
 
@@ -44,10 +47,13 @@ region = 'GOA'
 #            afsc_user,
 #            afsc_pass)
 
-cpue <- vroom::vroom(here::here('data', 'cpue_goa.csv'))
-lfreq <- vroom::vroom(here::here('data', 'lfreq_goa.csv'))
+cpue <- vroom::vroom(here::here('data', 'cpue_goa.csv')) %>% 
+  tidytable::filter(species_code %in% species)
+lfreq <- vroom::vroom(here::here('data', 'lfreq_goa.csv')) %>% 
+  tidytable::filter(species_code %in% species)
 strata <- vroom::vroom(here::here('data', 'strata_goa.csv'))
-specimen <- vroom::vroom(here::here('data', 'specimen_goa.csv'))
+specimen <- vroom::vroom(here::here('data', 'specimen_goa.csv')) %>% 
+  tidytable::filter(species_code %in% species)
 read_test <- vroom::vroom(here::here('data', 'reader_tester.csv')) %>% 
   dplyr::rename_all(tolower) %>% 
   tidytable::select.(species_code, region, read_age, test_age) %>% 
@@ -64,22 +70,35 @@ specimen %>%
 read_test %>% 
   tidytable::filter.(!(species_code %in% c(30050, 30051, 30052, 30150, 30152, 10261, 10262, 10200))) -> .read_test
 
+iters = iters
+lfreq_data = .lfreq
+specimen_data = .specimen
+cpue_data = .cpue
+strata_data = strata
+r_t = .read_test
+
+
+
+
+
+
 # run adding ageing error and growth variability
-srvy_iss_exp(iters = iters, 
-             lfreq_data = .lfreq,
-             specimen_data = .specimen, 
-             cpue_data = .cpue, 
-             strata_data = strata,
-             r_t = .read_test,
-             yrs = yrs, 
-             boot_hauls = TRUE, 
-             boot_lengths = TRUE, 
-             boot_ages = TRUE,
-             al_var = TRUE,
-             age_err = TRUE,
-             region = 'goa', 
-             save_interm = FALSE,
-             match_orig = FALSE)
+srvy_iss(iters = iters, 
+         lfreq_data = .lfreq,
+         specimen_data = .specimen, 
+         cpue_data = .cpue, 
+         strata_data = strata,
+         r_t = .read_test,
+         yrs = yrs, 
+         boot_hauls = TRUE, 
+         boot_lengths = TRUE, 
+         boot_ages = TRUE,
+         al_var = TRUE,
+         age_err = TRUE,
+         region = 'goa', 
+         save_interm = FALSE,
+         match_orig = FALSE,
+         save = 'spec1')
 
 # # run for goa rougheye-blackspotted stock complex
 # cpue %>% 

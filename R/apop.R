@@ -15,7 +15,8 @@ apop <- function(lpop, agedat){
     tidytable::mutate.(sex = tidytable::case_when.(sex == 'males' ~ 1,
                                                    sex == 'females' ~ 2,
                                                    TRUE ~ 3)) %>%
-    tidytable::rename.(sizepop = value) -> .lpop_long
+    tidytable::rename.(sizepop = value) %>% 
+    tidytable::select(-type) -> .lpop_long
   
   # compute resampled age pop'n for females & males
   agedat %>%

@@ -22,7 +22,7 @@ afsc_pass = db$password[db$database == "AFSC"]
 
 # set number of desired bootstrap iterations (suggested here: 10 for testing, 500 for running)
 # iters = 500
-iters = 10
+iters = 5
 
 # for testing run time
 if(iters < 100){
@@ -56,22 +56,23 @@ read_test <- vroom::vroom(here::here('data', 'reader_tester.csv')) %>%
   tidytable::filter.(species_code %in% species)
 
 # run adding ageing error and growth variability
-srvy_iss_exp(iters = iters, 
-             lfreq_data = lfreq,
-             specimen_data = specimen, 
-             cpue_data = cpue, 
-             strata_data = strata,
-             r_t = read_test,
-             yrs = yrs, 
-             boot_hauls = TRUE, 
-             boot_lengths = TRUE, 
-             boot_ages = TRUE,
-             al_var = TRUE,
-             age_err = TRUE,
-             region = 'bs', 
-             save_interm = FALSE,
-             match_orig = FALSE,
-             srvy_type = 'slope')
+srvy_iss(iters = iters, 
+         lfreq_data = lfreq,
+         specimen_data = specimen, 
+         cpue_data = cpue, 
+         strata_data = strata,
+         r_t = read_test,
+         yrs = yrs, 
+         boot_hauls = TRUE, 
+         boot_lengths = TRUE, 
+         boot_ages = TRUE,
+         al_var = TRUE,
+         age_err = TRUE,
+         region = 'bs', 
+         save_interm = FALSE,
+         match_orig = FALSE,
+         srvy_type = 'slope',
+         save = 'slope')
 
 # For testing run time of 500 iterations ----
 if(iters < 100){

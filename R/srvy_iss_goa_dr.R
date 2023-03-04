@@ -15,6 +15,7 @@
 #' @param region region will create a folder and place results in said folder
 #' @param save_interm save the intermediate results: original comps, resampled comps (default = FALSE)
 #' @param match_orig match the computed values to gap output (default = FALSE)
+#' @param save name to save output
 #'
 #' @return
 #' @export srvy_iss_goa_dr
@@ -24,7 +25,7 @@
 #'
 srvy_iss_goa_dr <- function(iters = 1, lfreq_data, specimen_data, cpue_data, strata_data, r_t, yrs = NULL, 
                             boot_hauls = FALSE, boot_lengths = FALSE, boot_ages = FALSE, al_var = FALSE, age_err = FALSE,
-                            region = NULL, save_interm = FALSE, match_orig = FALSE){
+                            region = NULL, save_interm = FALSE, match_orig = FALSE, save){
   
   # create storage location
   region = tolower(region)
@@ -140,17 +141,32 @@ srvy_iss_goa_dr <- function(iters = 1, lfreq_data, specimen_data, cpue_data, str
     tidytable::pivot_wider(names_from = type, values_from = value) -> ess_size
   
   # write effective & input sample size results
-  vroom::vroom_write(ess_age, 
-                     here::here("output", region, "iter_ess_ag_dr.csv"), 
-                     delim = ",")
-  vroom::vroom_write(ess_size, 
-                     here::here("output", region, "iter_ess_sz_dr.csv"), 
-                     delim = ",")
-  vroom::vroom_write(iss_age, 
-                     here::here("output", region, "iss_ag_dr.csv"), 
-                     delim = ",")
-  vroom::vroom_write(iss_size, 
-                     here::here("output", region, "iss_sz_dr.csv"), 
-                     delim = ",")
+  if(save == 'prod'){
+    vroom::vroom_write(ess_age, 
+                       here::here("output", region, paste0(save, "_iter_ess_ag_dr.csv")), 
+                       delim = ",")
+    vroom::vroom_write(ess_size, 
+                       here::here("output", region, paste0(save, "_iter_ess_sz_dr.csv")), 
+                       delim = ",")
+    vroom::vroom_write(iss_age, 
+                       here::here("output", region, paste0(save, "_iss_ag_dr.csv")), 
+                       delim = ",")
+    vroom::vroom_write(iss_size, 
+                       here::here("output", region, paste0(save, "_iss_sz_dr.csv")), 
+                       delim = ",")
+  } else{
+    vroom::vroom_write(ess_age, 
+                       here::here("output", region, "add_err", paste0(save, "_iter_ess_ag_dr.csv")), 
+                       delim = ",")
+    vroom::vroom_write(ess_size, 
+                       here::here("output", region, "add_err", paste0(save, "_iter_ess_sz_dr.csv")), 
+                       delim = ",")
+    vroom::vroom_write(iss_age, 
+                       here::here("output", region, "add_err", paste0(save, "_iss_ag_dr.csv")), 
+                       delim = ",")
+    vroom::vroom_write(iss_size, 
+                       here::here("output", region, "add_err", paste0(save, "_iss_sz_dr.csv")), 
+                       delim = ",")
+  }
   
 }
