@@ -101,22 +101,27 @@ srvy_comps <- function(lfreq_data, specimen_data, cpue_data, strata_data, r_t, y
   if(isTRUE(al_var)) {
     al_variab(.agedat)  %>% 
       tidytable::mutate(type = 'al') -> .agedat_al
-    .agedat_al %>% 
-      tidytable::bind_rows(.agedat) -> .agedat
   }
   
   # add ageing error ----
   if(isTRUE(age_err)) {
     age_error(.agedat, r_t)  %>% 
-      tidytable::mutate(type = 'ae') %>% 
-      tidytable::bind_rows(.agedat) -> .agedat
+      tidytable::mutate(type = 'ae') -> .agedat_ae
   }
   
   # with age-length and ageing error ----
   if(isTRUE(al_var) & isTRUE(age_err)) {
     age_error(.agedat_al, r_t)  %>% 
       tidytable::mutate(type = 'ae_al') %>% 
+      tidytable::bind_rows(.agedat_al) %>% 
+      tidytable::bind_rows(.agedat_ae) %>% 
       tidytable::bind_rows(.agedat) -> .agedat
+  } else if(isTRUE(al_var) & !isTRUE(age_err)){
+    .agedat %>% 
+      tidytable::bind_rows(.agedat_al) -> .agedat
+  } else if(!isTRUE(al_var) & isTRUE(age_err)){
+    .agedat %>% 
+      tidytable::bind_rows(.agedat_ae) -> .agedat
   }
   
   # age population ----
