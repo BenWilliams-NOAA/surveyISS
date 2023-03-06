@@ -30,9 +30,9 @@ vroom::vroom(here::here('output', 'bs', 'prod_iss_ag_shelf.csv')) %>%
                           tidytable::mutate.(region = 'bs_slope')) -> bs
 
 # compile ai
-vroom::vroom(here::here('output', 'ai', 'iss_ag.csv')) %>% 
+vroom::vroom(here::here('output', 'ai', 'prod_iss_ag.csv')) %>% 
   tidytable::rename.('iss_age' = base) %>% 
-  tidytable::left_join.(vroom::vroom(here::here('output', 'ai', 'iss_sz.csv'))) %>% 
+  tidytable::left_join.(vroom::vroom(here::here('output', 'ai', 'prod_iss_sz.csv'))) %>% 
   tidytable::rename.('iss_length' = base) %>% 
   tidytable::mutate.(region = 'ai') %>% 
   tidytable::bind_rows.(vroom::vroom(here::here('output', 'ai', 'prod_iss_ag_rebs.csv')) %>% 
@@ -42,9 +42,9 @@ vroom::vroom(here::here('output', 'ai', 'iss_ag.csv')) %>%
                           tidytable::mutate.(region = 'ai')) -> ai
 
 # compile goa
-vroom::vroom(here::here('output', 'goa', 'iss_ag.csv')) %>% 
+vroom::vroom(here::here('output', 'goa', 'prod_iss_ag.csv')) %>% 
   tidytable::rename.('iss_age' = base) %>% 
-  tidytable::left_join.(vroom::vroom(here::here('output', 'goa', 'iss_sz.csv'))) %>% 
+  tidytable::left_join.(vroom::vroom(here::here('output', 'goa', 'prod_iss_sz.csv'))) %>% 
   tidytable::rename.('iss_length' = base) %>% 
   tidytable::mutate.(region = 'goa') %>% 
   tidytable::bind_rows.(vroom::vroom(here::here('output', 'goa', 'prod_iss_ag_rebs.csv')) %>% 
