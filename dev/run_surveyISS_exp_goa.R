@@ -21,8 +21,8 @@ afsc_user = db$username[db$database == "AFSC"]
 afsc_pass = db$password[db$database == "AFSC"]
 
 # set number of desired bootstrap iterations (suggested here: 10 for testing, 500 for running)
-# iters = 500
-iters = 5
+iters = 500
+# iters = 5
 
 # for testing run time
 if(iters < 100){
@@ -34,9 +34,9 @@ if(iters < 100){
 # pull data for Tier 3 species in Gulf of Alaska (1990 on)
 yrs = 1990
 # species = c(10110, 10130, 10180, 20510, 21720, 21740, 30060, 30420, 30050, 30051, 30052, 30150, 30152, 10261, 10262, 10200)
-species = c(10110, 10262, 10261)
+# species = c(10110, 10262, 10261)
 # species = c(30060, 30420, 10180)
-# species = c(21720, 10200)
+species = c(21720, 10200, 10130)
 # species = c(21740, 10130)
 
 region = 'GOA'
@@ -70,18 +70,6 @@ specimen %>%
 read_test %>% 
   tidytable::filter.(!(species_code %in% c(30050, 30051, 30052, 30150, 30152, 10261, 10262, 10200))) -> .read_test
 
-iters = iters
-lfreq_data = .lfreq
-specimen_data = .specimen
-cpue_data = .cpue
-strata_data = strata
-r_t = .read_test
-
-
-
-
-
-
 # run adding ageing error and growth variability
 srvy_iss(iters = iters, 
          lfreq_data = .lfreq,
@@ -98,7 +86,7 @@ srvy_iss(iters = iters,
          region = 'goa', 
          save_interm = FALSE,
          match_orig = FALSE,
-         save = 'spec1')
+         save = 'spec3')
 
 # # run for goa rougheye-blackspotted stock complex
 # cpue %>% 
