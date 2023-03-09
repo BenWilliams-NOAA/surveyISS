@@ -15,11 +15,6 @@ library(here)
 source_files <- list.files(here::here("R"), "*.R$")
 map(here::here("R", source_files), source)
 
-# get database username/password
-db <- vroom::vroom(here::here("database_specs.csv"))
-afsc_user = db$username[db$database == "AFSC"]
-afsc_pass = db$password[db$database == "AFSC"]
-
 # set number of desired bootstrap iterations (suggested here: 10 for testing, 500 for running)
 # iters = 500
 iters = 5
@@ -33,20 +28,12 @@ if(iters < 100){
 
 # ebs shelf
 yrs = 1979
-# species = c(10110, 10112, 10115, 10130, 10210, 10261, 10285, 21720, 21740)
-species = c(10110, 10261, 10285)
-# species = c(10210, 10310)
-# species = c(21720, 10115)
-# species = c(21740, 10112)
+# species = c(10110, 10130, 10210, 10261, 21720, 21740)
+species = c(10110, 10130)
+# species = c(10210, 10261)
+# species = c(21720)
+# species = c(21740)
 region = 'BS'
-
-# query_data(region,
-#            species,
-#            yrs, 
-#            afsc_user,
-#            afsc_pass,
-#            nbs = FALSE,
-#            bs_slope = FALSE)
 
 cpue <- vroom::vroom(here::here('data', 'cpue_bs.csv')) %>% 
   tidytable::filter(species_code %in% species)
