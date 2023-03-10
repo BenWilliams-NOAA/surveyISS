@@ -48,6 +48,7 @@ goa_ess <- vroom::vroom(here::here('output', 'goa', 'add_err', 'spec1_iter_ess_a
                      here::here('output', 'goa', 'add_err', 'iter_ess_ag.csv'),
                      delim = ',')
 
+# bering sea
 
 vroom::vroom(here::here('output', 'bs', 'add_err', 'iss_ag_shelf.csv')) %>%
   mutate.(region = 'bs_shelf') %>%
@@ -60,6 +61,8 @@ vroom::vroom(here::here('output', 'bs', 'add_err', 'iss_ag_shelf.csv')) %>%
   vroom::vroom_write(.,
                      here::here('output', 'afsc_iss_err.csv'),
                      delim = ',')
+
+# combine all
 
 goa_iss %>% 
   tidytable::mutate(region = 'goa') %>% 
