@@ -16,8 +16,8 @@ source_files <- list.files(here::here("R"), "*.R$")
 map(here::here("R", source_files), source)
 
 # set number of desired bootstrap iterations (suggested here: 10 for testing, 500 for running)
-iters = 500
-# iters = 5
+# iters = 500
+iters = 5
 
 # for testing run time
 if(iters < 100){
@@ -30,7 +30,7 @@ if(iters < 100){
 yrs = 1990
 # species = c(10110, 10130, 21720, 21740, 30060, 10261)
 species = c(10110, 10261)
-# species = c(30060, 10130
+# species = c(30060, 10130)
 # species = c(21720)
 # species = c(21740)
 

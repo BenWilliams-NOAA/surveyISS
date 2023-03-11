@@ -50,16 +50,20 @@ goa_ess <- vroom::vroom(here::here('output', 'goa', 'add_err', 'spec1_iter_ess_a
 
 # bering sea
 
-vroom::vroom(here::here('output', 'bs', 'add_err', 'iss_ag_shelf.csv')) %>%
-  mutate.(region = 'bs_shelf') %>%
-  bind_rows.(vroom::vroom(here::here('output', 'bs', 'add_err', 'iss_ag_slope.csv')) %>%
-               mutate.(region = 'bs_slope')) %>% 
-  bind_rows.(vroom::vroom(here::here('output', 'ai', 'add_err', 'iss_ag.csv')) %>%
-               mutate.(region = 'ai')) %>%  
-  bind_rows.(vroom::vroom(here::here('output', 'goa', 'add_err', 'iss_ag.csv')) %>%
-               mutate.(region = 'goa')) %>%
+bs_iss <- vroom::vroom(here::here('output', 'bs', 'add_err', 'spec1_iss_ag_shelf.csv'))  %>%
+  bind_rows.(vroom::vroom(here::here('output', 'bs', 'add_err', 'spec2_iss_ag_shelf.csv'))) %>% 
+  bind_rows.(vroom::vroom(here::here('output', 'bs', 'add_err', 'spec3_iss_ag_shelf.csv'))) %>% 
+  bind_rows.(vroom::vroom(here::here('output', 'bs', 'add_err', 'spec4_iss_ag_shelf.csv'))) %>% 
   vroom::vroom_write(.,
-                     here::here('output', 'afsc_iss_err.csv'),
+                     here::here('output', 'bs', 'add_err', 'iss_ag_shelf.csv'),
+                     delim = ',')
+
+bs_ess <- vroom::vroom(here::here('output', 'bs', 'add_err', 'spec1_iter_ess_ag_shelf.csv'))  %>%
+  bind_rows.(vroom::vroom(here::here('output', 'bs', 'add_err', 'spec2_iter_ess_ag_shelf.csv'))) %>% 
+  bind_rows.(vroom::vroom(here::here('output', 'bs', 'add_err', 'spec3_iter_ess_ag_shelf.csv'))) %>% 
+  bind_rows.(vroom::vroom(here::here('output', 'bs', 'add_err', 'spec4_iter_ess_ag_shelf.csv'))) %>% 
+  vroom::vroom_write(.,
+                     here::here('output', 'bs', 'add_err', 'iter_ess_ag_shelf.csv'),
                      delim = ',')
 
 # combine all
@@ -68,6 +72,8 @@ goa_iss %>%
   tidytable::mutate(region = 'goa') %>% 
   tidytable::bind_rows(ai_iss %>% 
                          tidytable::mutate(region = 'ai')) %>% 
+  tidytable::bind_rows(bs_iss %>% 
+                         tidytable::mutate(region = 'bs')) %>%
   vroom::vroom_write(.,
                      here::here('output', 'afsc_iss_err.csv'),
                      delim = ',')
