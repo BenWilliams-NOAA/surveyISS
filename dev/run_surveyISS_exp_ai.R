@@ -31,7 +31,7 @@ yrs = 1990
 species = c(10110, 21720)
 # species = c(30060, 21921)
 # species = c(21740)
-
+# species = 30420
 region = 'AI'
 
 cpue <- vroom::vroom(here::here('data', 'cpue_ai.csv')) %>% 
