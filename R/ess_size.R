@@ -28,9 +28,9 @@ ess_size <- function(sim_data, og_data) {
                        prop_f = females / sum(females),
                        prop_t = total/sum(total),
                        .by = c(year, species_code, type)) %>% 
-    tidytable::mutate.(ess_f = sum(prop_f * (1 - prop_f)) / sum((prop_f - og_f)^2),
-                       ess_m = sum(prop_m * (1 - prop_m)) / sum((prop_m - og_m)^2),
-                       ess_t = sum(prop_t * (1 - prop_t)) / sum((prop_t - og_t)^2),
+    tidytable::mutate.(ess_f = sum(og_f * (1 - og_f)) / sum((prop_f - og_f)^2),
+                       ess_m = sum(og_m * (1 - og_m)) / sum((prop_m - og_m)^2),
+                       ess_t = sum(og_t * (1 - og_t)) / sum((prop_t - og_t)^2),
                        .by = c(year, species_code, type)) %>%
     tidytable::pivot_longer.(cols = c(ess_f, ess_m, ess_t), names_to = "ess") %>%
     tidytable::distinct(year, species_code, type, ess, value)
