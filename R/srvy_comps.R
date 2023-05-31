@@ -27,47 +27,47 @@ srvy_comps <- function(lfreq_data, specimen_data, cpue_data, strata_data, r_t, y
   # prep data ----
   # complete cases by length/sex/strata for all years
   lfreq_data %>%
-      tidytable::filter.(year >= yrs) %>% 
+      tidytable::filter(year >= yrs) %>% 
       tidytable::distinct(year, species_code, length) %>% 
       tidytable::expand(year, length, .by = species_code) -> .lngs
   
   # first pass of filtering
   data.table::setDT(cpue_data) %>%
-    tidytable::filter.(year >= yrs) %>% 
-    tidytable::left_join.(strata_data) -> .cpue
+    tidytable::filter(year >= yrs) %>% 
+    tidytable::left_join(strata_data) -> .cpue
   
   data.table::setDT(lfreq_data) %>%
-    tidytable::filter.(year >= yrs) %>% 
-    tidytable::drop_na.() -> .lfreq
+    tidytable::filter(year >= yrs) %>% 
+    tidytable::drop_na() -> .lfreq
   
   .lfreq %>% 
-    tidytable::uncount.(frequency) -> .lfreq_un
+    tidytable::uncount(frequency) -> .lfreq_un
   
   data.table::setDT(specimen_data) %>%
-    tidytable::filter.(year >= yrs) %>% 
-    tidytable::drop_na.() -> .agedat
+    tidytable::filter(year >= yrs) %>% 
+    tidytable::drop_na() -> .agedat
   
   # randomize hauls ----  
   if(isTRUE(boot_hauls)) {
-    boot_haul(.cpue) %>% 
-      tidytable::mutate.(hauljoin_unq = .I) -> .hls
+    swo::boot_haul(.cpue) %>% 
+      tidytable::mutate(hauljoin_unq = .I) -> .hls
     
     .hls %>% 
-      tidytable::left_join.(.cpue) %>% 
+      tidytable::left_join(.cpue) %>% 
       tidytable::rename(hauljoin_orig = 'hauljoin',
                         hauljoin = 'hauljoin_unq') -> .cpue
     .hls %>% 
-      tidytable::left_join.(.lfreq) %>% 
+      tidytable::left_join(.lfreq) %>% 
       tidytable::rename(hauljoin_orig = 'hauljoin',
                         hauljoin = 'hauljoin_unq') -> .lfreq
     .hls %>% 
-      tidytable::left_join.(.lfreq_un) %>% 
-      tidytable::drop_na.() %>% 
+      tidytable::left_join(.lfreq_un) %>% 
+      tidytable::drop_na() %>% 
       tidytable::rename(hauljoin_orig = 'hauljoin',
                         hauljoin = 'hauljoin_unq') -> .lfreq_un
     .hls %>% 
-      tidytable::left_join.(.agedat) %>% 
-      tidytable::drop_na.() %>% 
+      tidytable::left_join(.agedat) %>% 
+      tidytable::drop_na() %>% 
       tidytable::rename(hauljoin_orig = 'hauljoin',
                         hauljoin = 'hauljoin_unq') -> .agedat
     
@@ -75,7 +75,7 @@ srvy_comps <- function(lfreq_data, specimen_data, cpue_data, strata_data, r_t, y
   
   # randomize lengths ----
   if(isTRUE(boot_lengths)) {
-    boot_length(.lfreq_un) %>% 
+    swo::boot_length(.lfreq_un) %>% 
       tidytable::mutate(type = 'base') -> .lfreq_un
   } else{
     .lfreq_un %>% 
@@ -83,14 +83,14 @@ srvy_comps <- function(lfreq_data, specimen_data, cpue_data, strata_data, r_t, y
   }
   
   # length comp ----
-  lcomp(.lfreq_un) -> .lcomp
+  swo::lcomp(.lfreq_un) -> .lcomp
   
   # length population ----
-  lpop(.lcomp, .cpue, .lngs) -> .lpop
+  swo::lpop(.lcomp, .cpue, .lngs) -> .lpop
   
   # randomize age ----
   if(isTRUE(boot_ages)) {
-    boot_age(.agedat) %>% 
+    swo::boot_age(.agedat) %>% 
       tidytable::mutate(type = 'base') -> .agedat
   } else{
     .agedat %>% 
@@ -113,9 +113,7 @@ srvy_comps <- function(lfreq_data, specimen_data, cpue_data, strata_data, r_t, y
   if(isTRUE(al_var) & isTRUE(age_err)) {
     age_error(.agedat_al, r_t)  %>% 
       tidytable::mutate(type = 'ae_al') %>% 
-      tidytable::bind_rows(.agedat_al) %>% 
-      tidytable::bind_rows(.agedat_ae) %>% 
-      tidytable::bind_rows(.agedat) -> .agedat
+      tidytable::bind_rows(.agedat_al, .agedat_ae, .agedat) -> .agedat
   } else if(isTRUE(al_var) & !isTRUE(age_err)){
     .agedat %>% 
       tidytable::bind_rows(.agedat_al) -> .agedat
@@ -125,7 +123,7 @@ srvy_comps <- function(lfreq_data, specimen_data, cpue_data, strata_data, r_t, y
   }
   
   # age population ----
-  apop(.lpop, .agedat) -> .apop
+  swo::apop(.lpop, .agedat) -> .apop
   
   list(age = .apop, length = .lpop)
   
