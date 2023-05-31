@@ -15,4 +15,4 @@ Remotes:
 Imports: 
     magrittr,
     psych,
-    swo (>= 1.0.0)
+    swo (>= 0.1.0)
