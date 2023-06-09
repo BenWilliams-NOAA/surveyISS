@@ -24,22 +24,24 @@ if(iters < 100){
   st <- Sys.time()
 }
 
-# run for aleutian islands stocks ----
+# run for gulf of alaska stocks ----
 
+# pull data for Tier 3 species in Gulf of Alaska (1990 on)
 yrs = 1990
-# species = c(10110, 21720, 21740, 21921, 30060)
-# species = c(10110, 21720)
-# species = c(30060, 21921)
+# species = c(10110, 10130, 21720, 21740, 30060, 10261)
+# species = c(10110, 10261)
+# species = c(30060, 10130)
+# species = c(21720)
 # species = c(21740)
 species = 30420
-region = 'AI'
+region = 'GOA'
 
-cpue <- vroom::vroom(here::here('data', 'cpue_ai.csv')) %>% 
+cpue <- vroom::vroom(here::here('data', 'cpue_goa.csv')) %>% 
   tidytable::filter(species_code %in% species)
-lfreq <- vroom::vroom(here::here('data', 'lfreq_ai.csv')) %>% 
+lfreq <- vroom::vroom(here::here('data', 'lfreq_goa.csv')) %>% 
   tidytable::filter(species_code %in% species)
-strata <- vroom::vroom(here::here('data', 'strata_ai.csv'))
-specimen <- vroom::vroom(here::here('data', 'specimen_ai.csv')) %>% 
+strata <- vroom::vroom(here::here('data', 'strata_goa.csv'))
+specimen <- vroom::vroom(here::here('data', 'specimen_goa.csv')) %>% 
   tidytable::filter(species_code %in% species)
 read_test <- vroom::vroom(here::here('data', 'reader_tester.csv')) %>% 
   dplyr::rename_all(tolower) %>% 
@@ -60,10 +62,10 @@ srvy_iss(iters = iters,
          boot_ages = TRUE,
          al_var = TRUE,
          age_err = TRUE,
-         region = 'ai', 
+         region = 'goa', 
          save_interm = FALSE,
          match_orig = FALSE,
-         save = "spec4")
+         save = 'spec4')
 
 # For testing run time of 500 iterations ----
 if(iters < 100){
