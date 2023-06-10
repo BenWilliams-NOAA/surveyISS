@@ -65,7 +65,7 @@ srvy_iss(iters = iters,
          region = 'goa', 
          save_interm = FALSE,
          match_orig = FALSE,
-         save = 'spec4')
+         save = 'spec5')
 
 # For testing run time of 500 iterations ----
 if(iters < 100){
