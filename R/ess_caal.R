@@ -1,14 +1,14 @@
-#' calculate effective sample size for length comps
+#' calculate effective sample size for age comps
 #'
-#' @param sim_data list of abundance by length data
-#' @param og_data original abundance by length data (single list)
+#' @param sim_data list of abundance by age data
+#' @param og_data original abundance by age data (single list)
 #' @param sex_spec determine whether to do sex specific or total comps (default = TRUE)
 #'
 #' @return
 #' @export
 #'
 #' @examples
-ess_size <- function(sim_data, og_data, sex_spec) {
+ess_caal <- function(sim_data, og_data, sex_spec){
   
   if(isTRUE(sex_spec)){
     og_data %>% 
@@ -34,22 +34,26 @@ ess_size <- function(sim_data, og_data, sex_spec) {
                          ess_m = sum(og_m * (1 - og_m)) / sum((prop_m - og_m)^2),
                          ess_t = sum(og_t * (1 - og_t)) / sum((prop_t - og_t)^2),
                          .by = c(year, species_code, type)) %>%
+      tidytable::select(year, species_code, type, age, ess_f, ess_m, ess_t) %>% 
       tidytable::pivot_longer(cols = c(ess_f, ess_m, ess_t), names_to = "ess") %>%
-      tidytable::distinct(year, species_code, type, ess, value)
+      tidytable::distinct(year, species_code, type, ess, value) 
   } else{
     og_data %>% 
       tidytable::rename('og_total' = total) -> og
     
     sim_data %>% 
       tidytable::full_join(og) %>% 
-      tidytable::drop_na() %>% 
+      # tidytable::drop_na() %>% 
       tidytable::replace_na(list(og_total = 0, total = 0)) %>%
-      tidytable::mutate(og_t = og_total/sum(og_total),
-                         prop_t = total/sum(total),
-                         .by = c(year, species_code, type)) %>% 
+      tidytable::rename(og_t = 'og_total',
+                        prop_t = 'total') %>% 
       tidytable::mutate(ess_t = sum(og_t * (1 - og_t)) / sum((prop_t - og_t)^2),
-                         .by = c(year, species_code, type)) %>%
+                         .by = c(year, species_code, length, type)) %>%
+      tidytable::drop_na() %>% 
+      tidytable::select(year, species_code, type, length, ess_t) %>% 
       tidytable::pivot_longer(cols = c(ess_t), names_to = "ess") %>%
-      tidytable::distinct(year, species_code, type, ess, value)
+      tidytable::distinct(year, species_code, type, length, ess, value)
+    
   }
+  
 }

@@ -11,7 +11,7 @@ age_error <- function(age_dat, r_t) {
 
   # add id
   age_dat %>% 
-    tidytable::mutate.(id = .I) -> age_dat
+    tidytable::mutate(id = .I) -> age_dat
   
   # sample the age data from reader-tester results
   age_dat %>% 

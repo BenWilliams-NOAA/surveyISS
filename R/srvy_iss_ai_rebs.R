@@ -47,18 +47,18 @@ srvy_iss_ai_rebs <- function(iters = 1, lfreq_data, specimen_data, cpue_data, st
                            age_err = FALSE)
   og$age %>% 
     select(-type) %>% 
-    tidytable::summarize.(males = sum(males),
+    tidytable::summarize(males = sum(males),
                           females = sum(females),
                           unsexed = sum(unsexed),
                           .by = c(year, age)) %>% 
-    tidytable::mutate.(species_code = 3005012) -> oga
+    tidytable::mutate(species_code = 3005012) -> oga
   og$length %>% 
     select(-type) %>% 
-    tidytable::summarize.(males = sum(males),
+    tidytable::summarize(males = sum(males),
                           females = sum(females),
                           unsexed = sum(unsexed),
                           .by = c(year, length)) %>% 
-    tidytable::mutate.(species_code = 3005012) -> ogl
+    tidytable::mutate(species_code = 3005012) -> ogl
   
   # run iterations
   rr <- purrr::map(1:iters, ~ srvy_comps(lfreq_data = lfreq_data, 
@@ -74,21 +74,21 @@ srvy_iss_ai_rebs <- function(iters = 1, lfreq_data, specimen_data, cpue_data, st
                                          age_err = age_err))
   
   r_age <- do.call(mapply, c(list, rr, SIMPLIFY = FALSE))$age %>% 
-    tidytable::map_df.(., ~as.data.frame(.x), .id = "sim") %>% 
-    tidytable::summarize.(males = sum(males),
+    tidytable::map_df(., ~as.data.frame(.x), .id = "sim") %>% 
+    tidytable::summarize(males = sum(males),
                           females = sum(females),
                           unsexed = sum(unsexed),
                           .by = c(sim, year, age, type)) %>% 
-    tidytable::mutate.(species_code = 3005012) %>% 
+    tidytable::mutate(species_code = 3005012) %>% 
     split(., .[,'sim'])
   
   r_length <- do.call(mapply, c(list, rr, SIMPLIFY = FALSE))$length %>% 
-    tidytable::map_df.(., ~as.data.frame(.x), .id = "sim") %>% 
-    tidytable::summarize.(males = sum(males),
+    tidytable::map_df(., ~as.data.frame(.x), .id = "sim") %>% 
+    tidytable::summarize(males = sum(males),
                           females = sum(females),
                           unsexed = sum(unsexed),
                           .by = c(sim, year, length, type)) %>% 
-    tidytable::mutate.(species_code = 3005012) %>% 
+    tidytable::mutate(species_code = 3005012) %>% 
     split(., .[,'sim'])
   
   # if desired, write out intermediate results
@@ -96,26 +96,26 @@ srvy_iss_ai_rebs <- function(iters = 1, lfreq_data, specimen_data, cpue_data, st
     vroom::vroom_write(oga, file = here::here("output", region, "orig_age_rebs.csv"), delim = ",")
     vroom::vroom_write(ogl, file = here::here("output", region, "orig_length_rebs.csv"), delim = ",")
     r_age %>%
-      tidytable::map_df.(., ~as.data.frame(.x), .id = "sim") %>% 
+      tidytable::map_df(., ~as.data.frame(.x), .id = "sim") %>% 
       vroom::vroom_write(here::here("output", region, "resampled_age_rebs.csv"), delim = ",")
     r_length %>%
-      tidytable::map_df.(., ~as.data.frame(.x), .id = "sim") %>% 
+      tidytable::map_df(., ~as.data.frame(.x), .id = "sim") %>% 
       vroom::vroom_write(here::here("output", region, "resampled_size_rebs.csv"), delim = ",")
   }
   
   # compute effective sample size of bootstrapped age/length (for complex as whole)
   r_age %>%
-    tidytable::map.(., ~ess_age(sim_data = .x, og_data = oga)) %>%
-    tidytable::map_df.(., ~as.data.frame(.x), .id = "sim") %>% 
+    tidytable::map(., ~ess_age(sim_data = .x, og_data = oga)) %>%
+    tidytable::map_df(., ~as.data.frame(.x), .id = "sim") %>% 
     tidytable::rename(comp_type = ess) %>% 
-    tidytable::mutate.(comp_type = tidytable::case_when(comp_type == 'ess_f' ~ 'female',
+    tidytable::mutate(comp_type = tidytable::case_when(comp_type == 'ess_f' ~ 'female',
                                                         comp_type == 'ess_m' ~ 'male',
                                                         comp_type == 'ess_t' ~ 'total')) -> ess_age
   r_length %>%
-    tidytable::map.(., ~ess_size(sim_data = .x, og_data = ogl)) %>%
-    tidytable::map_df.(., ~as.data.frame(.x), .id = "sim") %>% 
+    tidytable::map(., ~ess_size(sim_data = .x, og_data = ogl)) %>%
+    tidytable::map_df(., ~as.data.frame(.x), .id = "sim") %>% 
     tidytable::rename(comp_type = ess) %>% 
-    tidytable::mutate.(comp_type = tidytable::case_when(comp_type == 'ess_f' ~ 'female',
+    tidytable::mutate(comp_type = tidytable::case_when(comp_type == 'ess_f' ~ 'female',
                                                         comp_type == 'ess_m' ~ 'male',
                                                         comp_type == 'ess_t' ~ 'total')) -> ess_size
   
@@ -124,7 +124,7 @@ srvy_iss_ai_rebs <- function(iters = 1, lfreq_data, specimen_data, cpue_data, st
   ess_age %>% 
     tidytable::summarise(iss = psych::harmonic.mean(value, na.rm=T),
                          .by = c(year, species_code, comp_type, type)) %>% 
-    tidytable::filter.(iss > 0) %>% 
+    tidytable::filter(iss > 0) %>% 
     tidytable::pivot_wider(names_from = type, values_from = iss) -> iss_age
   
   ess_age %>%
@@ -133,7 +133,7 @@ srvy_iss_ai_rebs <- function(iters = 1, lfreq_data, specimen_data, cpue_data, st
   ess_size %>% 
     tidytable::summarise(iss = psych::harmonic.mean(value, na.rm=T),
                          .by = c(year, species_code, comp_type, type)) %>% 
-    tidytable::filter.(iss > 0) %>% 
+    tidytable::filter(iss > 0) %>% 
     tidytable::pivot_wider(names_from = type, values_from = iss) -> iss_size
   
   ess_size %>%
