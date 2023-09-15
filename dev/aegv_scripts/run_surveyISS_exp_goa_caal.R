@@ -17,7 +17,7 @@ map(here::here("R", source_files), source)
 
 # set number of desired bootstrap iterations (suggested here: 10 for testing, 500 for running)
 # iters = 500
-iters = 5
+iters = 15
 
 # for testing run time
 if(iters < 100){
@@ -27,7 +27,8 @@ if(iters < 100){
 # run for gulf of alaska stocks ----
 
 # pull data for Tier 3 species in Gulf of Alaska (1990 on)
-yrs = 1990
+# yrs = 1990
+yrs = 2000
 # species = c(10110, 10130, 21720, 21740, 30060, 10261)
 # species = c(10110, 10261)
 # species = c(30060, 10130)

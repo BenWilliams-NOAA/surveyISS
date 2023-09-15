@@ -34,7 +34,7 @@ yrs = 1990
 # species = c(21720)
 # species = c(21740)
 # species = 30420
-species = c(30060, 21720)
+species = c(30060, 21720, 10110)
 region = 'GOA'
 
 cpue <- vroom::vroom(here::here('data', 'cpue_goa.csv')) %>% 
@@ -67,7 +67,7 @@ srvy_iss(iters = iters,
          region = 'goa', 
          save_interm = FALSE,
          match_orig = FALSE,
-         save = 'popoll_ann')
+         save = 'popollatf_ann')
 
 # For testing run time of 500 iterations ----
 if(iters < 100){
