@@ -20,30 +20,50 @@ if(iters < 100){
   st <- Sys.time()
 }
 
-# run for aleutian islands stocks ----
-yrs = 2000
+# # run for aleutian islands stocks ----
 # yrs = 1990
-# species = c(10110, 21720, 21740, 21921, 30060)
-# species = c(10110, 21720)
-# species = c(30060, 21921)
-species = c(21740)
-# species = 30420
-region = 'AI'
-
-cpue <- vroom::vroom(here::here('data', 'cpue_ai.csv')) %>% 
-  tidytable::filter(species_code %in% species)
-lfreq <- vroom::vroom(here::here('data', 'lfreq_ai.csv')) %>% 
-  tidytable::filter(species_code %in% species)
-strata <- vroom::vroom(here::here('data', 'strata_ai.csv'))
-specimen <- vroom::vroom(here::here('data', 'specimen_ai.csv')) %>% 
-  tidytable::filter(species_code %in% species)
-read_test <- vroom::vroom(here::here('data', 'reader_tester.csv')) %>% 
-  dplyr::rename_all(tolower) %>% 
-  tidytable::select(species_code, region, read_age, test_age) %>% 
-  tidytable::rename(age = 'read_age') %>% 
-  tidytable::filter(species_code %in% species)
-
-# run adding ageing error and growth variability (pooling growth data for bin size of 1 cm)
+# species = c(10110, 30420, 21720, 21740, 30060)
+# # species = c(10110, 21720)
+# # species = 30060
+# # species = 21740
+# # species = 30420
+# region = 'AI'
+# 
+# cpue <- vroom::vroom(here::here('data', 'cpue_ai.csv')) %>% 
+#   tidytable::filter(species_code %in% species)
+# lfreq <- vroom::vroom(here::here('data', 'lfreq_ai.csv')) %>% 
+#   tidytable::filter(species_code %in% species)
+# strata <- vroom::vroom(here::here('data', 'strata_ai.csv'))
+# specimen <- vroom::vroom(here::here('data', 'specimen_ai.csv')) %>% 
+#   tidytable::filter(species_code %in% species)
+# read_test <- vroom::vroom(here::here('data', 'reader_tester.csv')) %>% 
+#   dplyr::rename_all(tolower) %>% 
+#   tidytable::select(species_code, region, read_age, test_age) %>% 
+#   tidytable::rename(age = 'read_age') %>% 
+#   tidytable::filter(species_code %in% species)
+# 
+# # run adding ageing error and growth variability (pooling growth data for bin size of 1 cm)
+# # srvy_iss(iters = iters, 
+# #          lfreq_data = lfreq,
+# #          specimen_data = specimen, 
+# #          cpue_data = cpue, 
+# #          strata_data = strata,
+# #          r_t = read_test,
+# #          yrs = yrs,
+# #          bin = 1,
+# #          boot_hauls = TRUE, 
+# #          boot_lengths = TRUE, 
+# #          boot_ages = TRUE,
+# #          sex_spec = TRUE,
+# #          al_var = TRUE,
+# #          al_var_ann = FALSE,
+# #          age_err = TRUE,
+# #          region = 'ai', 
+# #          save_interm = FALSE,
+# #          match_orig = FALSE,
+# #          save = "spec1")
+# 
+# # run adding ageing error and growth variability (annual growth data for bin size of 1 cm)
 # srvy_iss(iters = iters, 
 #          lfreq_data = lfreq,
 #          specimen_data = specimen, 
@@ -57,87 +77,63 @@ read_test <- vroom::vroom(here::here('data', 'reader_tester.csv')) %>%
 #          boot_ages = TRUE,
 #          sex_spec = TRUE,
 #          al_var = TRUE,
-#          al_var_ann = FALSE,
+#          al_var_ann = TRUE,
 #          age_err = TRUE,
 #          region = 'ai', 
 #          save_interm = FALSE,
 #          match_orig = FALSE,
-#          save = "spec3")
-
-# run adding ageing error and growth variability (annual growth data for bin size of 1 cm)
-srvy_iss(iters = iters, 
-         lfreq_data = lfreq,
-         specimen_data = specimen, 
-         cpue_data = cpue, 
-         strata_data = strata,
-         r_t = read_test,
-         yrs = yrs,
-         bin = 1,
-         boot_hauls = TRUE, 
-         boot_lengths = TRUE, 
-         boot_ages = TRUE,
-         sex_spec = TRUE,
-         al_var = TRUE,
-         al_var_ann = TRUE,
-         age_err = TRUE,
-         region = 'ai', 
-         save_interm = FALSE,
-         match_orig = FALSE,
-         save = "spec3_ann1cm")
-
-# run adding ageing error and growth variability (annual growth data for bin size of 2 cm)
-srvy_iss(iters = iters, 
-         lfreq_data = lfreq,
-         specimen_data = specimen, 
-         cpue_data = cpue, 
-         strata_data = strata,
-         r_t = read_test,
-         yrs = yrs,
-         bin = 2,
-         boot_hauls = TRUE, 
-         boot_lengths = TRUE, 
-         boot_ages = TRUE,
-         sex_spec = TRUE,
-         al_var = TRUE,
-         al_var_ann = TRUE,
-         age_err = TRUE,
-         region = 'ai', 
-         save_interm = FALSE,
-         match_orig = FALSE,
-         save = "spec3_ann2cm")
-
-# run adding ageing error and growth variability (annual growth data for bin size of 5 cm)
-srvy_iss(iters = iters, 
-         lfreq_data = lfreq,
-         specimen_data = specimen, 
-         cpue_data = cpue, 
-         strata_data = strata,
-         r_t = read_test,
-         yrs = yrs,
-         bin = 5,
-         boot_hauls = TRUE, 
-         boot_lengths = TRUE, 
-         boot_ages = TRUE,
-         sex_spec = TRUE,
-         al_var = TRUE,
-         al_var_ann = TRUE,
-         age_err = TRUE,
-         region = 'ai', 
-         save_interm = FALSE,
-         match_orig = FALSE,
-         save = "spec3_ann5cm")
+#          save = "ann1cm")
+# 
+# # run adding ageing error and growth variability (annual growth data for bin size of 2 cm)
+# srvy_iss(iters = iters, 
+#          lfreq_data = lfreq,
+#          specimen_data = specimen, 
+#          cpue_data = cpue, 
+#          strata_data = strata,
+#          r_t = read_test,
+#          yrs = yrs,
+#          bin = 2,
+#          boot_hauls = TRUE, 
+#          boot_lengths = TRUE, 
+#          boot_ages = TRUE,
+#          sex_spec = TRUE,
+#          al_var = TRUE,
+#          al_var_ann = TRUE,
+#          age_err = TRUE,
+#          region = 'ai', 
+#          save_interm = FALSE,
+#          match_orig = FALSE,
+#          save = "ann2cm")
+# 
+# # run adding ageing error and growth variability (annual growth data for bin size of 5 cm)
+# srvy_iss(iters = iters, 
+#          lfreq_data = lfreq,
+#          specimen_data = specimen, 
+#          cpue_data = cpue, 
+#          strata_data = strata,
+#          r_t = read_test,
+#          yrs = yrs,
+#          bin = 5,
+#          boot_hauls = TRUE, 
+#          boot_lengths = TRUE, 
+#          boot_ages = TRUE,
+#          sex_spec = TRUE,
+#          al_var = TRUE,
+#          al_var_ann = TRUE,
+#          age_err = TRUE,
+#          region = 'ai', 
+#          save_interm = FALSE,
+#          match_orig = FALSE,
+#          save = "ann5cm")
 
 # run for gulf of alaska stocks ----
 
 # pull data for Tier 3 species in Gulf of Alaska (1990 on)
-yrs = 2000
-# yrs = 1990
-# species = c(10110, 10130, 21720, 21740, 30060, 10261)
-# species = c(10110, 10261)
-# species = c(30060, 10130)
-species = c(21720)
-# species = c(21740)
-# species = 30420
+yrs = 1990
+# species = c(10110, 10130, 10261, 21720, 21740, 30060, 30420)
+# species = c(10110, 10130, 10261, 30060, 30420)
+# species = 21720
+species = 21740
 region = 'GOA'
 
 cpue <- vroom::vroom(here::here('data', 'cpue_goa.csv')) %>% 
@@ -151,7 +147,9 @@ read_test <- vroom::vroom(here::here('data', 'reader_tester.csv')) %>%
   dplyr::rename_all(tolower) %>% 
   tidytable::select(species_code, region, read_age, test_age) %>% 
   tidytable::rename(age = 'read_age') %>% 
-  tidytable::filter(species_code %in% species)
+  tidytable::filter(species_code %in% species) %>% 
+  tidytable::filter(species_code %in% species & region == "GOA") %>% 
+  tidytable::slice_sample(n = 20000)
 
 # run adding ageing error and growth variability (pooling growth data for bin size of 1 cm)
 # srvy_iss(iters = iters, 
@@ -172,7 +170,7 @@ read_test <- vroom::vroom(here::here('data', 'reader_tester.csv')) %>%
 #          region = 'goa', 
 #          save_interm = FALSE,
 #          match_orig = FALSE,
-#          save = "spec3")
+#          save = "spec1")
 
 # run adding ageing error and growth variability (annual growth data for bin size of 1 cm)
 srvy_iss(iters = iters, 

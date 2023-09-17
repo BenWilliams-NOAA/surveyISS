@@ -21,13 +21,12 @@ if(iters < 100){
 }
 
 # run for aleutian islands stocks ----
-yrs = 2000
-# yrs = 1990
-# species = c(10110, 21720, 21740, 21921, 30060)
+yrs = 1990
+species = c(10110, 30420, 21720, 21740, 30060)
 # species = c(10110, 21720)
-# species = c(30060, 21921)
-# species = c(21740)
-species = 30420
+# species = 30060
+# species = 21740
+# species = 30420
 region = 'AI'
 
 cpue <- vroom::vroom(here::here('data', 'cpue_ai.csv')) %>% 
@@ -62,7 +61,7 @@ read_test <- vroom::vroom(here::here('data', 'reader_tester.csv')) %>%
 #          region = 'ai', 
 #          save_interm = FALSE,
 #          match_orig = FALSE,
-#          save = "spec4")
+#          save = "spec1")
 
 # run adding ageing error and growth variability (annual growth data for bin size of 1 cm)
 srvy_iss(iters = iters, 
@@ -83,7 +82,7 @@ srvy_iss(iters = iters,
          region = 'ai', 
          save_interm = FALSE,
          match_orig = FALSE,
-         save = "spec4_ann1cm")
+         save = "ann1cm")
 
 # run adding ageing error and growth variability (annual growth data for bin size of 2 cm)
 srvy_iss(iters = iters, 
@@ -104,7 +103,7 @@ srvy_iss(iters = iters,
          region = 'ai', 
          save_interm = FALSE,
          match_orig = FALSE,
-         save = "spec4_ann2cm")
+         save = "ann2cm")
 
 # run adding ageing error and growth variability (annual growth data for bin size of 5 cm)
 srvy_iss(iters = iters, 
@@ -125,18 +124,18 @@ srvy_iss(iters = iters,
          region = 'ai', 
          save_interm = FALSE,
          match_orig = FALSE,
-         save = "spec4_ann5cm")
+         save = "ann5cm")
 
 # run for gulf of alaska stocks ----
 
 # pull data for Tier 3 species in Gulf of Alaska (1990 on)
-yrs = 2000
-# yrs = 1990
-# species = c(10110, 10130, 21720, 21740, 30060, 10261)
+yrs = 1990
+species = c(10110, 10130, 10261, 21720, 21740, 30060, 30420)
 # species = c(10110, 10261)
 # species = c(30060, 10130)
-# species = c(21720)
-species = c(21740, 30420)
+# species = 21720
+# species = 21740
+# species = 30420
 region = 'GOA'
 
 cpue <- vroom::vroom(here::here('data', 'cpue_goa.csv')) %>% 
@@ -171,7 +170,7 @@ read_test <- vroom::vroom(here::here('data', 'reader_tester.csv')) %>%
 #          region = 'goa', 
 #          save_interm = FALSE,
 #          match_orig = FALSE,
-#          save = "spec4")
+#          save = "spec1")
 
 # run adding ageing error and growth variability (annual growth data for bin size of 1 cm)
 srvy_iss(iters = iters, 
@@ -192,7 +191,7 @@ srvy_iss(iters = iters,
          region = 'goa', 
          save_interm = FALSE,
          match_orig = FALSE,
-         save = "spec4_ann1cm")
+         save = "ann1cm")
 
 # run adding ageing error and growth variability (annual growth data for bin size of 2 cm)
 srvy_iss(iters = iters, 
@@ -213,7 +212,7 @@ srvy_iss(iters = iters,
          region = 'goa', 
          save_interm = FALSE,
          match_orig = FALSE,
-         save = "spec4_ann2cm")
+         save = "ann2cm")
 
 # run adding ageing error and growth variability (annual growth data for bin size of 5 cm)
 srvy_iss(iters = iters, 
@@ -234,7 +233,7 @@ srvy_iss(iters = iters,
          region = 'goa', 
          save_interm = FALSE,
          match_orig = FALSE,
-         save = "spec4_ann5cm")
+         save = "ann5cm")
 
 # For testing run time of 500 iterations ----
 if(iters < 100){
