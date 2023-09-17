@@ -16,8 +16,8 @@ source_files <- list.files(here::here("R"), "*.R$")
 map(here::here("R", source_files), source)
 
 # set number of desired bootstrap iterations (suggested here: 10 for testing, 500 for running)
-# iters = 500
-iters = 5
+iters = 500
+# iters = 5
 
 # for testing run time
 if(iters < 100){
@@ -34,7 +34,7 @@ yrs = 1990
 # species = c(21720)
 # species = c(21740)
 # species = 30420
-species = c(30060, 21720)
+species = c(30060, 21720, 10110)
 region = 'GOA'
 
 cpue <- vroom::vroom(here::here('data', 'cpue_goa.csv')) %>% 
@@ -52,21 +52,14 @@ read_test <- vroom::vroom(here::here('data', 'reader_tester.csv')) %>%
 
 
 # run for 2 cm bins ----
-lfreq %>% 
-  tidytable::mutate(length = 10 * (2 * ceiling((length / 10) / 2))) -> lfreq_2
-
-specimen %>% 
-  tidytable::drop_na() %>% 
-  tidytable::mutate(length = 10 * (2 * ceiling((length / 10) / 2))) -> specimen_2
-
-# run adding ageing error and growth variability
 srvy_iss(iters = iters, 
-         lfreq_data = lfreq_2,
-         specimen_data = specimen_2, 
+         lfreq_data = lfreq,
+         specimen_data = specimen, 
          cpue_data = cpue, 
          strata_data = strata,
          r_t = read_test,
          yrs = yrs, 
+         bin = 2,
          boot_hauls = TRUE, 
          boot_lengths = TRUE, 
          boot_ages = TRUE,
@@ -80,20 +73,14 @@ srvy_iss(iters = iters,
 
 
 # run for 5 cm bins ----
-lfreq %>% 
-  tidytable::mutate(length = 10 * (5 * ceiling((length / 10) / 5))) -> lfreq_5
-
-specimen %>% 
-  tidytable::drop_na() %>% 
-  tidytable::mutate(length = 10 * (5 * ceiling((length / 10) / 5))) -> specimen_5
-
 srvy_iss(iters = iters, 
-         lfreq_data = lfreq_5,
-         specimen_data = specimen_5, 
+         lfreq_data = lfreq,
+         specimen_data = specimen, 
          cpue_data = cpue, 
          strata_data = strata,
          r_t = read_test,
-         yrs = yrs, 
+         yrs = yrs,
+         bin = 5,
          boot_hauls = TRUE, 
          boot_lengths = TRUE, 
          boot_ages = TRUE,
