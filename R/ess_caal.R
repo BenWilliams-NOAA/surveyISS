@@ -43,13 +43,14 @@ ess_caal <- function(sim_data, og_data, sex_spec){
     
     sim_data %>% 
       tidytable::full_join(og) %>% 
-      # tidytable::drop_na() %>% 
+      tidytable::drop_na() %>%
       tidytable::replace_na(list(og_total = 0, total = 0)) %>%
       tidytable::rename(og_t = 'og_total',
                         prop_t = 'total') %>% 
       tidytable::mutate(ess_t = sum(og_t * (1 - og_t)) / sum((prop_t - og_t)^2),
                          .by = c(year, species_code, length, type)) %>%
       tidytable::drop_na() %>% 
+      tidytable::filter(is.finite(ess_t)) %>% 
       tidytable::select(year, species_code, type, length, ess_t) %>% 
       tidytable::pivot_longer(cols = c(ess_t), names_to = "ess") %>%
       tidytable::distinct(year, species_code, type, length, ess, value)

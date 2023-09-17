@@ -34,7 +34,7 @@ yrs = 1990
 # species = c(21720)
 # species = c(21740)
 # species = 30420
-species = 21740
+species = 21720
 region = 'GOA'
 
 cpue <- vroom::vroom(here::here('data', 'cpue_goa.csv')) %>% 

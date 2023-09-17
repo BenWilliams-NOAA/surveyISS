@@ -16,7 +16,7 @@ source_files <- list.files(here::here("R"), "*.R$")
 map(here::here("R", source_files), source)
 
 # set number of desired bootstrap iterations (suggested here: 10 for testing, 500 for running)
-# iters = 1000
+# iters = 500
 iters = 5
 
 # for testing run time
@@ -28,10 +28,9 @@ if(iters < 100){
 
 # ebs shelf
 yrs = 1979
-# species = c(10110, 10130, 10210, 10261, 21720, 21740)
-# species = c(10110, 10130)
-species = c(10210, 10261)
-# species = c(21720)
+# yrs = 2000
+# species = c(10110, 10130, 10210, 10261)
+species = 21720
 # species = c(21740)
 region = 'BS'
 
@@ -137,10 +136,10 @@ srvy_iss(iters = iters,
          save = "spec2_ann5cm")
 
 
-# For testing run time of 1000 iterations ----
+# For testing run time of 500 iterations ----
 if(iters < 100){
   end <- Sys.time()
-  runtime <- (end - st) / iters * 1000 / 60
+  runtime <- (end - st) / iters * 500 / 60
   runtime
 }
 
