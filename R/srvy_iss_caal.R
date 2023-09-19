@@ -77,11 +77,13 @@ srvy_iss_caal <- function(iters = 1, specimen_data, cpue_data, r_t, yrs = NULL,
                                                         comp_type == 'ess_t' ~ 'total')) -> ess_age1
 
   # compute harmonic mean of iterated effective sample size, which is the input sample size (iss)
+
   ess_age1 %>% 
-    tidytable::summarise(iss = psych::harmonic.mean(value, na.rm=T),
+    tidytable::summarise(iss = psych::harmonic.mean(value, na.rm = TRUE),
                          .by = c(year, species_code, comp_type, type, length)) %>% 
     tidytable::filter(iss > 0) %>% 
-    tidytable::pivot_wider(names_from = type, values_from = iss) -> iss_age
+    tidytable::pivot_wider(names_from = type, values_from = iss) %>% 
+    tidytable::drop_na() -> iss_age
 
   ess_age1 %>%
     tidytable::pivot_wider(names_from = type, values_from = value) -> ess_age1

@@ -13,13 +13,21 @@ apop_caal <- function(agedat, sex_spec = TRUE){
   if(isTRUE(sex_spec)){
     agedat %>%
       tidytable::drop_na() %>%
-      tidytable::summarise(age_num = .N, .by = c(year, species_code, sex, length, age, type)) %>% 
+      tidytable::filter(sex != 3) %>%
+      tidytable::summarise(age_num = .N, .by = c(year, species_code, sex, length, age, type)) %>%
       tidytable::mutate(age_frac = age_num/sum(age_num), 
                         .by = c(year, species_code, sex, length, type)) %>% 
       tidytable::select(-age_num) %>% 
       tidytable::pivot_wider(names_from = sex, values_from = age_frac, values_fill = 0) %>%
-      tidytable::rename(unsexed = '3', males = '1', females = '2') %>% 
-      tidytable::select(-unsexed)
+      tidytable::rename(males = '1', females = '2') %>% 
+    tidytable::full_join(agedat %>%
+                           tidytable::drop_na() %>% 
+                           tidytable::filter(sex != 3) %>%
+                           tidytable::summarise(age_num = .N, .by = c(year, species_code, length, age, type)) %>%  
+                           tidytable::mutate(age_frac = age_num/sum(age_num), 
+                                             .by = c(year, species_code, length, type)) %>% 
+                           tidytable::select(-age_num) %>% 
+                           tidytable::rename(total = 'age_frac'))
   } else{
     agedat %>%
       tidytable::drop_na() %>%
