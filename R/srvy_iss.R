@@ -7,10 +7,13 @@
 #' @param strata_data input dataframe
 #' @param r_t input dataframe
 #' @param yrs any year filter >= (default = NULL)
+#' @param bin bin size (default = 1 cm)
 #' @param boot_hauls resample hauls w/replacement (default = FALSE)
 #' @param boot_lengths resample lengths w/replacement (default = FALSE)
 #' @param boot_ages resample ages w/replacement (default = FALSE)
+#' @param sex_spec determine whether to do sex specific or total comps (default = TRUE)
 #' @param al_var include age-length variability (default = FALSE)
+#' @param al_var_ann resample age-length annually or pooled across years
 #' @param age_err include ageing error (default = FALSE)
 #' @param region region will create a folder and place results in said folder
 #' @param save_interm save the intermediate results: original comps, resampled comps (default = FALSE)
@@ -23,8 +26,8 @@
 #'
 #' @examples
 
-srvy_iss <- function(iters = 1, lfreq_data, specimen_data, cpue_data, strata_data, r_t, yrs = NULL, 
-                     boot_hauls = FALSE, boot_lengths = FALSE, boot_ages = FALSE, al_var = FALSE, age_err = FALSE,
+srvy_iss <- function(iters = 1, lfreq_data, specimen_data, cpue_data, strata_data, r_t, yrs = NULL, bin = 1, 
+                     boot_hauls = FALSE, boot_lengths = FALSE, boot_ages = FALSE, sex_spec = TRUE, al_var = FALSE, al_var_ann = FALSE, age_err = FALSE,
                      region = NULL, save_interm = FALSE, match_orig = FALSE, srvy_type = NULL, save){
   
   # create storage location
@@ -50,9 +53,11 @@ srvy_iss <- function(iters = 1, lfreq_data, specimen_data, cpue_data, strata_dat
                    strata_data = strata_data,
                    r_t = r_t,
                    yrs = yrs, 
+                   bin = bin,
                    boot_hauls = FALSE, 
                    boot_lengths = FALSE, 
                    boot_ages = FALSE,
+                   sex_spec = sex_spec,
                    al_var = FALSE,
                    age_err = FALSE)
   oga <- og$age %>% 
@@ -82,10 +87,13 @@ srvy_iss <- function(iters = 1, lfreq_data, specimen_data, cpue_data, strata_dat
                                          strata_data = strata_data,
                                          r_t = r_t,
                                          yrs = yrs, 
+                                         bin = bin,
                                          boot_hauls = boot_hauls, 
                                          boot_lengths = boot_lengths, 
                                          boot_ages = boot_ages,
+                                         sex_spec = sex_spec,
                                          al_var = al_var,
+                                         al_var_ann = al_var_ann,
                                          age_err = age_err))
   
   r_age <- do.call(mapply, c(list, rr, SIMPLIFY = FALSE))$age
@@ -96,36 +104,36 @@ srvy_iss <- function(iters = 1, lfreq_data, specimen_data, cpue_data, strata_dat
     vroom::vroom_write(oga, file = here::here("output", region, "orig_age.csv"), delim = ",")
     vroom::vroom_write(ogl, file = here::here("output", region, "orig_length.csv"), delim = ",")
     r_length %>%
-      tidytable::map_df.(., ~as.data.frame(.x), .id = "sim") %>% 
+      tidytable::map_df(., ~as.data.frame(.x), .id = "sim") %>% 
       vroom::vroom_write(here::here("output", region, "resampled_size.csv"), delim = ",")
     r_age %>%
-      tidytable::map_df.(., ~as.data.frame(.x), .id = "sim") %>% 
+      tidytable::map_df(., ~as.data.frame(.x), .id = "sim") %>% 
       vroom::vroom_write(here::here("output", region, "resampled_age.csv"), delim = ",")
   }
   if(isTRUE(save_interm) & region == 'bs') {
     vroom::vroom_write(oga, file = here::here("output", region, paste0("orig_age_", srvy_type, ".csv")), delim = ",")
     vroom::vroom_write(ogl, file = here::here("output", region, paste0("orig_length_", srvy_type, ".csv")), delim = ",")
     r_length %>%
-      tidytable::map_df.(., ~as.data.frame(.x), .id = "sim") %>% 
+      tidytable::map_df(., ~as.data.frame(.x), .id = "sim") %>% 
       vroom::vroom_write(here::here("output", region, paste0("resampled_size_", srvy_type, ".csv")), delim = ",")
     r_age %>%
-      tidytable::map_df.(., ~as.data.frame(.x), .id = "sim") %>% 
+      tidytable::map_df(., ~as.data.frame(.x), .id = "sim") %>% 
       vroom::vroom_write(here::here("output", region, paste0("resampled_age_", srvy_type, ".csv")), delim = ",")
   }
   
   # compute effective sample size of bootstrapped age/length
   r_age %>%
-    tidytable::map.(., ~ess_age(sim_data = .x, og_data = oga)) %>%
-    tidytable::map_df.(., ~as.data.frame(.x), .id = "sim") %>% 
+    tidytable::map(., ~ess_age(sim_data = .x, og_data = oga, sex_spec = sex_spec)) %>%
+    tidytable::map_df(., ~as.data.frame(.x), .id = "sim") %>% 
     tidytable::rename(comp_type = ess) %>% 
-    tidytable::mutate.(comp_type = tidytable::case_when(comp_type == 'ess_f' ~ 'female',
+    tidytable::mutate(comp_type = tidytable::case_when(comp_type == 'ess_f' ~ 'female',
                                                         comp_type == 'ess_m' ~ 'male',
                                                         comp_type == 'ess_t' ~ 'total')) -> ess_age
   r_length %>%
-    tidytable::map.(., ~ess_size(sim_data = .x, og_data = ogl)) %>%
-    tidytable::map_df.(., ~as.data.frame(.x), .id = "sim") %>% 
+    tidytable::map(., ~ess_size(sim_data = .x, og_data = ogl, sex_spec = sex_spec)) %>%
+    tidytable::map_df(., ~as.data.frame(.x), .id = "sim") %>% 
     tidytable::rename(comp_type = ess) %>% 
-    tidytable::mutate.(comp_type = tidytable::case_when(comp_type == 'ess_f' ~ 'female',
+    tidytable::mutate(comp_type = tidytable::case_when(comp_type == 'ess_f' ~ 'female',
                                                         comp_type == 'ess_m' ~ 'male',
                                                         comp_type == 'ess_t' ~ 'total')) -> ess_size
 
@@ -133,7 +141,7 @@ srvy_iss <- function(iters = 1, lfreq_data, specimen_data, cpue_data, strata_dat
   ess_age %>% 
     tidytable::summarise(iss = psych::harmonic.mean(value, na.rm=T),
                          .by = c(year, species_code, comp_type, type)) %>% 
-    tidytable::filter.(iss > 0) %>% 
+    tidytable::filter(iss > 0) %>% 
     tidytable::pivot_wider(names_from = type, values_from = iss) -> iss_age
   
   ess_age %>%
@@ -142,7 +150,7 @@ srvy_iss <- function(iters = 1, lfreq_data, specimen_data, cpue_data, strata_dat
   ess_size %>% 
     tidytable::summarise(iss = psych::harmonic.mean(value, na.rm=T),
                          .by = c(year, species_code, comp_type, type)) %>% 
-    tidytable::filter.(iss > 0) %>% 
+    tidytable::filter(iss > 0) %>% 
     tidytable::pivot_wider(names_from = type, values_from = iss) -> iss_size
   
   ess_size %>%

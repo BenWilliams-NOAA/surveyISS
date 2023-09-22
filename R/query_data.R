@@ -78,7 +78,7 @@ query_data <- function(region, species, yrs = NULL, afsc_user, afsc_pwd, nbs = F
     nbs = sql_filter(sql_precode = ">=", x = yrs, sql_code = nbs, flag = '-- insert year')
     
     sql_run(afsc, bs) %>% 
-      tidytable::bind_rows.(sql_run(afsc, nbs)) %>% 
+      tidytable::bind_rows(sql_run(afsc, nbs)) %>% 
       dplyr::rename_all(tolower) %>% 
       vroom::vroom_write(here::here('data', paste0("lfreq_", tolower(region), ".csv")), 
                          delim = ',')
@@ -147,7 +147,7 @@ query_data <- function(region, species, yrs = NULL, afsc_user, afsc_pwd, nbs = F
     spnbs = sql_filter(sql_precode = ">=", x = yrs, sql_code = spnbs, flag = '-- insert year')
     
     sql_run(afsc, spbs) %>% 
-      tidytable::bind_rows.(sql_run(afsc, spnbs)) %>% 
+      tidytable::bind_rows(sql_run(afsc, spnbs)) %>% 
       dplyr::rename_all(tolower) %>% 
       vroom::vroom_write(here::here('data', paste0("specimen_", tolower(region), ".csv")), 
                          delim = ',')
@@ -214,7 +214,7 @@ query_data <- function(region, species, yrs = NULL, afsc_user, afsc_pwd, nbs = F
     cpnbs = sql_filter(sql_precode = ">=", x = yrs, sql_code = cpnbs, flag = '-- insert year')
     
     sql_run(afsc, cpbs) %>% 
-      tidytable::bind_rows.(sql_run(afsc, cpnbs)) %>% 
+      tidytable::bind_rows(sql_run(afsc, cpnbs)) %>% 
       dplyr::rename_all(tolower) %>% 
       vroom::vroom_write(., 
                          here::here('data', paste0("cpue_", tolower(region), ".csv")), 
@@ -279,7 +279,7 @@ query_data <- function(region, species, yrs = NULL, afsc_user, afsc_pwd, nbs = F
     stnbs = sql_read('strata_nbs.sql')
     
     sql_run(afsc, stbs) %>% 
-      tidytable::bind_rows.(sql_run(afsc, stnbs)) %>% 
+      tidytable::bind_rows(sql_run(afsc, stnbs)) %>% 
       dplyr::rename_all(tolower) %>% 
       vroom::vroom_write(here::here('data', paste0("strata_", tolower(region), ".csv")), 
                          delim = ',')
@@ -365,7 +365,7 @@ query_data <- function(region, species, yrs = NULL, afsc_user, afsc_pwd, nbs = F
                       sql_code = rpbs, flag = '-- insert year')
     
     sql_run(afsc, rpnbs) %>% 
-      tidytable::bind_rows.(sql_run(afsc, rpbs)) %>%
+      tidytable::bind_rows(sql_run(afsc, rpbs)) %>%
       dplyr::rename_all(tolower) %>% 
       vroom::vroom_write(here::here('data', paste0("race_pop_", tolower(region), ".csv")), 
                          delim = ',')

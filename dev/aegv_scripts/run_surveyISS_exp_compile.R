@@ -19,7 +19,7 @@ library(here)
 ai_iss <- vroom::vroom(here::here('output', 'ai', 'add_err', 'spec1_iss_ag.csv'))  %>%
   bind_rows.(vroom::vroom(here::here('output', 'ai', 'add_err', 'spec2_iss_ag.csv'))) %>% 
   bind_rows.(vroom::vroom(here::here('output', 'ai', 'add_err', 'spec3_iss_ag.csv'))) %>% 
-  bind_rows.(vroom::vroom(here::here('output', 'ai', 'add_err', 'spec5_iss_ag.csv'))) %>% 
+  bind_rows.(vroom::vroom(here::here('output', 'ai', 'add_err', 'spec4_iss_ag.csv'))) %>% 
   vroom::vroom_write(.,
                      here::here('output', 'ai', 'add_err', 'iss_ag.csv'),
                      delim = ',')
@@ -27,7 +27,7 @@ ai_iss <- vroom::vroom(here::here('output', 'ai', 'add_err', 'spec1_iss_ag.csv')
 ai_ess <- vroom::vroom(here::here('output', 'ai', 'add_err', 'spec1_iter_ess_ag.csv'))  %>%
   bind_rows.(vroom::vroom(here::here('output', 'ai', 'add_err', 'spec2_iter_ess_ag.csv'))) %>% 
   bind_rows.(vroom::vroom(here::here('output', 'ai', 'add_err', 'spec3_iter_ess_ag.csv'))) %>% 
-  bind_rows.(vroom::vroom(here::here('output', 'ai', 'add_err', 'spec5_iter_ess_ag.csv'))) %>% 
+  bind_rows.(vroom::vroom(here::here('output', 'ai', 'add_err', 'spec4_iter_ess_ag.csv'))) %>% 
   vroom::vroom_write(.,
                      here::here('output', 'ai', 'add_err', 'iter_ess_ag.csv'),
                      delim = ',')

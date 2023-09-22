@@ -29,11 +29,12 @@ if(iters < 100){
 # pull data for Tier 3 species in Gulf of Alaska (1990 on)
 yrs = 1990
 # species = c(10110, 10130, 21720, 21740, 30060, 10261)
-species = c(10110, 10261)
+# species = c(10110, 10261)
 # species = c(30060, 10130)
 # species = c(21720)
 # species = c(21740)
 # species = 30420
+species = c(30060, 21720, 10110)
 region = 'GOA'
 
 cpue <- vroom::vroom(here::here('data', 'cpue_goa.csv')) %>% 
@@ -45,9 +46,9 @@ specimen <- vroom::vroom(here::here('data', 'specimen_goa.csv')) %>%
   tidytable::filter(species_code %in% species)
 read_test <- vroom::vroom(here::here('data', 'reader_tester.csv')) %>% 
   dplyr::rename_all(tolower) %>% 
-  tidytable::select.(species_code, region, read_age, test_age) %>% 
-  tidytable::rename.(age = 'read_age') %>% 
-  tidytable::filter.(species_code %in% species)
+  tidytable::select(species_code, region, read_age, test_age) %>% 
+  tidytable::rename(age = 'read_age') %>% 
+  tidytable::filter(species_code %in% species)
 
 # run adding ageing error and growth variability
 srvy_iss(iters = iters, 
@@ -61,11 +62,12 @@ srvy_iss(iters = iters,
          boot_lengths = TRUE, 
          boot_ages = TRUE,
          al_var = TRUE,
+         al_var_ann = TRUE,
          age_err = TRUE,
          region = 'goa', 
          save_interm = FALSE,
          match_orig = FALSE,
-         save = 'spec1')
+         save = 'popollatf_ann')
 
 # For testing run time of 500 iterations ----
 if(iters < 100){

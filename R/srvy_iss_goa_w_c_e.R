@@ -35,25 +35,25 @@ srvy_iss_goa_w_c_e <- function(iters = 1, lfreq_data, specimen_data, cpue_data, 
   
   # define data by subregion (swap out 'stratum' column with subregion) 
   lfreq_data %>%
-    tidytable::left_join.(strata_data)  %>% 
-    tidytable::mutate.(region = ifelse(summary_area %in% c(919), "wgoa",
+    tidytable::left_join(strata_data)  %>% 
+    tidytable::mutate(region = ifelse(summary_area %in% c(919), "wgoa",
                                        ifelse(summary_area %in% c(929, 939), "cgoa",
                                               ifelse(summary_area %in% c(949, 959), "egoa", NA)))) %>% 
-    tidytable::select.(-survey, -area, -summary_area) -> .lfreq_data
+    tidytable::select(-survey, -area, -summary_area) -> .lfreq_data
   
   specimen_data %>% 
-    tidytable::left_join.(strata_data) %>% 
-    tidytable::mutate.(region = ifelse(summary_area %in% c(919), "wgoa",
+    tidytable::left_join(strata_data) %>% 
+    tidytable::mutate(region = ifelse(summary_area %in% c(919), "wgoa",
                                        ifelse(summary_area %in% c(929, 939), "cgoa",
                                               ifelse(summary_area %in% c(949, 959), "egoa", NA)))) %>%  
-    tidytable::select.(-survey, -area, -summary_area) -> .specimen_data
+    tidytable::select(-survey, -area, -summary_area) -> .specimen_data
   
   cpue_data %>%  
-    tidytable::left_join.(strata_data) %>% 
-    tidytable::mutate.(region = ifelse(summary_area %in% c(919), "wgoa",
+    tidytable::left_join(strata_data) %>% 
+    tidytable::mutate(region = ifelse(summary_area %in% c(919), "wgoa",
                                        ifelse(summary_area %in% c(929, 939), "cgoa",
                                               ifelse(summary_area %in% c(949, 959), "egoa", NA)))) %>% 
-    tidytable::select.(-survey, -area, -summary_area)  -> .cpue_data
+    tidytable::select(-survey, -area, -summary_area)  -> .cpue_data
   
   
   # get original values for western goa
@@ -72,14 +72,14 @@ srvy_iss_goa_w_c_e <- function(iters = 1, lfreq_data, specimen_data, cpue_data, 
   oga <- og_w$age %>% 
     select(-type)
   oga %>% 
-    tidytable::summarize.(males = sum(males),
+    tidytable::summarize(males = sum(males),
                           females = sum(females),
                           unsexed = sum(unsexed),
                           .by = c(year, age, species_code)) -> oga_w
   ogl <- og_w$length %>% 
     select(-type)
   ogl %>% 
-    tidytable::summarize.(males = sum(males),
+    tidytable::summarize(males = sum(males),
                           females = sum(females),
                           unsexed = sum(unsexed),
                           .by = c(year, length, species_code)) -> ogl_w
@@ -100,14 +100,14 @@ srvy_iss_goa_w_c_e <- function(iters = 1, lfreq_data, specimen_data, cpue_data, 
   oga <- og_c$age %>% 
     select(-type)
   oga %>% 
-    tidytable::summarize.(males = sum(males),
+    tidytable::summarize(males = sum(males),
                           females = sum(females),
                           unsexed = sum(unsexed),
                           .by = c(year, age, species_code)) -> oga_c
   ogl <- og_c$length %>% 
     select(-type)
   ogl %>% 
-    tidytable::summarize.(males = sum(males),
+    tidytable::summarize(males = sum(males),
                           females = sum(females),
                           unsexed = sum(unsexed),
                           .by = c(year, length, species_code)) -> ogl_c
@@ -128,34 +128,34 @@ srvy_iss_goa_w_c_e <- function(iters = 1, lfreq_data, specimen_data, cpue_data, 
   oga <- og_e$age %>% 
     select(-type)
   oga %>% 
-    tidytable::summarize.(males = sum(males),
+    tidytable::summarize(males = sum(males),
                           females = sum(females),
                           unsexed = sum(unsexed),
                           .by = c(year, age, species_code)) -> oga_e
   ogl <- og_e$length %>% 
     select(-type)
   ogl %>% 
-    tidytable::summarize.(males = sum(males),
+    tidytable::summarize(males = sum(males),
                           females = sum(females),
                           unsexed = sum(unsexed),
                           .by = c(year, length, species_code)) -> ogl_e
   
   # compile og results 
   oga_w %>% 
-    tidytable::mutate.(region = "wgoa") -> .oga_w
+    tidytable::mutate(region = "wgoa") -> .oga_w
   oga_c %>% 
-    tidytable::mutate.(region = "cgoa") -> .oga_c
+    tidytable::mutate(region = "cgoa") -> .oga_c
   oga_e %>% 
-    tidytable::mutate.(region = "egoa") %>% 
-    tidytable::bind_rows.(.oga_w, .oga_c) -> oga
+    tidytable::mutate(region = "egoa") %>% 
+    tidytable::bind_rows(.oga_w, .oga_c) -> oga
   
   ogl_w %>% 
-    tidytable::mutate.(region = "wgoa") -> .ogl_w
+    tidytable::mutate(region = "wgoa") -> .ogl_w
   ogl_c %>% 
-    tidytable::mutate.(region = "cgoa") -> .ogl_c
+    tidytable::mutate(region = "cgoa") -> .ogl_c
   ogl_e %>% 
-    tidytable::mutate.(region = "egoa") %>% 
-    tidytable::bind_rows.(.ogl_w, .ogl_c) -> ogl
+    tidytable::mutate(region = "egoa") %>% 
+    tidytable::bind_rows(.ogl_w, .ogl_c) -> ogl
 
   
   # run iterations for western goa
@@ -173,8 +173,8 @@ srvy_iss_goa_w_c_e <- function(iters = 1, lfreq_data, specimen_data, cpue_data, 
   
   r_age <- do.call(mapply, c(list, rr, SIMPLIFY = FALSE))$age
   r_age %>% 
-    tidytable::map_df.(., ~as.data.frame(.x), .id = "sim") %>% 
-    tidytable::summarize.(males = sum(males),
+    tidytable::map_df(., ~as.data.frame(.x), .id = "sim") %>% 
+    tidytable::summarize(males = sum(males),
                           females = sum(females),
                           unsexed = sum(unsexed),
                           .by = c(sim, year, age, species_code, type)) %>% 
@@ -182,8 +182,8 @@ srvy_iss_goa_w_c_e <- function(iters = 1, lfreq_data, specimen_data, cpue_data, 
   
   r_length <- do.call(mapply, c(list, rr, SIMPLIFY = FALSE))$length
   r_length %>% 
-    tidytable::map_df.(., ~as.data.frame(.x), .id = "sim") %>% 
-    tidytable::summarize.(males = sum(males),
+    tidytable::map_df(., ~as.data.frame(.x), .id = "sim") %>% 
+    tidytable::summarize(males = sum(males),
                           females = sum(females),
                           unsexed = sum(unsexed),
                           .by = c(sim, year, length, species_code, type)) %>% 
@@ -204,8 +204,8 @@ srvy_iss_goa_w_c_e <- function(iters = 1, lfreq_data, specimen_data, cpue_data, 
   
   r_age <- do.call(mapply, c(list, rr, SIMPLIFY = FALSE))$age
   r_age %>% 
-    tidytable::map_df.(., ~as.data.frame(.x), .id = "sim") %>% 
-    tidytable::summarize.(males = sum(males),
+    tidytable::map_df(., ~as.data.frame(.x), .id = "sim") %>% 
+    tidytable::summarize(males = sum(males),
                           females = sum(females),
                           unsexed = sum(unsexed),
                           .by = c(sim, year, age, species_code, type)) %>% 
@@ -213,8 +213,8 @@ srvy_iss_goa_w_c_e <- function(iters = 1, lfreq_data, specimen_data, cpue_data, 
   
   r_length <- do.call(mapply, c(list, rr, SIMPLIFY = FALSE))$length
   r_length %>% 
-    tidytable::map_df.(., ~as.data.frame(.x), .id = "sim") %>% 
-    tidytable::summarize.(males = sum(males),
+    tidytable::map_df(., ~as.data.frame(.x), .id = "sim") %>% 
+    tidytable::summarize(males = sum(males),
                           females = sum(females),
                           unsexed = sum(unsexed),
                           .by = c(sim, year, length, species_code, type)) %>% 
@@ -235,8 +235,8 @@ srvy_iss_goa_w_c_e <- function(iters = 1, lfreq_data, specimen_data, cpue_data, 
   
   r_age <- do.call(mapply, c(list, rr, SIMPLIFY = FALSE))$age
   r_age %>% 
-    tidytable::map_df.(., ~as.data.frame(.x), .id = "sim") %>% 
-    tidytable::summarize.(males = sum(males),
+    tidytable::map_df(., ~as.data.frame(.x), .id = "sim") %>% 
+    tidytable::summarize(males = sum(males),
                           females = sum(females),
                           unsexed = sum(unsexed),
                           .by = c(sim, year, age, species_code, type)) %>% 
@@ -244,8 +244,8 @@ srvy_iss_goa_w_c_e <- function(iters = 1, lfreq_data, specimen_data, cpue_data, 
   
   r_length <- do.call(mapply, c(list, rr, SIMPLIFY = FALSE))$length
   r_length %>% 
-    tidytable::map_df.(., ~as.data.frame(.x), .id = "sim") %>% 
-    tidytable::summarize.(males = sum(males),
+    tidytable::map_df(., ~as.data.frame(.x), .id = "sim") %>% 
+    tidytable::summarize(males = sum(males),
                           females = sum(females),
                           unsexed = sum(unsexed),
                           .by = c(sim, year, length, species_code, type)) %>% 
@@ -256,98 +256,98 @@ srvy_iss_goa_w_c_e <- function(iters = 1, lfreq_data, specimen_data, cpue_data, 
     vroom::vroom_write(oga, file = here::here("output", region, "orig_age_w_c_egoa.csv"), delim = ",")
     vroom::vroom_write(ogl, file = here::here("output", region, "orig_length_w_c_egoa.csv"), delim = ",")
     r_age_w %>%
-      tidytable::map_df.(., ~as.data.frame(.x)) %>% 
-      tidytable::mutate.(region = "wgoa") -> .r_age_w
+      tidytable::map_df(., ~as.data.frame(.x)) %>% 
+      tidytable::mutate(region = "wgoa") -> .r_age_w
     r_age_c %>%
-      tidytable::map_df.(., ~as.data.frame(.x)) -> .r_age_c
+      tidytable::map_df(., ~as.data.frame(.x)) -> .r_age_c
     r_age_e %>%
-      tidytable::map_df.(., ~as.data.frame(.x)) %>% 
-      tidytable::mutate.(region = "egoa") %>% 
-      tidytable::bind_rows.(.r_age_w, .r_age_c) %>% 
+      tidytable::map_df(., ~as.data.frame(.x)) %>% 
+      tidytable::mutate(region = "egoa") %>% 
+      tidytable::bind_rows(.r_age_w, .r_age_c) %>% 
       vroom::vroom_write(here::here("output", region, "resampled_age_w_c_egoa.csv"), delim = ",")
     r_length_w %>%
-      tidytable::map_df.(., ~as.data.frame(.x)) %>% 
-      tidytable::mutate.(region = "wgoa") -> .r_length_w
+      tidytable::map_df(., ~as.data.frame(.x)) %>% 
+      tidytable::mutate(region = "wgoa") -> .r_length_w
     r_length_c %>%
-      tidytable::map_df.(., ~as.data.frame(.x)) %>% 
-      tidytable::mutate.(region = "cgoa") -> .r_length_c
+      tidytable::map_df(., ~as.data.frame(.x)) %>% 
+      tidytable::mutate(region = "cgoa") -> .r_length_c
     r_length_e %>%
-      tidytable::map_df.(., ~as.data.frame(.x)) %>% 
-      tidytable::mutate.(region = "egoa") %>% 
-      tidytable::bind_rows.(.r_length_w, .r_length_c) %>% 
+      tidytable::map_df(., ~as.data.frame(.x)) %>% 
+      tidytable::mutate(region = "egoa") %>% 
+      tidytable::bind_rows(.r_length_w, .r_length_c) %>% 
       vroom::vroom_write(here::here("output", region, "resampled_size_w_c_egoa.csv"), delim = ",") 
   }
   
   # compute effective sample size of bootstrapped age/length by subregion
   r_age_w %>%
-    tidytable::map.(., ~ess_age(sim_data = .x, og_data = oga_w)) %>% 
-    tidytable::map_df.(., ~as.data.frame(.x), .id = "sim") %>% 
+    tidytable::map(., ~ess_age(sim_data = .x, og_data = oga_w)) %>% 
+    tidytable::map_df(., ~as.data.frame(.x), .id = "sim") %>% 
     tidytable::rename(comp_type = ess) %>% 
-    tidytable::mutate.(comp_type = tidytable::case_when(comp_type == 'ess_f' ~ 'female',
+    tidytable::mutate(comp_type = tidytable::case_when(comp_type == 'ess_f' ~ 'female',
                                                         comp_type == 'ess_m' ~ 'male',
                                                         comp_type == 'ess_t' ~ 'total')) -> ess_age_w
   
   r_length_w %>%
-    tidytable::map.(., ~ess_size(sim_data = .x, og_data = ogl_w)) %>%
-    tidytable::map_df.(., ~as.data.frame(.x), .id = "sim") %>% 
+    tidytable::map(., ~ess_size(sim_data = .x, og_data = ogl_w)) %>%
+    tidytable::map_df(., ~as.data.frame(.x), .id = "sim") %>% 
     tidytable::rename(comp_type = ess) %>% 
-    tidytable::mutate.(comp_type = tidytable::case_when(comp_type == 'ess_f' ~ 'female',
+    tidytable::mutate(comp_type = tidytable::case_when(comp_type == 'ess_f' ~ 'female',
                                                         comp_type == 'ess_m' ~ 'male',
                                                         comp_type == 'ess_t' ~ 'total')) -> ess_size_w
   
   r_age_c %>%
-    tidytable::map.(., ~ess_age(sim_data = .x, og_data = oga_c)) %>% 
-    tidytable::map_df.(., ~as.data.frame(.x), .id = "sim") %>% 
+    tidytable::map(., ~ess_age(sim_data = .x, og_data = oga_c)) %>% 
+    tidytable::map_df(., ~as.data.frame(.x), .id = "sim") %>% 
     tidytable::rename(comp_type = ess) %>% 
-    tidytable::mutate.(comp_type = tidytable::case_when(comp_type == 'ess_f' ~ 'female',
+    tidytable::mutate(comp_type = tidytable::case_when(comp_type == 'ess_f' ~ 'female',
                                                         comp_type == 'ess_m' ~ 'male',
                                                         comp_type == 'ess_t' ~ 'total')) -> ess_age_c
   
   r_length_c %>%
-    tidytable::map.(., ~ess_size(sim_data = .x, og_data = ogl_c)) %>%
-    tidytable::map_df.(., ~as.data.frame(.x), .id = "sim") %>% 
+    tidytable::map(., ~ess_size(sim_data = .x, og_data = ogl_c)) %>%
+    tidytable::map_df(., ~as.data.frame(.x), .id = "sim") %>% 
     tidytable::rename(comp_type = ess) %>% 
-    tidytable::mutate.(comp_type = tidytable::case_when(comp_type == 'ess_f' ~ 'female',
+    tidytable::mutate(comp_type = tidytable::case_when(comp_type == 'ess_f' ~ 'female',
                                                         comp_type == 'ess_m' ~ 'male',
                                                         comp_type == 'ess_t' ~ 'total')) -> ess_size_c
   
   r_age_e %>%
-    tidytable::map.(., ~ess_age(sim_data = .x, og_data = oga_e)) %>% 
-    tidytable::map_df.(., ~as.data.frame(.x), .id = "sim") %>% 
+    tidytable::map(., ~ess_age(sim_data = .x, og_data = oga_e)) %>% 
+    tidytable::map_df(., ~as.data.frame(.x), .id = "sim") %>% 
     tidytable::rename(comp_type = ess) %>% 
-    tidytable::mutate.(comp_type = tidytable::case_when(comp_type == 'ess_f' ~ 'female',
+    tidytable::mutate(comp_type = tidytable::case_when(comp_type == 'ess_f' ~ 'female',
                                                         comp_type == 'ess_m' ~ 'male',
                                                         comp_type == 'ess_t' ~ 'total')) -> ess_age_e
   
   r_length_e %>%
-    tidytable::map.(., ~ess_size(sim_data = .x, og_data = ogl_e)) %>%
-    tidytable::map_df.(., ~as.data.frame(.x), .id = "sim") %>% 
+    tidytable::map(., ~ess_size(sim_data = .x, og_data = ogl_e)) %>%
+    tidytable::map_df(., ~as.data.frame(.x), .id = "sim") %>% 
     tidytable::rename(comp_type = ess) %>% 
-    tidytable::mutate.(comp_type = tidytable::case_when(comp_type == 'ess_f' ~ 'female',
+    tidytable::mutate(comp_type = tidytable::case_when(comp_type == 'ess_f' ~ 'female',
                                                         comp_type == 'ess_m' ~ 'male',
                                                         comp_type == 'ess_t' ~ 'total')) -> ess_size_e
   
   ess_age_w %>% 
-    tidytable::mutate.(region = "wgoa") -> .ess_age_w
+    tidytable::mutate(region = "wgoa") -> .ess_age_w
   ess_age_c %>% 
-    tidytable::mutate.(region = "cgoa") -> .ess_age_c
+    tidytable::mutate(region = "cgoa") -> .ess_age_c
   ess_age_e %>% 
-    tidytable::mutate.(region = "egoa") %>% 
-    tidytable::bind_rows.(.ess_age_w, .ess_age_c) -> ess_age
+    tidytable::mutate(region = "egoa") %>% 
+    tidytable::bind_rows(.ess_age_w, .ess_age_c) -> ess_age
   
   ess_size_w %>% 
-    tidytable::mutate.(region = "wgoa") -> .ess_size_w
+    tidytable::mutate(region = "wgoa") -> .ess_size_w
   ess_size_c %>% 
-    tidytable::mutate.(region = "cgoa") -> .ess_size_c
+    tidytable::mutate(region = "cgoa") -> .ess_size_c
   ess_size_e %>% 
-    tidytable::mutate.(region = "egoa") %>% 
-    tidytable::bind_rows.(.ess_size_w, .ess_size_c) -> ess_size
+    tidytable::mutate(region = "egoa") %>% 
+    tidytable::bind_rows(.ess_size_w, .ess_size_c) -> ess_size
   
   # compute harmonic mean of iterated effective sample size, which is the input sample size (iss)
   ess_age %>% 
     tidytable::summarise(iss = psych::harmonic.mean(value, na.rm=T),
                          .by = c(year, species_code, comp_type, type, region)) %>% 
-    tidytable::filter.(iss > 0) %>% 
+    tidytable::filter(iss > 0) %>% 
     tidytable::pivot_wider(names_from = type, values_from = iss) -> iss_age
   
   ess_age %>%
@@ -356,7 +356,7 @@ srvy_iss_goa_w_c_e <- function(iters = 1, lfreq_data, specimen_data, cpue_data, 
   ess_size %>% 
     tidytable::summarise(iss = psych::harmonic.mean(value, na.rm=T),
                          .by = c(year, species_code, comp_type, type, region)) %>% 
-    tidytable::filter.(iss > 0) %>% 
+    tidytable::filter(iss > 0) %>% 
     tidytable::pivot_wider(names_from = type, values_from = iss) -> iss_size
   
   ess_size %>%
