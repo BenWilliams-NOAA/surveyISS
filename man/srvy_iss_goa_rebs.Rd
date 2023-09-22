@@ -18,10 +18,9 @@ srvy_iss_goa_rebs(
   al_var = FALSE,
   age_err = FALSE,
   region = NULL,
-  save_orig = FALSE,
-  save_comps = FALSE,
-  save_ess = FALSE,
-  match_orig = FALSE
+  save_interm = FALSE,
+  match_orig = FALSE,
+  save
 )
 }
 \arguments{
@@ -51,13 +50,11 @@ srvy_iss_goa_rebs(
 
 \item{region}{region will create a folder and place results in said folder}
 
-\item{save_orig}{save the original comps (default = FALSE)}
-
-\item{save_comps}{save the resampled comps (default = FALSE)}
-
-\item{save_ess}{save the iterated effective sample sizes (default = FALSE)}
+\item{save_interm}{save the intermediate results: original comps, resampled comps (default = FALSE)}
 
 \item{match_orig}{match the computed values to gap output (default = FALSE)}
+
+\item{save}{name to save output}
 }
 \description{
 replicate srvy_iss function for goa rebs stock complex

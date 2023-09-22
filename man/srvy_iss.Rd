@@ -18,11 +18,10 @@ srvy_iss(
   al_var = FALSE,
   age_err = FALSE,
   region = NULL,
-  save_orig = FALSE,
-  save_comps = FALSE,
-  save_ess = FALSE,
+  save_interm = FALSE,
   match_orig = FALSE,
-  srvy_type = NULL
+  srvy_type = NULL,
+  save
 )
 }
 \arguments{
@@ -52,15 +51,13 @@ srvy_iss(
 
 \item{region}{region will create a folder and place results in said folder}
 
-\item{save_orig}{save the original comps (default = FALSE)}
-
-\item{save_comps}{save the resampled comps (default = FALSE)}
-
-\item{save_ess}{save the iterated effective sample sizes (default = FALSE)}
+\item{save_interm}{save the intermediate results: original comps, resampled comps (default = FALSE)}
 
 \item{match_orig}{match the computed values to gap output (default = FALSE)}
 
 \item{srvy_type}{only for bering sea survey, denotes whether it's the shelf or slope survey (default = NULL)}
+
+\item{save}{name to save output}
 }
 \description{
 replicate survey input sample size function for production run
