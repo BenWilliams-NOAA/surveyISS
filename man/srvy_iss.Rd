@@ -12,17 +12,19 @@ srvy_iss(
   strata_data,
   r_t,
   yrs = NULL,
+  bin = 1,
   boot_hauls = FALSE,
   boot_lengths = FALSE,
   boot_ages = FALSE,
+  sex_spec = TRUE,
   al_var = FALSE,
+  al_var_ann = FALSE,
   age_err = FALSE,
   region = NULL,
-  save_orig = FALSE,
-  save_comps = FALSE,
-  save_ess = FALSE,
+  save_interm = FALSE,
   match_orig = FALSE,
-  srvy_type = NULL
+  srvy_type = NULL,
+  save
 )
 }
 \arguments{
@@ -40,27 +42,31 @@ srvy_iss(
 
 \item{yrs}{any year filter >= (default = NULL)}
 
+\item{bin}{bin size (default = 1 cm)}
+
 \item{boot_hauls}{resample hauls w/replacement (default = FALSE)}
 
 \item{boot_lengths}{resample lengths w/replacement (default = FALSE)}
 
 \item{boot_ages}{resample ages w/replacement (default = FALSE)}
 
+\item{sex_spec}{determine whether to do sex specific or total comps (default = TRUE)}
+
 \item{al_var}{include age-length variability (default = FALSE)}
+
+\item{al_var_ann}{resample age-length annually or pooled across years}
 
 \item{age_err}{include ageing error (default = FALSE)}
 
 \item{region}{region will create a folder and place results in said folder}
 
-\item{save_orig}{save the original comps (default = FALSE)}
-
-\item{save_comps}{save the resampled comps (default = FALSE)}
-
-\item{save_ess}{save the iterated effective sample sizes (default = FALSE)}
+\item{save_interm}{save the intermediate results: original comps, resampled comps (default = FALSE)}
 
 \item{match_orig}{match the computed values to gap output (default = FALSE)}
 
 \item{srvy_type}{only for bering sea survey, denotes whether it's the shelf or slope survey (default = NULL)}
+
+\item{save}{name to save output}
 }
 \description{
 replicate survey input sample size function for production run
