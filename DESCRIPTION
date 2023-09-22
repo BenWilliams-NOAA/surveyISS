@@ -11,9 +11,9 @@ Authors@R:
       person(given = "Pete", 
              family = "Hulson",
              email = "pete.hulson@noaa.gov", 
-             role = "aut")
-Description: More about what it does (maybe more than one line)
-    Use four spaces when indenting paragraphs within the Description.
+             role = "aut"))
+Description: Produce bootstrap estimates of input sample sizes for use in statistical catch at age fishery assessments
+    
 License: MIT + file LICENSE
 Encoding: UTF-8
 LazyData: true

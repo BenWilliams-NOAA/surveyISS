@@ -19,6 +19,9 @@
     <loc>/reference/apop.html</loc>
   </url>
   <url>
+    <loc>/reference/apop_caal.html</loc>
+  </url>
+  <url>
     <loc>/reference/boot_age.html</loc>
   </url>
   <url>
@@ -29,6 +32,9 @@
   </url>
   <url>
     <loc>/reference/ess_age.html</loc>
+  </url>
+  <url>
+    <loc>/reference/ess_caal.html</loc>
   </url>
   <url>
     <loc>/reference/ess_size.html</loc>
@@ -64,10 +70,16 @@
     <loc>/reference/srvy_comps_ai_rebs.html</loc>
   </url>
   <url>
+    <loc>/reference/srvy_comps_caal.html</loc>
+  </url>
+  <url>
     <loc>/reference/srvy_iss.html</loc>
   </url>
   <url>
     <loc>/reference/srvy_iss_ai_rebs.html</loc>
+  </url>
+  <url>
+    <loc>/reference/srvy_iss_caal.html</loc>
   </url>
   <url>
     <loc>/reference/srvy_iss_exp.html</loc>
