@@ -19,6 +19,9 @@ library(here)
 ai_iss <- vroom::vroom(here::here('output', 'ai', 'add_err', 'iss_ag.csv'))  %>%
   tidytable::mutate(bin = '1cm',
                     grwth = 'Pooled') %>% 
+  bind_rows(vroom::vroom(here::here('output', 'ai', 'add_err', 'pool1cm_iss_ag.csv'))  %>%
+              tidytable::mutate(bin = '1cm',
+                                grwth = 'Pooled')) %>% 
   bind_rows(vroom::vroom(here::here('output', 'ai', 'add_err', 'ann1cm_iss_ag.csv'))  %>%
                tidytable::mutate(bin = '1cm',
                                  grwth = 'Annual')) %>% 

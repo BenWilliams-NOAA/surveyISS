@@ -20,6 +20,40 @@
 #'            
 query_data <- function(region, species, yrs = NULL, afsc_user, afsc_pwd, nbs = FALSE, bs_slope = FALSE) {
   
+  # for development
+  library(purrr)
+  library(tidyverse)
+  library(tidytable)
+  library(psych)
+  library(vroom)
+  library(here)
+  
+  source_files <- list.files(here::here("R"), "*.R$")
+  map(here::here("R", source_files), source)
+  
+  akfin_user = 'phulson'
+  akfin_pwd = '$blwins1'
+  
+  akfin = DBI::dbConnect(odbc::odbc(), "akfin",
+                        UID = akfin_user, PWD = akfin_pwd)
+  
+  species = 21720
+  yrs = 2022
+
+  lfreq = readLines(here::here('inst', 'sql', 'length_freq_gap.sql'))
+  # lfreq = sql_filter(x = region, sql_code = lfreq, flag = '-- insert region')
+  lfreq = sql_filter(sql_precode = "IN", x = species, sql_code = lfreq, flag = '-- insert species')
+  lfreq = sql_filter(sql_precode = ">=", x = yrs, sql_code = lfreq, flag = '-- insert year')
+  
+  
+  pcod <- sql_run(akfin, lfreq)
+  
+  pcod %>% 
+    tidytable::filter(YEAR >= 2022) %>% 
+    # dplyr::rename_all(tolower) %>% 
+    vroom::vroom_write(here::here('data', paste0("lfreq_gap_test.csv")), 
+                       delim = ',')
+  
   # create folder
   if (!dir.exists("data")) {dir.create("data")}
   
