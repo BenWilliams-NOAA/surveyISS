@@ -1,24 +1,19 @@
-#' query racebase
+#' query gap_products
 #'
-#' @param region specific region for data ('GOA', 'AI')
+#' @param survey survey number for gap_products survey_definition_id (ai = 52, goa = 47, ebs = 98, nbs = 143, ebs slope = 78
+#' @param region region description for output data file
 #' @param species species_codes e.g., c(10110, 21740)
 #' @param yrs minimum year to consider (default: NULL)
-#' @param afsc_user afsc database username
-#' @param afsc_pwd afsc database password
-#' @param nbs switch to include northern Bering Sea data (default: FALSE)
-#' @param bs_slope switch to query data from bs slope survey (default: FALSE)
+#' @param database database from which to pull data
+#' @param username database username
+#' @param password database password
 #'
 #' @return
 #' @export query_data
 #'
 #' @examples
-#' query_date(region = 'AI', 
-#'            species = c(30060,21740,10110,30420,21921,21720,10130,30020),
-#'            yrs = 2015,
-#'            afsc_user = 'your_username',
-#'            afsc_pwd = 'your_password')
 #'            
-query_data <- function(region, species, yrs = NULL, afsc_user, afsc_pwd, nbs = FALSE, bs_slope = FALSE) {
+query_data <- function(survey, region, species, yrs = NULL, database, username, password) {
   
   # for development
   library(purrr)
@@ -34,180 +29,116 @@ query_data <- function(region, species, yrs = NULL, afsc_user, afsc_pwd, nbs = F
   akfin_user = 'phulson'
   akfin_pwd = '$blwins1'
   
+  afsc_user = 'hulsonp'
+  afsc_pwd = 'Bri3+Fin2+Liam1'
+  
+  # connect to akfin
   akfin = DBI::dbConnect(odbc::odbc(), "akfin",
                         UID = akfin_user, PWD = akfin_pwd)
+  # connect to afsc
+  afsc = DBI::dbConnect(odbc::odbc(), "afsc",
+                        UID = afsc_user, PWD = afsc_pwd)
+  
+  
+  database = "akfin"
+  username = 'phulson'
+  password = '$blwins1'
+  
   
   species = 21720
-  yrs = 2022
+  yrs = 2019
+  survey = 47
 
-  lfreq = readLines(here::here('inst', 'sql', 'length_freq_gap.sql'))
-  # lfreq = sql_filter(x = region, sql_code = lfreq, flag = '-- insert region')
-  lfreq = sql_filter(sql_precode = "IN", x = species, sql_code = lfreq, flag = '-- insert species')
-  lfreq = sql_filter(sql_precode = ">=", x = yrs, sql_code = lfreq, flag = '-- insert year')
+
+  
+  # survey desc
+  # 52 - AI
+  # 98 - EBS
+  # 143 - NBS
+  # 47 - GOA
+  # 78 - EBS slope
   
   
   pcod <- sql_run(akfin, lfreq)
   
-  pcod %>% 
-    tidytable::filter(YEAR >= 2022) %>% 
-    # dplyr::rename_all(tolower) %>% 
+  
+  
+  # get goa and ai data
+  # sp = sql_read('specimen.sql')
+  sp = readLines(here::here('inst', 'sql', 'specimen_gap.sql'))
+  sp = sql_filter(sql_precode = "IN", x = survey, sql_code = sp, flag = '-- insert survey')
+  sp = sql_filter(sql_precode = "IN", x = species, sql_code = sp, flag = '-- insert species')
+  sp = sql_filter(sql_precode = ">=", x = yrs, sql_code = sp, flag = '-- insert year')
+  
+  sql_run(akfin, sp) %>% 
+    dplyr::rename_all(tolower) %>% 
+    vroom::vroom_write(., 
+                       here::here('data', paste0("specimen_", tolower(region), ".csv")), 
+                       delim = ',')
+  
+  
+  
+  pop %>% 
+    # dplyr::rename_all(tolower) %>%
     vroom::vroom_write(here::here('data', paste0("lfreq_gap_test.csv")), 
                        delim = ',')
   
+  test <- vroom::vroom(here::here('data', 'lfreq_gap_test.csv'), delim = ",")
+  
+  pop %>% 
+    distinct(SURVEY_DEFINITION_ID, SURVEY_NAME)
+  
+  test %>% 
+    dplyr::rename_all(tolower) %>% 
+    distinct(year)
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
   # create folder
   if (!dir.exists("data")) {dir.create("data")}
-  
-  if(region == 'BS' & (isFALSE(nbs))){
-    message("you are excluding the northern Bering Sea data, change to nbs = TRUE if needed")
-  }
-  
+
   # connect to database
-  afsc = DBI::dbConnect(odbc::odbc(), "afsc",
-                        UID = afsc_user, PWD = afsc_pwd)
+  conn = DBI::dbConnect(odbc::odbc(), database,
+                         UID = username, PWD = password)
   
   # year switch
   if (is.null(yrs)) yrs <- 0
   
-  # length frequency data 
-  if (region != 'BS'){
-    
-    # get goa and ai data
-    lfreq = readLines(here::here('inst', 'sql', 'length_freq.sql'))
-    # lfreq = sql_read('length_freq.sql')
-    lfreq = sql_filter(x = region, sql_code = lfreq, flag = '-- insert region')
-    lfreq = sql_filter(sql_precode = "IN", x = species, sql_code = lfreq, flag = '-- insert species')
-    lfreq = sql_filter(sql_precode = ">=", x = yrs, sql_code = lfreq, flag = '-- insert year')
-    
-    sql_run(afsc, lfreq) %>% 
-      dplyr::rename_all(tolower) %>% 
-      vroom::vroom_write(here::here('data', paste0("lfreq_", tolower(region), ".csv")), 
-                         delim = ',')
-  }
+  # length frequency data ----
+  # lfreq = sql_read('length_freq_gap.sql')
+  lfreq = readLines(here::here('inst', 'sql', 'length_freq_gap.sql'))
+  lfreq = sql_filter(sql_precode = "IN", x = survey, sql_code = lfreq, flag = '-- insert survey')
+  lfreq = sql_filter(sql_precode = "IN", x = species, sql_code = lfreq, flag = '-- insert species')
+  lfreq = sql_filter(sql_precode = ">=", x = yrs, sql_code = lfreq, flag = '-- insert year')
   
-  if(region == 'BS' & isFALSE(nbs) & isFALSE(bs_slope)) {
-    
-    # get bs shelf data without nbs
-    # bs = sql_read('length_freq_bs.sql')
-    bs = readLines(here::here('inst', 'sql', 'length_freq_bs.sql'))
-    bs = sql_filter(x = region, sql_code = bs, flag = '-- insert region')
-    bs = sql_filter(sql_precode = "IN", x = species, sql_code = bs, flag = '-- insert species')
-    bs = sql_filter(sql_precode = ">=", x = yrs, sql_code = bs, flag = '-- insert year')
-    
-    sql_run(afsc, bs) %>% 
-      dplyr::rename_all(tolower) %>% 
-      vroom::vroom_write(here::here('data', paste0("lfreq_", tolower(region), ".csv")), 
-                         delim = ',')
-    
-  }
+  sql_run(conn, lfreq) %>% 
+    dplyr::rename_all(tolower) %>% 
+    vroom::vroom_write(here::here('data', paste0("lfreq_", tolower(region), ".csv")), 
+                       delim = ',')
   
-  if(region == 'BS' & !isFALSE(nbs)){
-    
-    # get bs shelf data with nbs
-    bs = sql_read('length_freq_bs.sql')
-    bs = sql_filter(x = region, sql_code = bs, flag = '-- insert region')
-    bs = sql_filter(sql_precode = "IN", x = species, sql_code = bs, flag = '-- insert species')
-    bs = sql_filter(sql_precode = ">=", x = yrs, sql_code = bs, flag = '-- insert year')
-    
-    nbs = sql_read('length_freq_nbs.sql')
-    nbs = sql_filter(x = region, sql_code = nbs, flag = '-- insert region')
-    nbs = sql_filter(sql_precode = "IN", x = species, sql_code = nbs, flag = '-- insert species')
-    nbs = sql_filter(sql_precode = ">=", x = yrs, sql_code = nbs, flag = '-- insert year')
-    
-    sql_run(afsc, bs) %>% 
-      tidytable::bind_rows(sql_run(afsc, nbs)) %>% 
-      dplyr::rename_all(tolower) %>% 
-      vroom::vroom_write(here::here('data', paste0("lfreq_", tolower(region), ".csv")), 
-                         delim = ',')
-    
-  }
+  # specimen data ----
+  # sp = sql_read('specimen.sql')
+  sp = readLines(here::here('inst', 'sql', 'specimen_gap.sql'))
+  sp = sql_filter(sql_precode = "IN", x = survey, sql_code = sp, flag = '-- insert survey')
+  sp = sql_filter(sql_precode = "IN", x = species, sql_code = sp, flag = '-- insert species')
+  sp = sql_filter(sql_precode = ">=", x = yrs, sql_code = sp, flag = '-- insert year')
   
-  if(region == 'BS' & !isFALSE(bs_slope)){
-    
-    # get bs slope data
-    # bss = sql_read('length_freq_bss.sql')
-    bss = readLines(here::here('inst', 'sql', 'length_freq_bss.sql')) # 2010 survey was ommitted, readLines for now until pacakage developed
-    bss = sql_filter(x = region, sql_code = bss, flag = '-- insert region')
-    bss = sql_filter(sql_precode = "IN", x = species, sql_code = bss, flag = '-- insert species')
-    
-    sql_run(afsc, bss) %>% 
-      dplyr::rename_all(tolower) %>% 
-      dplyr::mutate(year=as.numeric(substr(as.character(cruise), 1, 4))) %>% 
-      vroom::vroom_write(here::here('data', paste0("lfreq_slope_", tolower(region), ".csv")), 
-                         delim = ',')
-    
-  }
+  sql_run(conn, sp) %>% 
+    dplyr::rename_all(tolower) %>% 
+    vroom::vroom_write(., 
+                       here::here('data', paste0("specimen_", tolower(region), ".csv")), 
+                       delim = ',')
   
-  # specimen data 
-  if (region!='BS'){ 
-    
-    # get goa and ai data
-    # sp = sql_read('specimen.sql')
-    sp = readLines(here::here('inst', 'sql', 'specimen.sql'))
-    sp = sql_filter(x = region, sql_code = sp, flag = '-- insert region')
-    sp = sql_filter(sql_precode = "IN", x = species, sql_code = sp, flag = '-- insert species')
-    sp = sql_filter(sql_precode = ">=", x = yrs, sql_code = sp, flag = '-- insert year')
-    
-    sql_run(afsc, sp) %>% 
-      dplyr::rename_all(tolower) %>% 
-      vroom::vroom_write(., 
-                         here::here('data', paste0("specimen_", tolower(region), ".csv")), 
-                         delim = ',')
-    
-  }
-  
-  if(region == 'BS' & isFALSE(nbs) & isFALSE(bs_slope)) {
-    
-    # get bs shelf data without nbs
-    spbs = readLines(here::here('inst', 'sql', 'specimen_bs.sql'))
-    # spbs = sql_read('specimen_bs.sql')
-    spbs = sql_filter(x = region, sql_code = spbs, flag = '-- insert region')
-    spbs = sql_filter(sql_precode = "IN", x = species, sql_code = spbs, flag = '-- insert species')
-    spbs = sql_filter(sql_precode = ">=", x = yrs, sql_code = spbs, flag = '-- insert year')
-    sql_run(afsc, spbs) %>% 
-      dplyr::rename_all(tolower) %>% 
-      vroom::vroom_write(here::here('data', paste0("specimen_", tolower(region), ".csv")), 
-                         delim = ',')
-    
-  }
-  
-  if(region == 'BS' & !isFALSE(nbs)) {
-    
-    # get bs shelf data with nbs
-    spbs = sql_read('specimen_bs.sql')
-    spbs = sql_filter(x = region, sql_code = spbs, flag = '-- insert region')
-    spbs = sql_filter(sql_precode = "IN", x = species, sql_code = spbs, flag = '-- insert species')
-    spbs = sql_filter(sql_precode = ">=", x = yrs, sql_code = spbs, flag = '-- insert year')
-    
-    
-    spnbs = sql_read('specimen_nbs.sql')
-    spnbs = sql_filter(x = region, sql_code = spnbs, flag = '-- insert region')
-    spnbs = sql_filter(sql_precode = "IN", x = species, sql_code = spnbs, flag = '-- insert species')
-    spnbs = sql_filter(sql_precode = ">=", x = yrs, sql_code = spnbs, flag = '-- insert year')
-    
-    sql_run(afsc, spbs) %>% 
-      tidytable::bind_rows(sql_run(afsc, spnbs)) %>% 
-      dplyr::rename_all(tolower) %>% 
-      vroom::vroom_write(here::here('data', paste0("specimen_", tolower(region), ".csv")), 
-                         delim = ',')
-    
-  }
-  
-  if(region == 'BS' & !isFALSE(bs_slope)) {
-    
-    # get bs slope data
-    # spbss = sql_read('specimen_bss.sql')
-    spbss = readLines(here::here('inst', 'sql', 'specimen_bss.sql')) # 2010 survey was ommitted, readLines for now until pacakage developed
-    spbss = sql_filter(x = region, sql_code = spbss, flag = '-- insert region')
-    spbss = sql_filter(sql_precode = "IN", x = species, sql_code = spbss, flag = '-- insert species')
-    
-    sql_run(afsc, spbss) %>% 
-      dplyr::rename_all(tolower) %>% 
-      dplyr::mutate(year=as.numeric(substr(as.character(cruise), 1, 4))) %>% 
-      vroom::vroom_write(here::here('data', paste0("specimen_slope_", tolower(region), ".csv")), 
-                         delim = ',')
-    
-  }
-  
+
   # cpue data 
   if (region!='BS') {
     # cp = sql_read('cpue.sql')

@@ -11,9 +11,9 @@ FROM gap_products.akfin_haul INNER JOIN gap_products.akfin_cruise
     INNER JOIN gap_products.akfin_length 
       ON gap_products.akfin_haul.hauljoin = gap_products.akfin_length.hauljoin
 WHERE
-    gap_products.akfin_cruise.survey_definition_id
-    -- insert survey
-    AND gap_products.akfin_length.species_code
-    -- insert species
-    AND gap_products.akfin_cruise.year
-    -- insert year
+gap_products.akfin_cruise.survey_definition_id
+-- insert survey
+AND gap_products.akfin_length.species_code
+-- insert species
+AND gap_products.akfin_cruise.year
+-- insert year 
