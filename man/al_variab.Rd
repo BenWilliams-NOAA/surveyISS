@@ -4,10 +4,12 @@
 \alias{al_variab}
 \title{resample age-length data to implement growth variability}
 \usage{
-al_variab(age_dat)
+al_variab(age_dat, annual = FALSE)
 }
 \arguments{
 \item{age_dat}{age specimen data}
+
+\item{annual}{resample age data annually or pooled across years}
 }
 \description{
 resample age-length data to implement growth variability

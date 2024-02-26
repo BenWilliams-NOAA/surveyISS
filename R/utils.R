@@ -1,7 +1,7 @@
 #'
 sql_read <- function(x) {
-  if(file.exists(system.file("sql", x, package = "swo"))) {
-    readLines(system.file("sql", x, package = "swo"))
+  if(file.exists(system.file("sql", x, package = "surveyISS"))) {
+    readLines(system.file("sql", x, package = "surveyISS"))
   } else {
     stop("The sql file does not exist.")
   }

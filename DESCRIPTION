@@ -1,0 +1,26 @@
+Package: surveyISS
+Title: Survey age composition input sample sizes with ageing error
+Version: 1.0.0
+Type: Package
+Authors@R: 
+    c(person(given = "Ben", 
+             family = "Williams",
+             email = "ben.williams@noaa.gov", 
+             role = c("aut", "cre"),
+           comment = c(ORCID = "000-0001-7295-2076")),
+      person(given = "Pete", 
+             family = "Hulson",
+             email = "pete.hulson@noaa.gov", 
+             role = "aut"))
+Description: Produce bootstrap estimates of input sample sizes for use in statistical catch at age fishery assessments
+    
+License: MIT + file LICENSE
+Encoding: UTF-8
+LazyData: true
+RoxygenNote: 7.2.3
+Remotes: 
+    git::https://github.com/BenWilliams-NOAA/swo
+Imports: 
+    magrittr,
+    psych,
+    swo (>= 1.0.0)

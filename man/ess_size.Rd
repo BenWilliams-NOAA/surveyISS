@@ -4,12 +4,14 @@
 \alias{ess_size}
 \title{calculate effective sample size for length comps}
 \usage{
-ess_size(sim_data, og_data)
+ess_size(sim_data, og_data, sex_spec)
 }
 \arguments{
 \item{sim_data}{list of abundance by length data}
 
 \item{og_data}{original abundance by length data (single list)}
+
+\item{sex_spec}{determine whether to do sex specific or total comps (default = TRUE)}
 }
 \description{
 calculate effective sample size for length comps
