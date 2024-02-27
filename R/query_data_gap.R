@@ -46,8 +46,8 @@ query_data <- function(survey, region, species, yrs = NULL, database, username, 
   
   
   species = 21720
-  yrs = 2019
-  survey = 47
+  yrs = 2016
+  survey = 78
 
 
   
@@ -74,6 +74,19 @@ query_data <- function(survey, region, species, yrs = NULL, database, username, 
     dplyr::rename_all(tolower) %>% 
     vroom::vroom_write(., 
                        here::here('data', paste0("specimen_", tolower(region), ".csv")), 
+                       delim = ',')
+  
+  
+  
+  # cp = sql_read('cpue.sql')
+  cp = readLines(here::here('inst', 'sql', 'cpue_gap.sql'))
+  cp = sql_filter(sql_precode = "IN", x = survey, sql_code = cp, flag = '-- insert survey')
+  cp = sql_filter(sql_precode = "IN", x = species, sql_code = cp, flag = '-- insert species')
+  cp = sql_filter(sql_precode = ">=", x = yrs, sql_code = cp, flag = '-- insert year')
+  
+  sql_run(akfin, cp) %>% 
+    dplyr::rename_all(tolower) %>% 
+    vroom::vroom_write(here::here('data', paste0("cpue_", tolower(region), ".csv")), 
                        delim = ',')
   
   
@@ -139,75 +152,21 @@ query_data <- function(survey, region, species, yrs = NULL, database, username, 
                        delim = ',')
   
 
-  # cpue data 
-  if (region!='BS') {
-    # cp = sql_read('cpue.sql')
-    cp = readLines(here::here('inst', 'sql', 'cpue.sql'))
-    cp = sql_add(paste0(region, '.cpue'), cp)
-    cp = sql_filter(x = region, sql_code = cp, flag = '-- insert region')
-    cp = sql_filter(sql_precode = "IN", x = species, sql_code = cp, flag = '-- insert species')
-    cp = sql_filter(sql_precode = ">=", x = yrs, sql_code = cp, flag = '-- insert year')
-    
-    sql_run(afsc, cp) %>% 
-      dplyr::rename_all(tolower) %>% 
-      vroom::vroom_write(here::here('data', paste0("cpue_", tolower(region), ".csv")), 
-                         delim = ',')
-  }
+  # cpue data ----
+  # cp = sql_read('cpue.sql')
+  cp = readLines(here::here('inst', 'sql', 'cpue_gap.sql'))
+  cp = sql_filter(sql_precode = "IN", x = survey, sql_code = cp, flag = '-- insert survey')
+  cp = sql_filter(sql_precode = "IN", x = species, sql_code = cp, flag = '-- insert species')
+  cp = sql_filter(sql_precode = ">=", x = yrs, sql_code = cp, flag = '-- insert year')
   
-  if(region == 'BS' & isFALSE(nbs) & isFALSE(bs_slope)) {
-    
-    # get bs shelf data without nbs
-    cpbs = readLines(here::here('inst', 'sql', 'cpue_BS.sql'))
-    # cpbs = sql_read('cpue_BS.sql')
-    cpbs = sql_add(paste0('HAEHNR', '.EBSSHELF_CPUE'), cpbs)
-    cpbs = sql_filter(sql_precode = "IN", x = species, sql_code = cpbs, flag = '-- insert species')
-    cpbs = sql_filter(sql_precode = ">=", x = yrs, sql_code = cpbs, flag = '-- insert year')
-    
-    sql_run(afsc, cpbs) %>% 
-      dplyr::rename_all(tolower) %>% 
-      vroom::vroom_write(., 
-                         here::here('data', paste0("cpue_", tolower(region), ".csv")), 
-                         delim = ',')
-    
-  }
+  sql_run(akfin, cp) %>% 
+    dplyr::rename_all(tolower) %>% 
+    vroom::vroom_write(here::here('data', paste0("cpue_", tolower(region), ".csv")), 
+                       delim = ',')
+
   
-  if(region == 'BS' & !isFALSE(nbs)) {
-    
-    # get bs shelf data with nbs
-    cpbs = sql_read('cpue_BS.sql')
-    cpbs = sql_add(paste0('HAEHNR', '.EBSSHELF_CPUE'), cpbs)
-    cpbs = sql_filter(sql_precode = "IN", x = species, sql_code = cpbs, flag = '-- insert species')
-    cpbs = sql_filter(sql_precode = ">=", x = yrs, sql_code = cpbs, flag = '-- insert year')
-    
-    cpnbs = sql_read('cpue_BS.sql')
-    cpnbs = sql_add(paste0('HAEHNR', '.NBS_CPUE'), cpnbs)
-    cpnbs = sql_filter(sql_precode = "IN", x = species, sql_code = cpnbs, flag = '-- insert species')
-    cpnbs = sql_filter(sql_precode = ">=", x = yrs, sql_code = cpnbs, flag = '-- insert year')
-    
-    sql_run(afsc, cpbs) %>% 
-      tidytable::bind_rows(sql_run(afsc, cpnbs)) %>% 
-      dplyr::rename_all(tolower) %>% 
-      vroom::vroom_write(., 
-                         here::here('data', paste0("cpue_", tolower(region), ".csv")), 
-                         delim = ',')
-    
-  }
   
-  if(region == 'BS' & !isFALSE(bs_slope)) {
-    
-    # get bs slope data
-    cpbss = sql_read('cpue_BS.sql')
-    cpbss = sql_add(paste0('HOFFJ', '.CPUE_EBSSLOPE'), cpbss)
-    cpbss = sql_filter(sql_precode = "IN", x = species, sql_code = cpbss, flag = '-- insert species')
-    cpbss = sql_filter(sql_precode = ">=", x = yrs, sql_code = cpbss, flag = '-- insert year')
-    
-    sql_run(afsc, cpbss) %>% 
-      dplyr::rename_all(tolower) %>% 
-      vroom::vroom_write(., 
-                         here::here('data', paste0("cpue_slope_", tolower(region), ".csv")), 
-                         delim = ',')
-    
-  }
+  
   
   # strata 
   if(region!='BS') {
