@@ -225,56 +225,16 @@ query_data_gap <- function(survey, region, species, yrs = NULL, database, userna
     vroom::vroom_write(here::here('data', paste0("apop_", tolower(region), ".csv")), 
                        delim = ',')
   
-  # species common name 
-  if(region!='BS') {
+  # species names ----
   
-    # goa and ai species
-    .s = sql_read('species.sql')
-    .s = sql_filter(sql_precode = "IN", x = species, sql_code = .s, flag = '-- insert species')
-    sql_run(afsc, .s) %>% 
-      dplyr::rename_all(tolower) %>% 
-      vroom::vroom_write(here::here('data', paste0("species_", tolower(region), ".csv")), 
-                         delim = ',')
-  
-  }
-  
-  if(region == 'BS' & isFALSE(nbs) & isFALSE(bs_slope)) {
-    
-    # bs shelf species without nbs
-    .s = sql_read('species.sql')
-    .s = sql_filter(sql_precode = "IN", x = species, sql_code = .s, flag = '-- insert species')
-    sql_run(afsc, .s) %>% 
-      dplyr::rename_all(tolower) %>% 
-      vroom::vroom_write(here::here('data', paste0("species_", tolower(region), ".csv")), 
-                         delim = ',')
-    
-  }
-  
-  if(region == 'BS' & !isFALSE(nbs)) {
-    
-    # bs shelf species with nbs
-    .s = sql_read('species.sql')
-    .s = sql_filter(sql_precode = "IN", x = species, sql_code = .s, flag = '-- insert species')
-    sql_run(afsc, .s) %>% 
-      dplyr::rename_all(tolower) %>% 
-      vroom::vroom_write(here::here('data', paste0("species_", tolower(region), "_nbs.csv")), 
-                         delim = ',')
-    
-  }
-  
-  if(region == 'BS' & !isFALSE(bs_slope)) {
-    
-    # bs slope species
-    .s = sql_read('species.sql')
-    .s = sql_filter(sql_precode = "IN", x = species, sql_code = .s, flag = '-- insert species')
-    sql_run(afsc, .s) %>% 
-      dplyr::rename_all(tolower) %>% 
-      vroom::vroom_write(here::here('data', paste0("species_", tolower(region), "_slope.csv")), 
-                         delim = ',')
-    
-  }
-  
-  DBI::dbDisconnect(afsc)
+  # .s = sql_read('species_gap.sql')
+  .s = readLines(here::here('inst', 'sql', 'species_gap.sql'))
+  .s = sql_filter(sql_precode = "IN", x = species, sql_code = .s, flag = '-- insert species')
+  sql_run(conn, .s) %>% 
+    dplyr::rename_all(tolower) %>% 
+    vroom::vroom_write(here::here('data', paste0("species_", tolower(region), ".csv")), 
+
+  DBI::dbDisconnect(conn)
   
 }
 
