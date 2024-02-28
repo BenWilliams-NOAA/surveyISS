@@ -13,7 +13,7 @@
 #'
 #' @examples
 #'            
-query_data <- function(survey, region, species, yrs = NULL, database, username, password) {
+query_data_gap <- function(survey, region, species, yrs = NULL, database, username, password) {
   
   # for development
   library(purrr)
@@ -64,7 +64,7 @@ query_data <- function(survey, region, species, yrs = NULL, database, username, 
   
   # get goa and ai data
   
-  survey = 47
+  survey = 98
   
   # st = sql_read('strata_gap.sql')
   st = readLines(here::here('inst', 'sql', 'strata_gap.sql'))
@@ -81,6 +81,23 @@ query_data <- function(survey, region, species, yrs = NULL, database, username, 
   strata1 <- c("SELECT ", "*", "FROM gap_products.akfin_area", "WHERE ", "gap_products.akfin_area.survey_definition_id", "IN ('52')")
   
   sql_run(conn, strata1)
+  
+  
+  survey = 98
+  
+  # lpop = sql_read('lpop_gap.sql')
+  lpop = readLines(here::here('inst', 'sql', 'lpop_gap.sql'))
+  lpop = sql_filter(sql_precode = "IN", x = survey, sql_code = lpop, flag = '-- insert survey')
+  lpop = sql_filter(sql_precode = "IN", x = species, sql_code = lpop, flag = '-- insert species')
+  lpop = sql_filter(sql_precode = ">=", x = yrs, sql_code = lpop, flag = '-- insert year')
+
+  tt <- sql_run(conn, lpop)
+  
+  tt %>% 
+    dplyr::rename_all(tolower) %>% 
+    tidytable::summarize(popn = sum(population_count), .by = c(year,stratum)) %>% 
+    print(n = 95)
+  
   
   
   
@@ -170,7 +187,19 @@ query_data <- function(survey, region, species, yrs = NULL, database, username, 
                        delim = ',')
 
   
-  # race pop
+  # sizecomp ----
+  # lpop = sql_read('lpop_gap.sql')
+  lpop = readLines(here::here('inst', 'sql', 'lpop_gap.sql'))
+  lpop = sql_filter(sql_precode = "IN", x = survey, sql_code = lpop, flag = '-- insert survey')
+  lpop = sql_filter(sql_precode = "IN", x = species, sql_code = lpop, flag = '-- insert species')
+  lpop = sql_filter(sql_precode = ">=", x = yrs, sql_code = lpop, flag = '-- insert year')
+  
+  sql_run(conn, lpop) %>% 
+    dplyr::rename_all(tolower) %>% 
+    vroom::vroom_write(here::here('data', paste0("lpop_", tolower(region), ".csv")), 
+                       delim = ',')
+  
+  
   if(region!='BS') {
     
     # get goa and ai data
