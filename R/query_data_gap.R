@@ -70,6 +70,7 @@ query_data_gap <- function(survey, region, species, yrs = NULL, database, userna
   sql_run(conn, st) %>% 
     dplyr::rename_all(tolower) %>% 
     tidytable::filter(design_year == max(design_year), .by = stratum) %>% 
+    tidytable::select(-design_year) %>% 
     tidytable::arrange(stratum) %>% 
     vroom::vroom_write(here::here('data', paste0("strata_", tolower(region), ".csv")), 
                        delim = ',')
