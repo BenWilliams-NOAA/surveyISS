@@ -47,7 +47,7 @@ query_data <- function(survey, region, species, yrs = NULL, database, username, 
   
   species = 21720
   yrs = 2016
-  survey = 78
+  survey = 47
 
 
   
@@ -62,32 +62,26 @@ query_data <- function(survey, region, species, yrs = NULL, database, username, 
   pcod <- sql_run(akfin, lfreq)
   
   
-  
   # get goa and ai data
-  # sp = sql_read('specimen.sql')
-  sp = readLines(here::here('inst', 'sql', 'specimen_gap.sql'))
-  sp = sql_filter(sql_precode = "IN", x = survey, sql_code = sp, flag = '-- insert survey')
-  sp = sql_filter(sql_precode = "IN", x = species, sql_code = sp, flag = '-- insert species')
-  sp = sql_filter(sql_precode = ">=", x = yrs, sql_code = sp, flag = '-- insert year')
   
-  sql_run(akfin, sp) %>% 
+  survey = 47
+  
+  # st = sql_read('strata_gap.sql')
+  st = readLines(here::here('inst', 'sql', 'strata_gap.sql'))
+  st = sql_filter(sql_precode = "IN", x = survey, sql_code = st, flag = '-- insert survey')
+  
+  sql_run(conn, st) %>% 
     dplyr::rename_all(tolower) %>% 
-    vroom::vroom_write(., 
-                       here::here('data', paste0("specimen_", tolower(region), ".csv")), 
+    tidytable::filter(design_year == max(design_year), .by = stratum) %>% 
+    tidytable::arrange(stratum) %>% 
+    vroom::vroom_write(here::here('data', paste0("strata_", tolower(region), ".csv")), 
                        delim = ',')
   
   
+  strata1 <- c("SELECT ", "*", "FROM gap_products.akfin_area", "WHERE ", "gap_products.akfin_area.survey_definition_id", "IN ('52')")
   
-  # cp = sql_read('cpue.sql')
-  cp = readLines(here::here('inst', 'sql', 'cpue_gap.sql'))
-  cp = sql_filter(sql_precode = "IN", x = survey, sql_code = cp, flag = '-- insert survey')
-  cp = sql_filter(sql_precode = "IN", x = species, sql_code = cp, flag = '-- insert species')
-  cp = sql_filter(sql_precode = ">=", x = yrs, sql_code = cp, flag = '-- insert year')
+  sql_run(conn, strata1)
   
-  sql_run(akfin, cp) %>% 
-    dplyr::rename_all(tolower) %>% 
-    vroom::vroom_write(here::here('data', paste0("cpue_", tolower(region), ".csv")), 
-                       delim = ',')
   
   
   
@@ -139,7 +133,7 @@ query_data <- function(survey, region, species, yrs = NULL, database, username, 
                        delim = ',')
   
   # specimen data ----
-  # sp = sql_read('specimen.sql')
+  # sp = sql_read('specimen_gap.sql')
   sp = readLines(here::here('inst', 'sql', 'specimen_gap.sql'))
   sp = sql_filter(sql_precode = "IN", x = survey, sql_code = sp, flag = '-- insert survey')
   sp = sql_filter(sql_precode = "IN", x = species, sql_code = sp, flag = '-- insert species')
@@ -151,79 +145,30 @@ query_data <- function(survey, region, species, yrs = NULL, database, username, 
                        here::here('data', paste0("specimen_", tolower(region), ".csv")), 
                        delim = ',')
   
-
   # cpue data ----
-  # cp = sql_read('cpue.sql')
+  # cp = sql_read('cpue_gap.sql')
   cp = readLines(here::here('inst', 'sql', 'cpue_gap.sql'))
   cp = sql_filter(sql_precode = "IN", x = survey, sql_code = cp, flag = '-- insert survey')
   cp = sql_filter(sql_precode = "IN", x = species, sql_code = cp, flag = '-- insert species')
   cp = sql_filter(sql_precode = ">=", x = yrs, sql_code = cp, flag = '-- insert year')
   
-  sql_run(akfin, cp) %>% 
+  sql_run(conn, cp) %>% 
     dplyr::rename_all(tolower) %>% 
     vroom::vroom_write(here::here('data', paste0("cpue_", tolower(region), ".csv")), 
                        delim = ',')
 
+  # strata data ----
+  # st = sql_read('strata_gap.sql')
+  st = readLines(here::here('inst', 'sql', 'strata_gap.sql'))
+  st = sql_filter(sql_precode = "IN", x = survey, sql_code = st, flag = '-- insert survey')
   
-  
-  
-  
-  # strata 
-  if(region!='BS') {
-    
-    # get goa and ai data
-    st = readLines(here::here('inst', 'sql', 'strata.sql'))
-    # st = sql_read('strata.sql')
-    st = sql_filter(x = region, sql_code = st, flag = '-- insert region')
-    sql_run(afsc, st) %>% 
-      dplyr::rename_all(tolower) %>% 
-      vroom::vroom_write(here::here('data', paste0("strata_", tolower(region), ".csv")), 
-                         delim = ',')
-  }
-  
-  if(region == 'BS' & isFALSE(nbs) & isFALSE(bs_slope)) {
-    
-    # get bs shelf data without nbs
-    
-    # for now shutting this down until we can resolve where the bs strata data should be coming from and using meaghan's strata tables
-    
-    # # old call to haehner table, not public facing so switching to stratum table in racebase
-    # # stbs = sql_read('strata_bs.sql')
-    # 
-    # # new call to racebase.stratum, note: when package is set up change from 'readLines' function to 'sql_run'
-    # stbs = readLines(here::here('inst', 'sql', 'strata_bs_new.sql'))
-    # # stbs = sql_read('strata_bs_new.sql')  # this would be the call when the package is set up
-    # stbs = sql_filter(x = region, sql_code = stbs, flag = '-- insert region')
-    # #stbs = sql_filter(x = 2022, sql_code = stbs, flag = '-- insert year') #hardwired to 2022, looks like strata sizes changed
-    # 
-    # sql_run(afsc, stbs) %>%
-    #   dplyr::rename_all(tolower) %>%
-    #   vroom::vroom_write(here::here('data', paste0("strata_test_", tolower(region), ".csv")),
-    #                      delim = ',')
-    
-  }
-  
-  if(region == 'BS' & !isFALSE(nbs)) {
-    
-    # get bs shelf data with nbs
-    stbs = sql_read('strata_bs.sql')
-    stnbs = sql_read('strata_nbs.sql')
-    
-    sql_run(afsc, stbs) %>% 
-      tidytable::bind_rows(sql_run(afsc, stnbs)) %>% 
-      dplyr::rename_all(tolower) %>% 
-      vroom::vroom_write(here::here('data', paste0("strata_", tolower(region), ".csv")), 
-                         delim = ',')
-    
-  }
-  
-  if(region == 'BS' & !isFALSE(bs_slope)) {
-    
-    # get bs slope data
-    # this is here as placeholder till we resolve the above comment
+  sql_run(conn, st) %>% 
+    dplyr::rename_all(tolower) %>% 
+    tidytable::filter(design_year == max(design_year), .by = stratum) %>% 
+    tidytable::arrange(stratum) %>% 
+    vroom::vroom_write(here::here('data', paste0("strata_", tolower(region), ".csv")), 
+                       delim = ',')
 
-  }
-  
   
   # race pop
   if(region!='BS') {
