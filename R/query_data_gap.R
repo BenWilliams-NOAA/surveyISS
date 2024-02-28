@@ -50,6 +50,20 @@ query_data_gap <- function(survey, region, species, yrs = NULL, database, userna
   survey = 47
 
 
+  # apop = sql_read('apop_gap.sql')
+  apop = readLines(here::here('inst', 'sql', 'apop_gap.sql'))
+  apop = sql_filter(sql_precode = "IN", x = survey, sql_code = apop, flag = '-- insert survey')
+  apop = sql_filter(sql_precode = "IN", x = species, sql_code = apop, flag = '-- insert species')
+  apop = sql_filter(sql_precode = ">=", x = yrs, sql_code = apop, flag = '-- insert year')
+  
+  sql_run(conn, apop) %>% 
+    dplyr::rename_all(tolower) %>% 
+    vroom::vroom_write(here::here('data', paste0("apop_", tolower(region), ".csv")), 
+                       delim = ',')
+  
+  
+  
+  
   
   # survey desc
   # 52 - AI
@@ -199,100 +213,17 @@ query_data_gap <- function(survey, region, species, yrs = NULL, database, userna
     vroom::vroom_write(here::here('data', paste0("lpop_", tolower(region), ".csv")), 
                        delim = ',')
   
+  # agecomp ----
+  # apop = sql_read('apop_gap.sql')
+  apop = readLines(here::here('inst', 'sql', 'apop_gap.sql'))
+  apop = sql_filter(sql_precode = "IN", x = survey, sql_code = apop, flag = '-- insert survey')
+  apop = sql_filter(sql_precode = "IN", x = species, sql_code = apop, flag = '-- insert species')
+  apop = sql_filter(sql_precode = ">=", x = yrs, sql_code = apop, flag = '-- insert year')
   
-  if(region!='BS') {
-    
-    # get goa and ai data
-    rp = sql_read('race_pop.sql')
-    # length pop
-    rpl = sql_add(paste0(region, '.SIZECOMP_TOTAL'), rp)
-    rpl = sql_filter(sql_precode = 'IN', sql_code = rpl,
-                     x = species, 
-                     flag = '-- insert species')
-    rpl = sql_filter(sql_precode = ">=", x = yrs, 
-                     sql_code = rpl, flag = '-- insert year')
-    
-    
-    sql_run(afsc, rpl) %>% 
-      dplyr::rename_all(tolower) %>% 
-      vroom::vroom_write(here::here('data', paste0("race_lpop_", tolower(region), ".csv")), 
-                         delim = ',')
-    
-    # age pop
-    rpa = sql_read('race_apop.sql')
-    rpa = sql_add(paste0(region, '.AGECOMP_TOTAL'), rpa)
-    rpa = sql_filter(sql_precode = 'IN', sql_code = rpa,
-                     x = species, 
-                     flag = '-- insert species')
-    rpa = sql_filter(sql_precode = ">=", x = yrs, 
-                     sql_code = rpa, flag = '-- insert year')
-    
-    
-    sql_run(afsc, rpa) %>% 
-      dplyr::rename_all(tolower) %>% 
-      vroom::vroom_write(here::here('data', paste0("race_apop_", tolower(region), ".csv")), 
-                         delim = ',')
-    
-  }
-  
-  if(region == 'BS' & isFALSE(nbs) & isFALSE(bs_slope)) {
-    
-    # get bs shelf data without nbs
-    rpbs = sql_read('race_pop_bs.sql')
-    rpbs = sql_filter(sql_precode = 'IN', sql_code = rpbs,
-                      x = species, 
-                      flag = '-- insert species')
-    rpbs = sql_filter(sql_precode = ">=", x = yrs, 
-                      sql_code = rpbs, flag = '-- insert year')
-    
-    sql_run(afsc, rpbs) %>%
-      dplyr::rename_all(tolower) %>% 
-      vroom::vroom_write(here::here('data', paste0("race_lpop_", tolower(region), ".csv")), 
-                         delim = ',')
-    
-  }
-  
-  if(region == 'BS' & !isFALSE(nbs)) {
-    
-    # get bs shelf data with nbs
-    rpnbs = sql_read('race_pop_nbs.sql')
-    rpnbs = sql_filter(sql_precode = 'IN', sql_code = rpnbs,
-                       x = species, 
-                       flag = '-- insert species')
-    rpnbs = sql_filter(sql_precode = ">=", x = yrs, 
-                       sql_code = rpnbs, flag = '-- insert year')
-    
-    rpbs = sql_read('race_pop_bs.sql')
-    rpbs = sql_filter(sql_precode = 'IN', sql_code = rpbs,
-                      x = species, 
-                      flag = '-- insert species')
-    rpbs = sql_filter(sql_precode = ">=", x = yrs, 
-                      sql_code = rpbs, flag = '-- insert year')
-    
-    sql_run(afsc, rpnbs) %>% 
-      tidytable::bind_rows(sql_run(afsc, rpbs)) %>%
-      dplyr::rename_all(tolower) %>% 
-      vroom::vroom_write(here::here('data', paste0("race_pop_", tolower(region), ".csv")), 
-                         delim = ',')
-    
-  }
-  
-  if(region == 'BS' & !isFALSE(bs_slope)) {
-    
-    # get bs slope data
-    rpbss = sql_read('race_pop_bss.sql')
-    rpbss = sql_filter(x = region, sql_code = rpbss, flag = '-- insert region')
-    rpbss = sql_filter(sql_precode = "IN", x = species, sql_code = rpbss, flag = '-- insert species')
-    rpbss = sql_filter(sql_precode = ">=", x = yrs, sql_code = rpbss, flag = '-- insert year')
-    
-    sql_run(afsc, rpbss) %>% 
-      dplyr::rename_all(tolower) %>% 
-      dplyr:: group_by(year,species_code,length) %>% 
-      dplyr::summarise(males=sum(males),females=sum(females),unsexed=sum(unsexed),total=sum(total)) %>%
-      vroom::vroom_write(here::here('data', paste0("race_lpop_slope_", tolower(region), ".csv")), 
-                         delim = ',')
-    
-  }
+  sql_run(conn, apop) %>% 
+    dplyr::rename_all(tolower) %>% 
+    vroom::vroom_write(here::here('data', paste0("apop_", tolower(region), ".csv")), 
+                       delim = ',')
   
   # species common name 
   if(region!='BS') {
