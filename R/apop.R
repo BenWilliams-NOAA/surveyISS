@@ -10,12 +10,13 @@
 #' @examples
 apop <- function(lpop, agedat, sex_spec = TRUE){
   
+  # reformat length pop'n data
+  lpop %>%
+    tidytable::rename(sizepop = abund) %>% 
+    tidytable::select(-type) -> .lpop_long
+  
   # compute age pop'n for either sex-specific or sex-combined (total) data
   if(isTRUE(sex_spec)){ # for sex-specific data
-    # reformat length pop'n data
-    lpop %>%
-      tidytable::rename(sizepop = abund) %>% 
-      tidytable::select(-type) -> .lpop_long
     # compute female/male age pop'n
     agedat %>%
       tidytable::drop_na() %>%
@@ -56,9 +57,6 @@ apop <- function(lpop, agedat, sex_spec = TRUE){
       .agepop_mf
     }
   } else{ # for combined-sex (total) data
-    .lpop %>%
-      tidytable::summarize(sizepop = sum(abund), .by = c(species_code, year, length)) %>% 
-      tidytable::mutate(sex = 4) -> .lpop_long
     .agedat %>%
       tidytable::summarise(age_num = .N, .by = c(year, species_code, length, age, type)) %>% 
       tidytable::mutate(age_frac = age_num/sum(age_num), 
