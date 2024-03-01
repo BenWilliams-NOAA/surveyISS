@@ -57,7 +57,7 @@ apop <- function(lpop, agedat, sex_spec = TRUE){
       .agepop_mf
     }
   } else{ # for combined-sex (total) data
-    .agedat %>%
+    agedat %>%
       tidytable::summarise(age_num = .N, .by = c(year, species_code, length, age, type)) %>% 
       tidytable::mutate(age_frac = age_num/sum(age_num), 
                         .by = c(year, species_code, length, type)) %>%

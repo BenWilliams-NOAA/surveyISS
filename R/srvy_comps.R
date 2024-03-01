@@ -85,16 +85,16 @@ srvy_comps <- function(lfreq_data, specimen_data, cpue_data, strata_data, r_t, y
       tidytable::mutate(type = 'base') -> .lfreq_un
   }
   
-  # bin length data ----
+  # bin length data ---- # note that this automatically converts from mm to cm
   .lfreq_un %>% 
     tidytable::mutate(length = 10 * (bin * ceiling((length / 10) / bin))) -> .lfreq_un
   
   # length comp ----
-  lcomp(.lfreq_un) -> .lcomp
+  lcomp(.lfreq_un, sex_spec = sex_spec) -> .lcomp
   
   # length population ----
   lpop(.lcomp, .cpue, .lngs) -> .lpop
-  
+
   # randomize age ----
   if(isTRUE(boot_ages)) {
     boot_age(.agedat) %>% 

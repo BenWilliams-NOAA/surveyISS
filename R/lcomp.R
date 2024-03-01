@@ -11,7 +11,7 @@ lcomp <- function(lfreq_un, sex_spec = TRUE) {
   
   # compute haul-sepcific marginal length comp for either sex-specific or sex-combined (total) data
   if(isTRUE(sex_spec)){ # for sex-specific data
-  .lfreq_un %>%
+  lfreq_un %>%
     tidytable::summarise(frequency = .N,
                           .by = c(year, species_code, stratum, hauljoin, sex, length, type)) %>% 
     tidytable::mutate(nhauls = data.table::uniqueN(hauljoin),
@@ -22,7 +22,7 @@ lcomp <- function(lfreq_un, sex_spec = TRUE) {
                           nhauls = mean(nhauls),
                           .by = c(year, species_code, stratum, hauljoin, sex, length, type))
   } else{ # for combined-sex (total) data
-    .lfreq_un %>%
+    lfreq_un %>%
       tidytable::mutate(sex = 4) %>% 
       tidytable::summarise(frequency = .N,
                            .by = c(year, species_code, stratum, hauljoin, sex, length, type)) %>% 
