@@ -94,12 +94,11 @@ multi <- function(age_dat, r_t){
     tidytable::select(-id)
 }
 
-
 # run test ----
 
 # set number of desired bootstrap iterations
 # iters = 100
-iters = 250
+iters = 1000
 
 # multinomial
 # for testing run time
@@ -153,3 +152,6 @@ ggplot(data = samp_test, aes(x = age, y = p_rt)) +
 
 runtime_multi
 runtime_nonpar
+
+samp_test %>% 
+  print(n = 22)
