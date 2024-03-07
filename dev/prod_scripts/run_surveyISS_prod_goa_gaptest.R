@@ -33,26 +33,23 @@ if(iters < 100){
 
 # pull data for Tier 3 species in Gulf of Alaska (1990 on)
 yrs = 1990
-species = c(10110, 10130, 10180, 20510, 21720, 21740, 30060, 30420, 30050, 30051, 30052, 30150, 30152, 10261, 10262, 10200)
-#species = c(21740, 30060) # pollock and pop for testing
-
+# species = c(10110, 10130, 10180, 20510, 21720, 21740, 30060, 30420, 30050, 30051, 30052, 30150, 30152, 10261, 10262, 10200)
+species = c(21740, 30060) # pollock and pop for testing
+survey = 47
 region = 'GOA'
+database = 'akfin'
 
-# query_data(region,
-#            species,
-#            yrs, 
-#            afsc_user,
-#            afsc_pass)
-
+query_data_gap(survey, region, species, yrs = NULL, database, username, password)
+  
 cpue <- vroom::vroom(here::here('data', 'cpue_goa.csv'))
 lfreq <- vroom::vroom(here::here('data', 'lfreq_goa.csv'))
 strata <- vroom::vroom(here::here('data', 'strata_goa.csv'))
 specimen <- vroom::vroom(here::here('data', 'specimen_goa.csv'))
 read_test <- vroom::vroom(here::here('data', 'reader_tester.csv')) %>% 
   dplyr::rename_all(tolower) %>% 
-  tidytable::select.(species_code, region, read_age, test_age) %>% 
-  tidytable::rename.(age = 'read_age') %>% 
-  tidytable::filter.(species_code %in% species)
+  tidytable::select(species_code, region, read_age, test_age) %>% 
+  tidytable::rename(age = 'read_age') %>% 
+  tidytable::filter(species_code %in% species)
 
 # run for all species (and subsetting out special cases so we don't have two places with those results)
 cpue %>% 
@@ -63,6 +60,18 @@ specimen %>%
   tidytable::filter.(!(species_code %in% c(30050, 30051, 30052, 30150, 30152, 10261, 10262, 10200))) -> .specimen
 read_test %>% 
   tidytable::filter.(!(species_code %in% c(30050, 30051, 30052, 30150, 30152, 10261, 10262, 10200))) -> .read_test
+
+
+lfreq_data = lfreq
+specimen_data = specimen
+cpue_data = cpue
+strata_data = strata
+r_t = read_test
+
+
+specimen_data %>% 
+  tidytable::filter(year == 1990 & species_code == 21740 & sex == 1 & age == 1)
+
 
 srvy_iss(iters = iters, 
          lfreq_data = .lfreq,
@@ -79,7 +88,14 @@ srvy_iss(iters = iters,
          region = 'goa', 
          save_interm = TRUE,
          match_orig = TRUE,
-         save = 'prod')
+         save = 'gaptest')
+
+
+
+
+
+
+
 
 # run for goa rougheye-blackspotted stock complex
 cpue %>% 

@@ -20,8 +20,7 @@ map(here::here("R", source_files), source)
 cpue <- tidytable::as_tidytable(vroom::vroom(here::here('data', 'cpue_goa.csv')))
 lfreq <- tidytable::as_tidytable(vroom::vroom(here::here('data', 'lfreq_goa.csv')))
 strata <- tidytable::as_tidytable(vroom::vroom(here::here('data', 'strata_goa.csv')))
-specimen <- tidytable::as_tidytable(vroom::vroom(here::here('data', 'specimen_goa.csv')) %>% 
-                                      select(-weight))
+specimen <- tidytable::as_tidytable(vroom::vroom(here::here('data', 'specimen_goa.csv')))
 gap_lpop <- tidytable::as_tidytable(vroom::vroom(here::here('data', 'lpop_goa.csv')))
 gap_apop <- tidytable::as_tidytable(vroom::vroom(here::here('data', 'apop_goa.csv')))
 
@@ -34,7 +33,7 @@ og <- srvy_comps(lfreq_data = lfreq,
                  strata_data = strata,
                  r_t = NULL,
                  yrs = yrs, 
-                 bin = bin,
+                 bin = 1,
                  boot_hauls = FALSE, 
                  boot_lengths = FALSE, 
                  boot_ages = FALSE,
