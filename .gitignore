@@ -6,4 +6,7 @@ database_specs.csv
 output/ai/
 output/bs/
 output/goa/
+output/saved/ai/
+output/saved/bs/
+output/saved/goa/
 data/
