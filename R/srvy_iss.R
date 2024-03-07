@@ -17,7 +17,6 @@
 #' @param age_err include ageing error (default = FALSE)
 #' @param region region will create a folder and place results in said folder
 #' @param save_interm save the intermediate results: original comps, resampled comps (default = FALSE)
-#' @param match_orig match the computed values to gap output (default = FALSE)
 #' @param srvy_type only for bering sea survey, denotes whether it's the shelf or slope survey (default = NULL)
 #' @param save name to save output
 #'
@@ -28,7 +27,7 @@
 
 srvy_iss <- function(iters = 1, lfreq_data, specimen_data, cpue_data, strata_data, r_t, yrs = NULL, bin = 1, 
                      boot_hauls = FALSE, boot_lengths = FALSE, boot_ages = FALSE, sex_spec = TRUE, al_var = FALSE, al_var_ann = FALSE, age_err = FALSE,
-                     region = NULL, save_interm = FALSE, match_orig = FALSE, srvy_type = NULL, save){
+                     region = NULL, save_interm = FALSE, srvy_type = NULL, save){
   
   # create storage location
   region = tolower(region)
@@ -64,21 +63,6 @@ srvy_iss <- function(iters = 1, lfreq_data, specimen_data, cpue_data, strata_dat
     select(-type)
   ogl <- og$length %>% 
     select(-type)
-  
-  # if desired, match original age/length pop'n values with GAP output
-  if(isTRUE(match_orig) & region != 'bs'){
-    gap_lpop <- vroom::vroom(here::here('data', paste0('race_lpop_', tolower(region), '.csv')))
-    gap_apop <- vroom::vroom(here::here('data', paste0('race_apop_', tolower(region), '.csv')))
-    match_gap(oga, ogl, gap_apop, gap_lpop, thresh = 0.01, region = region)
-  }
-  if(isTRUE(match_orig) & region == 'bs'){
-    if(isTRUE(srvy_type == 'shelf')){
-      gap_lpop <- vroom::vroom(here::here('data', paste0('race_lpop_', tolower(region), '.csv')))
-      match_gap_bs(ogl, gap_lpop, thresh = 0.01, region = region, save = srvy_type)} else{
-        gap_lpop <- vroom::vroom(here::here('data', paste0('race_lpop_slope_', tolower(region), '.csv')))
-        match_gap_bs(ogl, gap_lpop, thresh = 0.01, region = region, save = srvy_type)
-      }
-  }
   
   # run resampling iterations
   rr <- purrr::map(1:iters, ~ srvy_comps(lfreq_data = lfreq_data, 
