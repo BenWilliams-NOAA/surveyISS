@@ -77,11 +77,7 @@ srvy_comps <- function(lfreq_data, specimen_data, cpue_data, strata_data, r_t, y
   
   # randomize lengths ----
   if(isTRUE(boot_lengths)) {
-    boot_length(.lfreq_un) %>% 
-      tidytable::mutate(type = 'base') -> .lfreq_un
-  } else{
-    .lfreq_un %>% 
-      tidytable::mutate(type = 'base') -> .lfreq_un
+    boot_length(.lfreq_un) -> .lfreq_un
   }
   
   # bin length data ---- # note that this automatically converts from mm to cm
@@ -96,38 +92,26 @@ srvy_comps <- function(lfreq_data, specimen_data, cpue_data, strata_data, r_t, y
   
   # randomize age ----
   if(isTRUE(boot_ages)) {
-    boot_age(.agedat) %>% 
-      tidytable::mutate(type = 'base') -> .agedat
-  } else{
-    .agedat %>% 
-      tidytable::mutate(type = 'base') -> .agedat
+    boot_age(.agedat) -> .agedat
   }
   
   # add age-length variability ----
   if(isTRUE(al_var)) {
-    al_variab(.agedat, annual = al_var_ann)  %>% 
-      tidytable::mutate(type = 'al') -> .agedat_al
+    al_variab(.agedat, annual = al_var_ann) -> .agedat_al
   }
   
   # add ageing error ----
   if(isTRUE(age_err)) {
-    age_error(.agedat, r_t)  %>% 
-      tidytable::mutate(type = 'ae') -> .agedat_ae
+    age_error(.agedat, r_t) -> .agedat_ae
   }
   
   # with age-length and ageing error ----
   if(isTRUE(al_var) & isTRUE(age_err)) {
-    age_error(.agedat_al, r_t)  %>% 
-      tidytable::mutate(type = 'ae_al') %>% 
-      tidytable::bind_rows(.agedat_al) %>% 
-      tidytable::bind_rows(.agedat_ae) %>% 
-      tidytable::bind_rows(.agedat) -> .agedat
+    age_error(.agedat_al, r_t) -> .agedat
   } else if(isTRUE(al_var) & !isTRUE(age_err)){
-    .agedat %>% 
-      tidytable::bind_rows(.agedat_al) -> .agedat
+    .agedat_al -> .agedat
   } else if(!isTRUE(al_var) & isTRUE(age_err)){
-    .agedat %>% 
-      tidytable::bind_rows(.agedat_ae) -> .agedat
+    .agedat_ae -> .agedat
   }
   
   .agedat %>% 

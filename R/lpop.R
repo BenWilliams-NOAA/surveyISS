@@ -11,7 +11,7 @@
 lpop <- function(lcomp, cpue, lngs) {
   lcomp %>%
     tidytable::summarise(comp = sum(comp) / mean(nhauls), 
-                          .by = c(year, species_code, stratum, sex, length, type)) -> .unk
+                          .by = c(year, species_code, stratum, sex, length)) -> .unk
   
   # id hauls without lengths
   # see issue #35 for reasoning 
@@ -20,7 +20,7 @@ lpop <- function(lcomp, cpue, lngs) {
     tidytable::distinct(hauljoin, species_code)  %>% 
     tidytable::anti_join(lcomp %>%
                             tidytable::summarise(hauljoin = unique(hauljoin),
-                                                  .by = c(species_code, stratum, type))) %>% 
+                                                  .by = c(species_code, stratum))) %>% 
     tidytable::left_join(cpue) -> .no_length
   
   # compute population est by year, species, strata
@@ -40,7 +40,7 @@ lpop <- function(lcomp, cpue, lngs) {
   } else {
     .no_length %>%
       tidytable::left_join(.unk) %>%
-      tidytable::select(year, species_code, stratum, hauljoin, sex, length, comp, type) %>%
+      tidytable::select(year, species_code, stratum, hauljoin, sex, length, comp) %>%
       tidytable::bind_rows(lcomp) %>%
       tidytable::left_join(.pop) %>%
       tidytable::mutate(sz_pop = round(comp * abund, 0)) %>% 
@@ -50,7 +50,7 @@ lpop <- function(lcomp, cpue, lngs) {
   # get annual pop'n @ length
   .temp %>%
     tidytable::summarise(abund = sum(sz_pop, na.rm = T), 
-                         .by = c(year, species_code, length, sex, type)) %>%
+                         .by = c(year, species_code, length, sex)) %>%
     tidytable::left_join(lngs, .) %>%
     tidytable::drop_na()
 

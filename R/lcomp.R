@@ -12,25 +12,25 @@ lcomp <- function(lfreq_un) {
   lfreq_un %>%
     tidytable::filter(sex != 0) %>% 
     tidytable::summarise(frequency = .N,
-                         .by = c(year, species_code, stratum, hauljoin, sex, length, type)) %>% 
+                         .by = c(year, species_code, stratum, hauljoin, sex, length)) %>% 
     tidytable::mutate(nhauls = data.table::uniqueN(hauljoin),
-                      .by = c(year, species_code, stratum, type)) %>%
+                      .by = c(year, species_code, stratum)) %>%
     tidytable::mutate(tot = sum(frequency),
-                      .by = c(year, species_code, stratum, hauljoin, type)) %>%
+                      .by = c(year, species_code, stratum, hauljoin)) %>%
     tidytable::summarise(comp = sum(frequency) / mean(tot),
                          nhauls = mean(nhauls),
-                         .by = c(year, species_code, stratum, hauljoin, sex, length, type)) %>% 
+                         .by = c(year, species_code, stratum, hauljoin, sex, length)) %>% 
     # bind with haul-specific marginal length comps for total (combined sex) data
     tidytable::bind_rows(lfreq_un %>%
                            tidytable::filter(sex == 0) %>% 
                            tidytable::summarise(frequency = .N,
-                                                .by = c(year, species_code, stratum, hauljoin, sex, length, type)) %>% 
+                                                .by = c(year, species_code, stratum, hauljoin, sex, length)) %>% 
                            tidytable::mutate(nhauls = data.table::uniqueN(hauljoin),
-                                             .by = c(year, species_code, stratum, type)) %>%
+                                             .by = c(year, species_code, stratum)) %>%
                            tidytable::mutate(tot = sum(frequency),
-                                             .by = c(year, species_code, stratum, hauljoin, type)) %>%
+                                             .by = c(year, species_code, stratum, hauljoin)) %>%
                            tidytable::summarise(comp = sum(frequency) / mean(tot),
                                                 nhauls = mean(nhauls),
-                                                .by = c(year, species_code, stratum, hauljoin, sex, length, type)))
+                                                .by = c(year, species_code, stratum, hauljoin, sex, length)))
 
 }
