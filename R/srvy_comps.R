@@ -10,7 +10,6 @@
 #' @param boot_hauls switch for resampling hauls (default = FALSE)
 #' @param boot_lengths switch for resampling lengths (default = FALSE)
 #' @param boot_ages switch for resampling ages (default = FALSE)
-#' @param sex_spec determine whether to do sex specific or total comps (default = TRUE)
 #' @param al_var switch for including age-length variability (default = FALSE)
 #' @param al_var_ann resample age-length annually or pooled across years
 #' @param age_err switch for including ageing error (default = FALSE)
@@ -22,7 +21,7 @@
 #' 
 
 srvy_comps <- function(lfreq_data, specimen_data, cpue_data, strata_data, r_t, yrs, bin,
-                       boot_hauls, boot_lengths, boot_ages, sex_spec, al_var, al_var_ann, age_err) {
+                       boot_hauls, boot_lengths, boot_ages, al_var, al_var_ann, age_err) {
   # globals ----
   # year switch
   if (is.null(yrs)) yrs <- 0
@@ -90,11 +89,11 @@ srvy_comps <- function(lfreq_data, specimen_data, cpue_data, strata_data, r_t, y
     tidytable::mutate(length = 10 * (bin * ceiling((length / 10) / bin))) -> .lfreq_un
   
   # length comp ----
-  lcomp(.lfreq_un, sex_spec = sex_spec) -> .lcomp
+  lcomp(.lfreq_un) -> .lcomp
   
   # length population ----
   lpop(.lcomp, .cpue, .lngs) -> .lpop
-
+  
   # randomize age ----
   if(isTRUE(boot_ages)) {
     boot_age(.agedat) %>% 
@@ -135,7 +134,7 @@ srvy_comps <- function(lfreq_data, specimen_data, cpue_data, strata_data, r_t, y
     tidytable::mutate(length = 10 * (bin * ceiling((length / 10) / bin))) -> .agedat
   
   # age population ----
-  apop(.lpop, .agedat, sex_spec = sex_spec) -> .apop
+  apop(.lpop, .agedat) -> .apop
   
   list(age = .apop, length = .lpop)
   
