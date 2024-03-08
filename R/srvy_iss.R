@@ -109,20 +109,28 @@ srvy_iss <- function(iters = 1, lfreq_data, specimen_data, cpue_data, strata_dat
   # compute effective sample size of bootstrapped age/length
   r_age %>%
     tidytable::map(., ~ess_age(sim_data = .x, og_data = oga)) %>%
-    tidytable::map_df(., ~as.data.frame(.x), .id = "sim") -> .ess_age
+    tidytable::map_df(., ~as.data.frame(.x), .id = "sim") %>% 
+    tidytable::mutate(sex_desc = case_when(sex == 0 ~ 'total_pre',
+                                           sex == 1 ~ 'male',
+                                           sex == 2 ~ 'female',
+                                           sex == 4 ~ 'total_post')) -> .ess_age
   r_length %>%
     tidytable::map(., ~ess_length(sim_data = .x, og_data = ogl)) %>%
-    tidytable::map_df(., ~as.data.frame(.x), .id = "sim") -> .ess_length
+    tidytable::map_df(., ~as.data.frame(.x), .id = "sim") %>% 
+    tidytable::mutate(sex_desc = case_when(sex == 0 ~ 'total_pre',
+                                           sex == 1 ~ 'male',
+                                           sex == 2 ~ 'female',
+                                           sex == 4 ~ 'total_post')) -> .ess_length
 
   # compute harmonic mean of iterated effective sample size, which is the input sample size (iss)
   .ess_age %>% 
     tidytable::summarise(iss = psych::harmonic.mean(ess, na.rm = TRUE),
-                         .by = c(year, species_code, sex)) %>% 
+                         .by = c(year, species_code, sex, sex_desc)) %>% 
     tidytable::filter(iss > 0) -> iss_age
 
   .ess_length %>% 
     tidytable::summarise(iss = psych::harmonic.mean(ess, na.rm=T),
-                         .by = c(year, species_code, sex)) %>% 
+                         .by = c(year, species_code, sex, sex_desc)) %>% 
     tidytable::filter(iss > 0) -> iss_length
 
   # write input/effective sample size results
