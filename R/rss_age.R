@@ -1,4 +1,4 @@
-#' calculate effective sample size for age comps
+#' calculate realized sample size for age comps
 #'
 #' @param sim_data list of abundance by age data
 #' @param og_data original abundance by age data (single list)
@@ -7,7 +7,7 @@
 #' @export
 #'
 #' @examples
-ess_age <- function(sim_data, og_data){
+rss_age <- function(sim_data, og_data){
   
   # compute post-expansion total age pop'n and add to og and sim data
   og_data %>% 
@@ -22,7 +22,7 @@ ess_age <- function(sim_data, og_data){
                            tidytable::summarise(agepop = sum(agepop), .by = c(year, species_code, age)) %>% 
                            tidytable::mutate(sex = 4)) -> sim
     
-  # compute ess   
+  # compute realized sample size   
   sim %>% 
     tidytable::full_join(og) %>% 
     tidytable::replace_na(list(agepop = 0)) %>%
@@ -30,7 +30,7 @@ ess_age <- function(sim_data, og_data){
     tidytable::mutate(p_og = og_agepop / sum(og_agepop),
                       p_sim = agepop / sum(agepop),
                       .by = c(year, species_code, sex)) %>% 
-    tidytable::summarise(ess = sum(p_og * (1 - p_og)) / sum((p_sim - p_og)^2),
+    tidytable::summarise(rss = sum(p_og * (1 - p_og)) / sum((p_sim - p_og)^2),
                          .by = c(year, species_code, sex)) %>% 
     tidytable::drop_na()
 
