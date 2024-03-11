@@ -22,15 +22,17 @@ rss_age <- function(sim_data, og_data){
                            tidytable::summarise(agepop = sum(agepop), .by = c(year, species_code, age)) %>% 
                            tidytable::mutate(sex = 4)) -> sim
     
-  # compute realized sample size   
+  # compute realized sample size and relative bias  
   sim %>% 
     tidytable::full_join(og) %>% 
     tidytable::replace_na(list(agepop = 0)) %>%
     tidytable::filter(sex != 3) %>%
     tidytable::mutate(p_og = og_agepop / sum(og_agepop),
                       p_sim = agepop / sum(agepop),
+                      rel_bias = (agepop - og_agepop) / og_agepop,
                       .by = c(year, species_code, sex)) %>% 
     tidytable::summarise(rss = sum(p_og * (1 - p_og)) / sum((p_sim - p_og)^2),
+                         rel_bias = mean(rel_bias),
                          .by = c(year, species_code, sex)) %>% 
     tidytable::drop_na()
 

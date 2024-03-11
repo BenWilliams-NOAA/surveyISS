@@ -22,15 +22,17 @@ rss_length <- function(sim_data, og_data) {
                            tidytable::summarise(abund = sum(abund), .by = c(year, species_code, length)) %>%
                            tidytable::mutate(sex = 4)) -> sim
   
-  # compute realized sample size  
+  # compute realized sample size and relative bias 
   sim %>% 
     tidytable::full_join(og) %>% 
     tidytable::replace_na(list(abund = 0)) %>%
     tidytable::filter(sex != 3) %>%
     tidytable::mutate(p_og = og_abund / sum(og_abund),
                       p_sim = abund / sum(abund),
+                      rel_bias = (abund - og_abund) / og_abund,
                       .by = c(year, species_code, sex)) %>% 
     tidytable::summarise(rss = sum(p_og * (1 - p_og)) / sum((p_sim - p_og)^2),
+                         rel_bias = mean(rel_bias),
                          .by = c(year, species_code, sex)) %>% 
     tidytable::drop_na()
 

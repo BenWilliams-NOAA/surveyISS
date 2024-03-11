@@ -81,7 +81,7 @@ srvy_iss <- function(iters = 1, lfreq_data, specimen_data, cpue_data, strata_dat
   r_age <- do.call(mapply, c(list, rr, SIMPLIFY = FALSE))$age
   r_length <- do.call(mapply, c(list, rr, SIMPLIFY = FALSE))$length
   
-  # compute realized sample size of bootstrapped age/length
+  # compute realized sample size and relative sample size of bootstrapped age/length
   r_age %>%
     tidytable::map(., ~rss_age(sim_data = .x, og_data = oga)) %>%
     tidytable::map_df(., ~as.data.frame(.x), .id = "sim") %>% 
@@ -99,12 +99,14 @@ srvy_iss <- function(iters = 1, lfreq_data, specimen_data, cpue_data, strata_dat
 
   # compute harmonic mean of iterated realized sample size, which is the input sample size (iss)
   .rss_age %>% 
-    tidytable::summarise(iss = psych::harmonic.mean(ess, na.rm = TRUE),
+    tidytable::summarise(iss = psych::harmonic.mean(rss, na.rm = TRUE),
+                         rel_bias = mean(rel_bias),
                          .by = c(year, species_code, sex, sex_desc)) %>% 
     tidytable::filter(iss > 0) -> iss_age
 
   .rss_length %>% 
-    tidytable::summarise(iss = psych::harmonic.mean(ess, na.rm=T),
+    tidytable::summarise(iss = psych::harmonic.mean(rss, na.rm=T),
+                         rel_bias = mean(rel_bias),
                          .by = c(year, species_code, sex, sex_desc)) %>% 
     tidytable::filter(iss > 0) -> iss_length
 
