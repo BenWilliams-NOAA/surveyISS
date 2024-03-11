@@ -16,8 +16,6 @@
 #' @export srvy_comps_ai_rebs
 #'
 #' @examples
-#' swo(lfreq, specimen, cpue, strata_data, yrs = 2015, boot_hauls = TRUE,
-#'     boot_lengths = TRUE, length_samples = 100)
 srvy_comps_ai_rebs <- function(lfreq_data, specimen_data, cpue_data, strata_data, r_t, yrs, 
                                boot_hauls, boot_lengths, boot_ages, al_var, age_err) {
   

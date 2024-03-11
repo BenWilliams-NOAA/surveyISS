@@ -11,8 +11,7 @@ apop <- function(lpop, agedat){
   
   # reformat length pop'n data
   lpop %>%
-    tidytable::rename(sizepop = abund) %>% 
-    tidytable::select(-type) -> .lpop_long
+    tidytable::rename(sizepop = abund) -> .lpop_long
   
   # compute female/male age pop'n
   agedat %>%
@@ -31,7 +30,7 @@ apop <- function(lpop, agedat){
   # determine magnitude of unsex samples
   agedat %>%
     tidytable::drop_na() %>% 
-    tidytable::summarise(n = .N, .by = c('year', 'species_code', 'sex', 'type')) %>%
+    tidytable::summarise(n = .N, .by = c('year', 'species_code', 'sex')) %>%
     tidytable::filter(sex == 3) %>%
     tidytable::select(year, species_code, n) -> .sex_cnt_ag
   # if unsexed samples exist, compute unsexed age pop'n

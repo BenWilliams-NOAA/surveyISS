@@ -39,7 +39,7 @@ survey = 47
 region = 'GOA'
 database = 'akfin'
 
-query_data_gap(survey, region, species, yrs = NULL, database, username, password)
+# query_data_gap(survey, region, species, yrs = NULL, database, username, password)
   
 cpue <- vroom::vroom(here::here('data', 'cpue_goa.csv'))
 lfreq <- vroom::vroom(here::here('data', 'lfreq_goa.csv'))
@@ -53,13 +53,13 @@ read_test <- vroom::vroom(here::here('data', 'reader_tester.csv')) %>%
 
 # run for all species (and subsetting out special cases so we don't have two places with those results)
 cpue %>% 
-  tidytable::filter.(!(species_code %in% c(30050, 30051, 30052, 30150, 30152, 10261, 10262, 10200))) -> .cpue
+  tidytable::filter(!(species_code %in% c(30050, 30051, 30052, 30150, 30152, 10261, 10262, 10200))) -> .cpue
 lfreq %>% 
-  tidytable::filter.(!(species_code %in% c(30050, 30051, 30052, 30150, 30152, 10261, 10262, 10200))) -> .lfreq
+  tidytable::filter(!(species_code %in% c(30050, 30051, 30052, 30150, 30152, 10261, 10262, 10200))) -> .lfreq
 specimen %>% 
-  tidytable::filter.(!(species_code %in% c(30050, 30051, 30052, 30150, 30152, 10261, 10262, 10200))) -> .specimen
+  tidytable::filter(!(species_code %in% c(30050, 30051, 30052, 30150, 30152, 10261, 10262, 10200))) -> .specimen
 read_test %>% 
-  tidytable::filter.(!(species_code %in% c(30050, 30051, 30052, 30150, 30152, 10261, 10262, 10200))) -> .read_test
+  tidytable::filter(!(species_code %in% c(30050, 30051, 30052, 30150, 30152, 10261, 10262, 10200))) -> .read_test
 
 
 lfreq_data = lfreq
