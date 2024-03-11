@@ -27,7 +27,7 @@ lpop <- function(lcomp, cpue, lngs) {
   cpue %>%
     tidytable::mutate(st_num = mean(numcpue) * area,
                        tot = sum(numcpue), 
-                       .by = c(year, species_code, stratum)) %>%
+                       .by = c(year, species_code, stratum, hauljoin)) %>%
     tidytable::summarise(abund = mean(numcpue) / tot * st_num,
                           .by = c(year, species_code, stratum, hauljoin)) -> .pop
   
