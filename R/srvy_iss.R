@@ -109,7 +109,7 @@ srvy_iss <- function(iters = 1, lfreq_data, specimen_data, cpue_data, strata_dat
                          rel_bias = mean(rel_bias),
                          .by = c(year, species_code, sex, sex_desc)) %>% 
     tidytable::filter(iss > 0) -> iss_length
-
+  
   # write results
   # input sample size
   vroom::vroom_write(iss_length, here::here("output", region, paste0(save, "_iss_ln.csv")), delim = ",")    
