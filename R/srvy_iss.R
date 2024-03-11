@@ -60,10 +60,8 @@ srvy_iss <- function(iters = 1, lfreq_data, specimen_data, cpue_data, strata_dat
                    boot_ages = FALSE,
                    al_var = FALSE,
                    age_err = FALSE)
-  oga <- og$age %>% 
-    select(-type)
-  ogl <- og$length %>% 
-    select(-type)
+  oga <- og$age
+  ogl <- og$length
   
   # run resampling iterations
   rr <- purrr::map(1:iters, ~ srvy_comps(lfreq_data = lfreq_data, 
