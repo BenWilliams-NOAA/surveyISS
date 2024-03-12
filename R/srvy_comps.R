@@ -75,9 +75,13 @@ srvy_comps <- function(lfreq_data, specimen_data, cpue_data, strata_data, r_t, y
     
   } 
   
-  # randomize lengths ----
+  # randomize lengths (and add sex = 0 for sex-combined (total) comp calculations) ----
   if(isTRUE(boot_lengths)) {
     boot_length(.lfreq_un) -> .lfreq_un
+  } else{
+    .lfreq_un %>% 
+      tidytable::bind_rows(.lfreq_un %>% 
+                             tidytable::mutate(sex = 0))
   }
   
   # bin length data ---- # note that this automatically converts from mm to cm
@@ -90,9 +94,13 @@ srvy_comps <- function(lfreq_data, specimen_data, cpue_data, strata_data, r_t, y
   # length population ----
   lpop(.lcomp, .cpue, .lngs) -> .lpop
   
-  # randomize age ----
+  # randomize age  (and add sex = 0 for sex-combined (total) comp calculations) ----
   if(isTRUE(boot_ages)) {
     boot_age(.agedat) -> .agedat
+  } else{
+    .agedat %>% 
+      tidytable::bind_rows(.agedat %>% 
+                             tidytable::mutate(sex = 0))
   }
   
   # add age-length variability ----

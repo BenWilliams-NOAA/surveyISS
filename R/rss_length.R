@@ -29,10 +29,10 @@ rss_length <- function(sim_data, og_data) {
     tidytable::filter(sex != 3) %>%
     tidytable::mutate(p_og = og_abund / sum(og_abund),
                       p_sim = abund / sum(abund),
-                      rel_bias = (abund - og_abund) / og_abund * 100,
+                      # rel_bias = (abund - og_abund) / og_abund * 100,
                       .by = c(year, species_code, sex)) %>% 
     tidytable::summarise(rss = sum(p_og * (1 - p_og)) / sum((p_sim - p_og)^2),
-                         rel_bias = mean(rel_bias),
+                         # rel_bias = mean(rel_bias),
                          .by = c(year, species_code, sex)) %>% 
     tidytable::drop_na()
 
