@@ -17,7 +17,7 @@ boot_age <- function(age_dat) {
     tidytable::separate(sex_ln_ag, c('sex', 'length', "age"), sep = '-', convert = TRUE) -> .age_dat
   
   .age_dat %>% 
-    tidytable::bind_rows(.agedat %>% 
+    tidytable::bind_rows(.age_dat %>% 
                            tidytable::mutate(sex = 0))
   
   # age_dat %>%
