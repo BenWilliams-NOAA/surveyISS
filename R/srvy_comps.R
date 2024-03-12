@@ -81,7 +81,7 @@ srvy_comps <- function(lfreq_data, specimen_data, cpue_data, strata_data, r_t, y
   } else{
     .lfreq_un %>% 
       tidytable::bind_rows(.lfreq_un %>% 
-                             tidytable::mutate(sex = 0))
+                             tidytable::mutate(sex = 0)) -> .lfreq_un
   }
   
   # bin length data ---- # note that this automatically converts from mm to cm
@@ -100,7 +100,7 @@ srvy_comps <- function(lfreq_data, specimen_data, cpue_data, strata_data, r_t, y
   } else{
     .agedat %>% 
       tidytable::bind_rows(.agedat %>% 
-                             tidytable::mutate(sex = 0))
+                             tidytable::mutate(sex = 0)) -> .agedat
   }
   
   # add age-length variability ----
