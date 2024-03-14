@@ -227,6 +227,7 @@ srvy_comps_ai_rebs <- function(lfreq_data, specimen_data, cpue_data, strata_data
   
   # length population ----
   lpop(.lcomp, .cpue, .lngs) %>% 
+    tidytable::summarise(abund = sum(abund), .by = c(year, length, sex)) %>% 
     tidytable::mutate(species_code = 3005012) -> .lpop
   
   # randomize age  (and add sex = 0 for sex-combined (total) comp calculations) ----
@@ -263,7 +264,7 @@ srvy_comps_ai_rebs <- function(lfreq_data, specimen_data, cpue_data, strata_data
   
   # age population ----
   apop(.lpop, .agedat) -> .apop
-  
+
   list(age = .apop, length = .lpop)
   
 }
