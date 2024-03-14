@@ -9,6 +9,9 @@
 #' @examples
 rss_age <- function(sim_data, og_data){
   
+  sim_data = r_age[[1]]
+  og_data = oga
+  
   # compute post-expansion total age pop'n and add to og and sim data
   og_data %>% 
     tidytable::bind_rows(og_data %>% 
@@ -25,14 +28,13 @@ rss_age <- function(sim_data, og_data){
   # compute realized sample size and relative bias  
   sim %>% 
     tidytable::full_join(og) %>% 
-    tidytable::replace_na(list(agepop = 0)) %>%
+    tidytable::replace_na(list(agepop = 0)) %>% 
+    tidytable::replace_na(list(og_agepop = 0)) %>%
     tidytable::filter(sex != 3) %>%
     tidytable::mutate(p_og = og_agepop / sum(og_agepop),
                       p_sim = agepop / sum(agepop),
-                      # rel_bias = (agepop - og_agepop) / og_agepop * 100,
                       .by = c(year, species_code, sex)) %>% 
     tidytable::summarise(rss = sum(p_og * (1 - p_og)) / sum((p_sim - p_og)^2),
-                         # rel_bias = mean(rel_bias),
                          .by = c(year, species_code, sex)) %>% 
     tidytable::drop_na()
 
