@@ -67,14 +67,16 @@ query_data_gap <- function(survey, region, species, yrs = NULL, database, userna
   st = readLines(here::here('inst', 'sql', 'gap_products', 'strata_gap.sql'))
   st = sql_filter(sql_precode = "IN", x = survey, sql_code = st, flag = '-- insert survey')
   
+  st_grp = readLines(here::here('inst', 'sql', 'gap_products', 'strata_groups_gap.sql'))
+  st_grp = sql_filter(sql_precode = "IN", x = survey, sql_code = st_grp, flag = '-- insert survey')
+  
   sql_run(conn, st) %>% 
-    dplyr::rename_all(tolower) %>% 
-    tidytable::filter(design_year == max(design_year), .by = stratum) %>% 
-    tidytable::select(-design_year) %>% 
+    tidytable::left_join(sql_run(conn, st_grp)) %>% 
+    dplyr::rename_all(tolower) %>%
     tidytable::arrange(stratum) %>% 
+    tidytable::filter(design_year == max(design_year), .by = c(stratum)) %>% 
     vroom::vroom_write(here::here('data', paste0("strata_", tolower(region), ".csv")), 
-                       delim = ',')
-
+                       delim = ',') 
   
   # sizecomp ----
   # lpop = sql_read('lpop_gap.sql')
