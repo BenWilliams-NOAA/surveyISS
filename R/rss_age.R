@@ -7,7 +7,8 @@
 #' @export rss_age
 #'
 #' @examples
-rss_age <- function(sim_data, og_data){
+rss_age <- function(sim_data, 
+                    og_data){
   
   # compute post-expansion total age pop'n and add to og and sim data
   og_data %>% 
@@ -46,7 +47,8 @@ rss_age <- function(sim_data, og_data){
 #' @export rss_age_reg
 #'
 #' @examples
-rss_age_reg <- function(sim_data, og_data){
+rss_age_reg <- function(sim_data, 
+                        og_data){
   
   # compute post-expansion total age pop'n and add to og and sim data
   og_data %>% 

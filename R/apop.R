@@ -7,7 +7,8 @@
 #' @export
 #'
 #' @examples
-apop <- function(lpop, agedat){
+apop <- function(lpop, 
+                 agedat){
   
   # reformat length pop'n data
   lpop %>%

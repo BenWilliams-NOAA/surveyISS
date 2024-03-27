@@ -11,7 +11,7 @@
 #' @param boot_lengths switch for resampling lengths (default = FALSE)
 #' @param boot_ages switch for resampling ages (default = FALSE)
 #' @param al_var switch for including age-length variability (default = FALSE)
-#' @param al_var_ann resample age-length annually or pooled across years
+#' @param al_var_ann resample age-length annually or pooled across years (default = FALSE)
 #' @param age_err switch for including ageing error (default = FALSE)
 #'
 #' @return
@@ -20,8 +20,19 @@
 #' @examples
 #' 
 
-srvy_comps <- function(lfreq_data, specimen_data, cpue_data, strata_data, r_t, yrs, bin,
-                       boot_hauls, boot_lengths, boot_ages, al_var, al_var_ann, age_err) {
+srvy_comps <- function(lfreq_data, 
+                       specimen_data, 
+                       cpue_data, 
+                       strata_data, 
+                       r_t, 
+                       yrs = NULL, 
+                       bin = 1,
+                       boot_hauls = FALSE, 
+                       boot_lengths = FALSE, 
+                       boot_ages = FALSE, 
+                       al_var = FALSE,
+                       al_var_ann = FALSE,
+                       age_err = FALSE) {
   # globals ----
   # year switch
   if (is.null(yrs)) yrs <- 0
@@ -132,7 +143,10 @@ srvy_comps <- function(lfreq_data, specimen_data, cpue_data, strata_data, r_t, y
   
 }
 
-#' primary survey expansion for age/length pop'n numbers function (customized for ai rebs complex)
+#' primary survey expansion for age/length pop'n numbers function
+#'  customized for ai complexes (e.g., blackspotted-rougheye rockfish)
+#'   where length pop'n are estimated at species level, 
+#'   but age pop'n are estimated at complex level)
 #'
 #' @param lfreq_data length frequency data
 #' @param specimen_data age-length specimen data
@@ -147,15 +161,28 @@ srvy_comps <- function(lfreq_data, specimen_data, cpue_data, strata_data, r_t, y
 #' @param al_var switch for including age-length variability (default = FALSE)
 #' @param al_var_ann resample age-length annually or pooled across years
 #' @param age_err switch for including ageing error (default = FALSE)
+#' @param cmplx_code numeric value to replace the individual species codes with a complex code (default = NULL)
 #'
 #' @return
-#' @export srvy_comps_ai_rebs
+#' @export srvy_comps_ai_cmplx
 #'
 #' @examples
 #' 
 
-srvy_comps_ai_rebs <- function(lfreq_data, specimen_data, cpue_data, strata_data, r_t, yrs, bin,
-                               boot_hauls, boot_lengths, boot_ages, al_var, al_var_ann, age_err) {
+srvy_comps_ai_cmplx <- function(lfreq_data, 
+                                specimen_data, 
+                                cpue_data, 
+                                strata_data, 
+                                r_t, 
+                                yrs = NULL, 
+                                bin = 1,
+                                boot_hauls = FALSE, 
+                                boot_lengths = FALSE, 
+                                boot_ages = FALSE, 
+                                al_var = FALSE,
+                                al_var_ann = FALSE,
+                                age_err = FALSE,
+                                cmplx_code = NULL) {
   # globals ----
   # year switch
   if (is.null(yrs)) yrs <- 0
@@ -228,7 +255,7 @@ srvy_comps_ai_rebs <- function(lfreq_data, specimen_data, cpue_data, strata_data
   # length population ----
   lpop(.lcomp, .cpue, .lngs) %>% 
     tidytable::summarise(abund = sum(abund), .by = c(year, length, sex)) %>% 
-    tidytable::mutate(species_code = 3005012) -> .lpop
+    tidytable::mutate(species_code = cmplx_code) -> .lpop
   
   # randomize age  (and add sex = 0 for sex-combined (total) comp calculations) ----
   if(isTRUE(boot_ages)) {
@@ -259,7 +286,7 @@ srvy_comps_ai_rebs <- function(lfreq_data, specimen_data, cpue_data, strata_data
   }
   
   .agedat %>% 
-    tidytable::mutate(species_code = 3005012) %>% 
+    tidytable::mutate(species_code = cmplx_code) %>% 
     tidytable::mutate(length = 10 * (bin * ceiling((length / 10) / bin))) -> .agedat
   
   # age population ----

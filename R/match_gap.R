@@ -12,7 +12,12 @@
 #'
 #' @examples
 
-match_gap <- function(oga, ogl, gap_apop, gap_lpop, thresh_mapd = 1, thresh_sad = 0.1){
+match_gap <- function(oga, 
+                      ogl, 
+                      gap_apop, 
+                      gap_lpop, 
+                      thresh_mapd = 1, 
+                      thresh_sad = 0.1){
 
   # Compare between surveyISS and GAP estimates of pop'n at length
   

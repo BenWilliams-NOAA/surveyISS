@@ -13,7 +13,13 @@
 #'
 #' @examples
 #'            
-query_data_gap <- function(survey, region, species, yrs = NULL, database, username, password) {
+query_data_gap <- function(survey,
+                           region, 
+                           species, 
+                           yrs = NULL, 
+                           database, 
+                           username,
+                           password) {
 
   # create folder
   if (!dir.exists("data")) {dir.create("data")}

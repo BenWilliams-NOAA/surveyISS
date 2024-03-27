@@ -8,7 +8,9 @@
 #' @export
 #'
 #' @examples
-lpop <- function(lcomp, cpue, lngs) {
+lpop <- function(lcomp, 
+                 cpue, 
+                 lngs) {
   lcomp %>%
     tidytable::summarise(comp = sum(comp) / mean(nhauls), 
                           .by = c(year, species_code, stratum, sex, length)) -> .unk

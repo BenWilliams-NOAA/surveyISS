@@ -2,13 +2,15 @@
 #'
 #' @param age_dat age specimen data 
 #' @param r_t reader/tester data 
-#' @param nonpar use either sampling with replacement or multinomial for reater-tester data (default = FALSE)
+#' @param nonpar use either sampling with replacement or multinomial for reader-tester data (default = FALSE)
 #'
 #' @return
 #' @export
 #'
 #' @examples
-age_error <- function(age_dat, r_t, nonpar = FALSE) {
+age_error <- function(age_dat, 
+                      r_t, 
+                      nonpar = FALSE) {
 
   # add id
   age_dat %>% 

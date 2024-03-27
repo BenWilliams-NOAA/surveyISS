@@ -7,7 +7,8 @@
 #' @export rss_length
 #'
 #' @examples
-rss_length <- function(sim_data, og_data) {
+rss_length <- function(sim_data,
+                       og_data) {
   
   # compute post-expansion total length pop'n and add to og and sim data
   og_data %>% 
@@ -45,7 +46,8 @@ rss_length <- function(sim_data, og_data) {
 #' @export rss_length_reg
 #'
 #' @examples
-rss_length_reg <- function(sim_data, og_data) {
+rss_length_reg <- function(sim_data,
+                           og_data) {
   
   # compute post-expansion total length pop'n and add to og and sim data
   og_data %>% 

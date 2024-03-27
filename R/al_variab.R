@@ -7,7 +7,8 @@
 #' @export
 #'
 #' @examples
-al_variab <- function(age_dat, annual = FALSE) {
+al_variab <- function(age_dat, 
+                      annual = FALSE) {
   
   if(isTRUE(annual)){
     age_dat %>% 
