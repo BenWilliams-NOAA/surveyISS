@@ -15,6 +15,53 @@ library(here)
 source_files <- list.files(here::here("R"), "*.R$")
 map(here::here("R", source_files), source)
 
+
+# for testing stuff
+
+species = c(21720, 30060) 
+
+cpue_data <- vroom::vroom(here::here('data', 'cpue_goa.csv')) %>% 
+  tidytable::filter(species_code %in% species)
+lfreq_data <- vroom::vroom(here::here('data', 'lfreq_goa.csv')) %>% 
+  tidytable::filter(species_code %in% species)
+strata_data <- vroom::vroom(here::here('data', 'strata_goa.csv'))
+specimen_data <- vroom::vroom(here::here('data', 'specimen_goa.csv')) %>% 
+  tidytable::filter(species_code %in% species)
+r_t <- vroom::vroom(here::here('data', 'reader_tester.csv')) %>% 
+  dplyr::rename_all(tolower) %>% 
+  tidytable::select(species_code, region, read_age, test_age) %>% 
+  tidytable::rename(age = 'read_age') %>% 
+  tidytable::filter(species_code %in% species)
+
+
+iters = 5 
+yrs = 1990
+boot_hauls = TRUE
+boot_lengths = TRUE
+boot_ages = TRUE
+al_var = TRUE
+al_var_ann = TRUE
+age_err = TRUE
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 # get database username/password
 db <- vroom::vroom(here::here("database_specs.csv"))
 username = db$username[db$database == "AKFIN"]
@@ -33,8 +80,8 @@ if(iters < 100){
 
 # pull data for Tier 3 species in Gulf of Alaska (1990 on)
 yrs = 1990
-# species = c(10110, 10130, 10180, 20510, 21720, 21740, 30060, 30420, 30050, 30051, 30052, 30150, 30152, 10261, 10262, 10200)
-species = c(21740, 30060) # pollock and pop for testing
+species = c(10110, 10130, 10180, 20510, 21720, 21740, 30060, 30420, 30050, 30051, 30052, 30150, 30152, 10261, 10262, 10200)
+# species = c(21740, 30060) # pollock and pop for testing
 survey = 47
 region = 'GOA'
 database = 'akfin'
@@ -213,3 +260,14 @@ if(iters < 100){
   runtime
 }
 
+
+# test for caal data
+specimen %>% 
+  tidytable::filter(species_code == 21720) -> specimen_data
+cpue %>% 
+  tidytable::filter(species_code == 21720) -> cpue_data
+read_test %>% 
+  tidytable::filter(species_code == 21720) -> r_t
+lfreq %>% 
+  tidytable::filter(species_code == 21720) -> lfreq_data
+strata_data = strata

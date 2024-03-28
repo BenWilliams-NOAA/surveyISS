@@ -11,8 +11,9 @@ lcomp <- function(lfreq_un) {
   # compute haul-specific marginal length comp for sex-specific data
   lfreq_un %>%
     tidytable::filter(sex != 0) %>% 
-    tidytable::summarise(frequency = .N,
-                         .by = c(year, species_code, stratum, hauljoin, sex, length)) %>% 
+    group_by(year, species_code, stratum, hauljoin, sex, length) %>% 
+    tidytable::summarise(frequency = .N) %>% 
+    ungroup %>% 
     tidytable::mutate(nhauls = data.table::uniqueN(hauljoin),
                       .by = c(year, species_code, stratum)) %>%
     tidytable::mutate(tot = sum(frequency),
@@ -23,8 +24,9 @@ lcomp <- function(lfreq_un) {
     # bind with haul-specific marginal length comps for total (combined sex) data
     tidytable::bind_rows(lfreq_un %>%
                            tidytable::filter(sex == 0) %>% 
-                           tidytable::summarise(frequency = .N,
-                                                .by = c(year, species_code, stratum, hauljoin, sex, length)) %>% 
+                           group_by(year, species_code, stratum, hauljoin, sex, length) %>% 
+                           tidytable::summarise(frequency = .N) %>% 
+                           ungroup %>% 
                            tidytable::mutate(nhauls = data.table::uniqueN(hauljoin),
                                              .by = c(year, species_code, stratum)) %>%
                            tidytable::mutate(tot = sum(frequency),

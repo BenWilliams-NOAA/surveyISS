@@ -1842,7 +1842,7 @@ srvy_iss_caal <- function(iters = 1,
                         al_var = FALSE,
                         al_var_ann = FALSE,
                         age_err = FALSE)
-  oga <- og$age
+  ogcaal <- og$caal
   
   # run resampling iterations ----
   rr <- purrr::map(1:iters, ~ srvy_comps_caal(specimen_data = specimen_data, 
@@ -1856,90 +1856,42 @@ srvy_iss_caal <- function(iters = 1,
                                               al_var_ann = al_var_ann,
                                               age_err = age_err))
   
-  r_age <- do.call(mapply, c(list, rr, SIMPLIFY = FALSE))$age
+  r_caal <- do.call(mapply, c(list, rr, SIMPLIFY = FALSE))$caal
 
   # compute statistics ----
   # compute realized sample size of bootstrapped age/length
-  r_age %>%
-    tidytable::map(., ~rss_caal(sim_data = .x, og_data = oga)) %>%
+  r_caal %>%
+    tidytable::map(., ~rss_caal(sim_data = .x, og_data = ogcaal)) %>%
     tidytable::map_df(., ~as.data.frame(.x), .id = "sim") %>% 
     tidytable::mutate(sex_desc = case_when(sex == 0 ~ 'total',
                                            sex == 1 ~ 'male',
-                                           sex == 2 ~ 'female')) -> .rss_age
+                                           sex == 2 ~ 'female')) -> .rss_caal
 
   # compute harmonic mean of iterated realized sample size, which is the input sample size (iss)
   #   and compute average relative bias in pop'n estimates (avg relative bias across age or length)
-  iss_age <- .rss_age %>% 
+  iss_caal <- .rss_caal %>% 
     tidytable::summarise(iss = psych::harmonic.mean(rss, na.rm = TRUE),
                          .by = c(year, species_code, sex, sex_desc, length)) %>% 
-    tidytable::left_join(r_age %>%
+    tidytable::left_join(r_caal %>%
                            tidytable::map_df(., ~as.data.frame(.x), .id = "sim") %>% 
-                           tidytable::left_join(oga %>% 
+                           tidytable::left_join(ogcaal %>% 
                                                   tidytable::rename(og_caal = caal)) %>% 
                            tidytable::mutate(bias = (caal - og_caal)) %>% 
                            tidytable::drop_na() %>%
                            tidytable::summarise(bias = mean(bias, na.rm = TRUE), .by = c(year, species_code, sex, length)))
   
-  iss_age %>% 
-    print(n = 100)
-
-  r_age %>%
-    tidytable::map_df(., ~as.data.frame(.x), .id = "sim") %>% 
-    tidytable::left_join(oga %>% 
-                           tidytable::rename(og_caal = caal)) %>% 
-    tidytable::mutate(bias = (caal - og_caal)) %>% 
-    tidytable::drop_na() %>%
-    tidytable::summarise(bias = mean(bias, na.rm = TRUE), .by = c(year, species_code, sex, length))
-  
-  oga %>% 
-    tidytable::filter(year == 1993, length ==350)
-  
-  # compute effective sample size of bootstrapped caal
-  r_age %>%
-    tidytable::map(., ~ess_caal(sim_data = .x, og_data = oga, sex_spec = sex_spec)) %>%
-    tidytable::map_df(., ~as.data.frame(.x), .id = "sim") %>% 
-    tidytable::rename(comp_type = ess) %>% 
-    tidytable::mutate(comp_type = tidytable::case_when(comp_type == 'ess_f' ~ 'female',
-                                                       comp_type == 'ess_m' ~ 'male',
-                                                       comp_type == 'ess_t' ~ 'total')) -> ess_age1
-  
-  # compute harmonic mean of iterated effective sample size, which is the input sample size (iss)
-  
-  ess_age1 %>% 
-    tidytable::summarise(iss = psych::harmonic.mean(value, na.rm = TRUE),
-                         .by = c(year, species_code, comp_type, type, length)) %>% 
-    tidytable::filter(iss > 0) %>% 
-    tidytable::pivot_wider(names_from = type, values_from = iss) %>% 
-    tidytable::drop_na() -> iss_age
-  
-  ess_age1 %>%
-    tidytable::pivot_wider(names_from = type, values_from = value) -> ess_age1
-  
-  # write input sample size results
-  vroom::vroom_write(iss_age, here::here("output", region, 'add_err', paste0(save, "_iss_ag.csv")), delim = ",")
-  
-  # if(region != 'bs' & save == 'prod'){
-  #   vroom::vroom_write(ess_size, here::here("output", region, paste0(save, "_iter_ess_sz.csv")), delim = ",")
-  #   vroom::vroom_write(ess_age, here::here("output", region, paste0(save, "_iter_ess_ag.csv")), delim = ",")
-  #   vroom::vroom_write(iss_size, here::here("output", region, paste0(save, "_iss_sz.csv")), delim = ",")    
-  #   vroom::vroom_write(iss_age, here::here("output", region, paste0(save, "_iss_ag.csv")), delim = ",")
-  # } else if(region != 'bs' & save != 'prod'){
-  #   vroom::vroom_write(ess_size, here::here("output", region, 'add_err', paste0(save, "_iter_ess_sz.csv")), delim = ",")
-  #   vroom::vroom_write(ess_age, here::here("output", region, 'add_err', paste0(save, "_iter_ess_ag.csv")), delim = ",")
-  #   vroom::vroom_write(iss_size, here::here("output", region, 'add_err', paste0(save, "_iss_sz.csv")), delim = ",")    
-  #   vroom::vroom_write(iss_age, here::here("output", region, 'add_err', paste0(save, "_iss_ag.csv")), delim = ",")
-  # }
-  # if(region == 'bs' & save == 'prod'){
-  #   vroom::vroom_write(ess_size, here::here("output", region, paste0(save, "_iter_ess_sz_", srvy_type, ".csv")), delim = ",")
-  #   vroom::vroom_write(ess_age, here::here("output", region, paste0(save, "_iter_ess_ag_", srvy_type, ".csv")), delim = ",")
-  #   vroom::vroom_write(iss_size, here::here("output", region, paste0(save, "_iss_sz_", srvy_type, ".csv")), delim = ",") 
-  #   vroom::vroom_write(iss_age, here::here("output", region, paste0(save, "_iss_ag_", srvy_type, ".csv")), delim = ",")
-  # } else if(region == 'bs' & save != 'prod'){
-  #   vroom::vroom_write(ess_size, here::here("output", region, 'add_err', paste0(save, "_iter_ess_sz_", srvy_type, ".csv")), delim = ",")
-  #   vroom::vroom_write(ess_age, here::here("output", region, 'add_err', paste0(save, "_iter_ess_ag_", srvy_type, ".csv")), delim = ",")
-  #   vroom::vroom_write(iss_size, here::here("output", region, 'add_err', paste0(save, "_iss_sz_", srvy_type, ".csv")), delim = ",") 
-  #   vroom::vroom_write(iss_age, here::here("output", region, 'add_err', paste0(save, "_iss_ag_", srvy_type, ".csv")), delim = ",")
-  # }
+  # write results ----
+  # input sample size   
+  vroom::vroom_write(iss_caal, here::here("output", region, paste0(save, "_iss_caal.csv")), delim = ",")
+  # base conditional age-at-length
+  vroom::vroom_write(ogcaal, file = here::here("output", region, "base_caal.csv"), delim = ",")
+  # if desired, write out bootstrapped conditional age-at-length and realized sample sizes
+  if(isTRUE(save_interm)) {
+    r_caal %>%
+      tidytable::map_df(., ~as.data.frame(.x), .id = "sim") %>% 
+      vroom::vroom_write(here::here("output", region, "resampled_caal.csv"), delim = ",")
+    vroom::vroom_write(.rss_caal, here::here("output", region, paste0(save, "_iter_rss_caal.csv")), delim = ",")
+  }
 }
 
 

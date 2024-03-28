@@ -393,10 +393,10 @@ srvy_comps_caal <- function(specimen_data,
     tidytable::mutate(length = 10 * (bin * ceiling((length / 10) / bin))) -> .agedat
   
   
-  # age population ----
-  apop_caal(.agedat) -> .apop
+  # caal ----
+  apop_caal(.agedat) -> .caal
   
-  list(age = .apop)
+  list(caal = .apop)
   
 }
 
