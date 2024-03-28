@@ -9,15 +9,15 @@
 #' @examples
 al_variab <- function(age_dat, 
                       annual = FALSE) {
-  
+
   if(isTRUE(annual)){
     age_dat %>% 
-      tidytable::mutate(length = sample(length, .N, replace = TRUE), 
-                        .by = c(age, species_code, sex, year))}
-  else{
+      dplyr::group_by(age, species_code, sex, year) %>% 
+      tidytable::mutate(length = sample(length, .N, replace = TRUE))
+  } else{
     age_dat %>% 
-      tidytable::mutate(length = sample(length, .N, replace = TRUE), 
-                        .by = c(age, species_code, sex))
+      dplyr::group_by(age, species_code, sex) %>% 
+      tidytable::mutate(length = sample(length, .N, replace = TRUE))
   }
   
 }

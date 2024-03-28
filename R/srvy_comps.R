@@ -95,7 +95,8 @@ srvy_comps <- function(lfreq_data,
                              tidytable::mutate(sex = 0)) -> .lfreq_un
   }
   
-  # bin length data ---- # note that this automatically converts from mm to cm
+  # bin length data ---- 
+  # note that this automatically converts from mm to cm
   .lfreq_un %>% 
     tidytable::mutate(length = 10 * (bin * ceiling((length / 10) / bin))) -> .lfreq_un
   
@@ -133,6 +134,8 @@ srvy_comps <- function(lfreq_data,
     .agedat_ae -> .agedat
   }
   
+  # bin lengths in age data ----
+  # note that this automatically converts from mm to cm
   .agedat %>% 
     tidytable::mutate(length = 10 * (bin * ceiling((length / 10) / bin))) -> .agedat
   
@@ -245,7 +248,8 @@ srvy_comps_ai_cmplx <- function(lfreq_data,
                              tidytable::mutate(sex = 0)) -> .lfreq_un
   }
   
-  # bin length data ---- # note that this automatically converts from mm to cm
+  # bin length data ---- 
+  # note that this automatically converts from mm to cm
   .lfreq_un %>% 
     tidytable::mutate(length = 10 * (bin * ceiling((length / 10) / bin))) -> .lfreq_un
   
@@ -285,6 +289,8 @@ srvy_comps_ai_cmplx <- function(lfreq_data,
     .agedat_ae -> .agedat
   }
   
+  # bin lengths in age data ----
+  # note that this automatically converts from mm to cm
   .agedat %>% 
     tidytable::mutate(species_code = cmplx_code) %>% 
     tidytable::mutate(length = 10 * (bin * ceiling((length / 10) / bin))) -> .agedat
@@ -295,3 +301,103 @@ srvy_comps_ai_cmplx <- function(lfreq_data,
   list(age = .apop, length = .lpop)
   
 }
+
+#' primary survey age/length pop'n numbers function
+#'  customized for condition age-at-length data
+#'
+#' @param specimen_data age-length specimen data
+#' @param cpue_data abundance by length data 
+#' @param r_t reader/tester ageing data 
+#' @param yrs returns years >= (default = NULL)
+#' @param bin bin size for length data
+#' @param boot_hauls switch for resampling hauls (default = FALSE)
+#' @param boot_ages switch for resampling ages (default = FALSE)
+#' @param al_var switch for including age-length variability (default = FALSE)
+#' @param al_var_ann resample age-length annually or pooled across years
+#' @param age_err switch for including ageing error (default = FALSE)
+#'
+#' @return
+#' @export srvy_comps
+#'
+#' @examples
+#' 
+
+srvy_comps_caal <- function(specimen_data, 
+                            cpue_data,
+                            r_t, 
+                            yrs = NULL,  
+                            bin = 1,
+                            boot_hauls = FALSE, 
+                            boot_ages = FALSE,
+                            al_var = FALSE,
+                            al_var_ann = FALSE,
+                            age_err = FALSE) {
+  # globals ----
+  # year switch
+  if (is.null(yrs)) yrs <- 0
+  
+  # prep data ----
+  
+  # first pass of filtering
+  data.table::setDT(cpue_data) %>%
+      tidytable::filter(year >= yrs) -> .cpue
+  
+  data.table::setDT(specimen_data) %>%
+    tidytable::filter(year >= yrs) %>% 
+    tidytable::drop_na() -> .agedat
+  
+  # randomize hauls ----  
+  if(isTRUE(boot_hauls)) {
+    boot_haul(.cpue) %>% 
+      tidytable::mutate(hauljoin_unq = .I) -> .hls
+    
+    .hls %>% 
+      tidytable::left_join(.agedat) %>% 
+      tidytable::drop_na() %>% 
+      tidytable::rename(hauljoin_orig = 'hauljoin',
+                        hauljoin = 'hauljoin_unq') -> .agedat
+    
+  } 
+  
+  # randomize age ----
+  if(isTRUE(boot_ages)) {
+    boot_age(.agedat) -> .agedat
+  } else{
+    .agedat %>% 
+      tidytable::bind_rows(.agedat %>% 
+                             tidytable::mutate(sex = 0)) -> .agedat
+  }
+  
+  # add age-length variability ----
+  if(isTRUE(al_var)) {
+    al_variab(.agedat, annual = al_var_ann) -> .agedat_al
+  }
+  
+  # add ageing error ----
+  if(isTRUE(age_err)) {
+    age_error(.agedat, r_t) -> .agedat_ae
+  }
+  
+  # with age-length and ageing error ----
+  if(isTRUE(al_var) & isTRUE(age_err)) {
+    age_error(.agedat_al, r_t) -> .agedat
+  } else if(isTRUE(al_var) & !isTRUE(age_err)){
+    .agedat_al -> .agedat
+  } else if(!isTRUE(al_var) & isTRUE(age_err)){
+    .agedat_ae -> .agedat
+  }
+  
+  # bin lengths in age data ----
+  # note that this automatically converts from mm to cm
+  .agedat %>% 
+    tidytable::mutate(length = 10 * (bin * ceiling((length / 10) / bin))) -> .agedat
+  
+  
+  # age population ----
+  apop_caal(.agedat) -> .apop
+  
+  list(age = .apop)
+  
+}
+
+

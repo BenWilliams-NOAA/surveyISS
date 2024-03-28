@@ -24,8 +24,8 @@ age_error <- function(age_dat,
         r_t %>% 
           tidytable::filter(.N >= 10, 
                             .by = c(age, species_code)) %>% 
-          tidytable::mutate(new_age = sample(test_age, .N, replace = TRUE), 
-                            .by = c(age, species_code))
+          dplyr::group_by(age, species_code) %>% 
+          tidytable::mutate(new_age = sample(test_age, .N, replace = TRUE))
       ) %>% 
       tidytable::slice_sample(n = 1, .by = id) -> agerr
     
