@@ -1879,16 +1879,7 @@ srvy_iss_caal <- function(iters = 1,
                            tidytable::mutate(bias = (caal - og_caal)) %>% 
                            # tidytable::drop_na() %>%
                            tidytable::summarise(bias = mean(bias, na.rm = TRUE), .by = c(year, species_code, sex, length)))
-  iss_caal %>% 
-    print(n = 100)
 
-  specimen_data %>% 
-    filter(year == 1990 & species_code == 30060) %>% 
-    arrange(length)
-  
-  
-  
-  
   # write results ----
   # input sample size   
   vroom::vroom_write(iss_caal, here::here("output", region, paste0(save, "_iss_caal.csv")), delim = ",")
