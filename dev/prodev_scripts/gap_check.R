@@ -38,14 +38,12 @@ og <- srvy_comps(lfreq_data = lfreq,
                  boot_hauls = FALSE, 
                  boot_lengths = FALSE, 
                  boot_ages = FALSE,
-                 sex_spec = TRUE,
                  al_var = FALSE,
+                 al_var_ann = FALSE,
                  age_err = FALSE)
 
-oga <- og$age %>% 
-  select(-type)
-ogl <- og$length %>% 
-  select(-type)
+oga <- og$age
+ogl <- og$length
 
 match <- match_gap(oga, ogl, gap_apop, gap_lpop)
 

@@ -1877,7 +1877,7 @@ srvy_iss_caal <- function(iters = 1,
                            tidytable::left_join(ogcaal %>% 
                                                   tidytable::rename(og_caal = caal)) %>% 
                            tidytable::mutate(bias = (caal - og_caal)) %>% 
-                           # tidytable::drop_na() %>%
+                           tidytable::drop_na() %>%
                            tidytable::summarise(bias = mean(bias, na.rm = TRUE), .by = c(year, species_code, sex, length)))
 
   # write results ----
