@@ -12,6 +12,7 @@ boot_haul <- function(cpue_data) {
     tidytable::select(year, species_code, hauljoin) %>% 
     tidytable::distinct() %>% 
     group_by(year, species_code) %>% 
-    tidytable::mutate(hauljoin = sample(hauljoin, .N, replace = TRUE))
+    tidytable::mutate(hauljoin = sample(hauljoin, .N, replace = TRUE)) %>% 
+    ungroup
   
 }

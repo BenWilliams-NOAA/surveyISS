@@ -42,6 +42,7 @@ boot_ages = TRUE
 al_var = TRUE
 al_var_ann = TRUE
 age_err = TRUE
+bin = 1
 
 
 

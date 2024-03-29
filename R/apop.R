@@ -20,6 +20,7 @@ apop <- function(lpop,
     tidytable::drop_na() %>%
     group_by(year, species_code, sex, length, age) %>% 
     tidytable::summarise(age_num = .N) %>% 
+    ungroup %>%
     tidytable::mutate(age_frac = age_num/sum(age_num), 
                       .by = c(year, species_code, sex, length)) %>% 
     tidytable::left_join(.lpop_long) %>%
@@ -34,6 +35,7 @@ apop <- function(lpop,
     tidytable::drop_na() %>% 
     group_by(year, species_code, sex) %>% 
     tidytable::summarise(n = .N) %>%
+    ungroup %>% 
     tidytable::filter(sex == 3) %>%
     tidytable::select(year, species_code, n) -> .sex_cnt_ag
   # if unsexed samples exist, compute unsexed age pop'n
@@ -45,6 +47,7 @@ apop <- function(lpop,
       tidytable::filter(n > 0) %>%
       group_by(year, species_code, length, age) %>% 
       tidytable::summarise(age_num = .N) %>% 
+      ungroup %>% 
       tidytable::mutate(age_frac = age_num/sum(age_num), 
                         .by = c(year, species_code, length)) %>%
       tidytable::left_join(.lpop_long_un) %>%
@@ -59,7 +62,8 @@ apop <- function(lpop,
       tidytable::bind_rows(agedat %>%
                              tidytable::filter(sex == 0) %>% 
                              group_by(year, species_code, length, age) %>% 
-                             tidytable::summarise(age_num = .N) %>% 
+                             tidytable::summarise(age_num = .N) %>%  
+                             ungroup %>% 
                              tidytable::mutate(age_frac = age_num/sum(age_num), 
                                                .by = c(year, species_code, length)) %>%
                              tidytable::left_join(.lpop_long %>%
@@ -76,7 +80,8 @@ apop <- function(lpop,
       tidytable::bind_rows(agedat %>%
                              tidytable::filter(sex == 0) %>% 
                              group_by(year, species_code, length, age) %>% 
-                             tidytable::summarise(age_num = .N) %>% 
+                             tidytable::summarise(age_num = .N) %>%  
+                             ungroup %>% 
                              tidytable::mutate(age_frac = age_num/sum(age_num), 
                                                .by = c(year, species_code, length)) %>%
                              tidytable::left_join(.lpop_long %>%

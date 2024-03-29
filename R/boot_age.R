@@ -17,6 +17,7 @@ boot_age <- function(age_dat) {
   # add combined sex resampled data
   .age_dat %>% 
     tidytable::bind_rows(.age_dat %>% 
-                           tidytable::mutate(sex = 0))
+                           tidytable::mutate(sex = 0)) %>% 
+    ungroup
 
 }

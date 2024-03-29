@@ -149,7 +149,7 @@ srvy_comps <- function(lfreq_data,
 #' primary survey expansion for age/length pop'n numbers function
 #'  customized for ai complexes (e.g., blackspotted-rougheye rockfish)
 #'   where length pop'n are estimated at species level, 
-#'   but age pop'n are estimated at complex level)
+#'   but age pop'n are estimated at complex level
 #'
 #' @param lfreq_data length frequency data
 #' @param specimen_data age-length specimen data
@@ -302,8 +302,7 @@ srvy_comps_ai_cmplx <- function(lfreq_data,
   
 }
 
-#' primary survey age/length pop'n numbers function
-#'  customized for condition age-at-length data
+#' primary survey condition age-at-length function
 #'
 #' @param specimen_data age-length specimen data
 #' @param cpue_data abundance by length data 
@@ -396,7 +395,7 @@ srvy_comps_caal <- function(specimen_data,
   # caal ----
   apop_caal(.agedat) -> .caal
   
-  list(caal = .apop)
+  list(caal = .caal)
   
 }
 
