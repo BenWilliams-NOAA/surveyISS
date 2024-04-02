@@ -1789,14 +1789,11 @@ srvy_iss_ai_subreg <- function(iters = 1,
 #' @param yrs any year filter >= (default = NULL)
 #' @param boot_hauls resample hauls w/replacement (default = FALSE)
 #' @param boot_ages resample ages w/replacement (default = FALSE)
-#' @param sex_spec determine whether to do sex specific or total comps (default = TRUE)
 #' @param al_var include age-length variability (default = FALSE)
 #' @param al_var_ann resample age-length annually or pooled across years
 #' @param age_err include ageing error (default = FALSE)
 #' @param region region will create a folder and place results in said folder
 #' @param save_interm save the intermediate results: original comps, resampled comps (default = FALSE)
-#' @param match_orig match the computed values to gap output (default = FALSE)
-#' @param srvy_type only for bering sea survey, denotes whether it's the shelf or slope survey (default = NULL)
 #' @param save name to save output
 #'
 #' @return
@@ -1810,15 +1807,12 @@ srvy_iss_caal <- function(iters = 1,
                           r_t, 
                           yrs = NULL, 
                           boot_hauls = FALSE, 
-                          boot_ages = FALSE, 
-                          sex_spec = TRUE, 
+                          boot_ages = FALSE,
                           al_var = FALSE, 
                           al_var_ann = FALSE, 
                           age_err = FALSE,
                           region = NULL, 
                           save_interm = FALSE,
-                          match_orig = FALSE, 
-                          srvy_type = NULL, 
                           save){
   
   # create storage location
