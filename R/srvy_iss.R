@@ -1787,6 +1787,7 @@ srvy_iss_ai_subreg <- function(iters = 1,
 #' @param cpue_data input dataframe
 #' @param r_t input dataframe
 #' @param yrs any year filter >= (default = NULL)
+#' @param bin bin size for length data
 #' @param boot_hauls resample hauls w/replacement (default = FALSE)
 #' @param boot_ages resample ages w/replacement (default = FALSE)
 #' @param al_var include age-length variability (default = FALSE)
@@ -1805,7 +1806,8 @@ srvy_iss_caal <- function(iters = 1,
                           specimen_data, 
                           cpue_data, 
                           r_t, 
-                          yrs = NULL, 
+                          yrs = NULL,  
+                          bin = 1, 
                           boot_hauls = FALSE, 
                           boot_ages = FALSE,
                           al_var = FALSE, 
