@@ -32,15 +32,7 @@ lpop <- function(lcomp,
                       .by = c(year, species_code, stratum)) %>%
     tidytable::summarise(abund = mean(numcpue) / tot * st_num,
                          .by = c(year, species_code, stratum, hauljoin)) -> .pop
-  
-  .pop %>% 
-    tidytable::summarise(abund = sum(abund, na.rm = TRUE), .by = c(year, species_code))
-  
-  gap_lpop %>% 
-    tidytable::summarise(abund = sum(population_count, na.rm = TRUE), .by = c(year, species_code))
-  
-  
-  
+
   # if there are any samples w/o lengths rejoin them
   if(nrow(.no_length) == 0){
     lcomp %>%
