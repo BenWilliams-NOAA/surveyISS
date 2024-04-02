@@ -27,7 +27,9 @@ age_error <- function(age_dat,
           group_by(age, species_code) %>% 
           tidytable::mutate(new_age = sample(test_age, .N, replace = TRUE))
       ) %>% 
-      tidytable::slice_sample(n = 1, .by = id) -> agerr
+      group_by(id) %>% 
+      tidytable::slice_sample(n = 1) %>% 
+      ungroup -> agerr
     
     # remove the old ages, replace with new ones and bind back with samples that were not tested
     agerr %>% 
@@ -41,8 +43,8 @@ age_error <- function(age_dat,
       tidytable::drop_na() %>% 
       tidytable::left_join(age_dat %>% 
                              tidytable::drop_na() %>% 
-                             group_by(species_code, year, age) %>% 
-                             tidytable::summarise(aged = .N) %>% 
+                             tidytable::summarise(aged = .N,
+                                                  .by = c(species_code, year, age)) %>% 
                              tidytable::left_join(r_t %>% 
                                                     tidytable::summarise(count = .N, .by = c(species_code, age, test_age)) %>%
                                                     tidytable::mutate(p_a = count / sum(count), .by = c(species_code, age))) %>% 

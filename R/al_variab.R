@@ -16,8 +16,10 @@ al_variab <- function(age_dat,
       tidytable::mutate(id = .I) %>% 
       tidytable::left_join(age_dat %>% 
                              tidytable::drop_na() %>% 
-                             tidytable::summarise(lengthed = .N, .by = c(species_code, year, sex, age, length)) %>% 
-                             tidytable::mutate(p_l = lengthed / sum(lengthed), .by = c(species_code, year, sex, age)) %>% 
+                             tidytable::summarise(lengthed = .N, 
+                                                  .by = c(species_code, year, sex, age, length)) %>% 
+                             tidytable::mutate(p_l = lengthed / sum(lengthed), 
+                                               .by = c(species_code, year, sex, age)) %>% 
                              tidytable::drop_na() %>% 
                              dplyr::group_by(species_code, year, sex, age) %>% 
                              dplyr::mutate(samp_length = rmultinom(1, sum(lengthed), p_l)) %>% 
@@ -36,8 +38,10 @@ al_variab <- function(age_dat,
       tidytable::mutate(id = .I) %>% 
       tidytable::left_join(age_dat %>% 
                              tidytable::drop_na() %>% 
-                             tidytable::summarise(lengthed = .N, .by = c(species_code, sex, age, length)) %>% 
-                             tidytable::mutate(p_l = lengthed / sum(lengthed), .by = c(species_code, sex, age)) %>% 
+                             tidytable::summarise(lengthed = .N,
+                                                  .by = c(species_code, sex, age, length)) %>% 
+                             tidytable::mutate(p_l = lengthed / sum(lengthed), 
+                                               .by = c(species_code, sex, age)) %>% 
                              tidytable::drop_na() %>% 
                              dplyr::group_by(species_code, sex, age) %>% 
                              dplyr::mutate(samp_length = rmultinom(1, sum(lengthed), p_l)) %>% 

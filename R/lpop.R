@@ -18,7 +18,7 @@ lpop <- function(lcomp,
   # id hauls without lengths
   # see issue #35 for reasoning 
   cpue %>%
-    tidytable::filter(numcpue > 0) %>% 
+    tidytable::filter(numcpue > 0) %>%
     tidytable::distinct(hauljoin, species_code)  %>% 
     tidytable::anti_join(lcomp %>%
                             tidytable::summarise(hauljoin = unique(hauljoin),
@@ -29,9 +29,17 @@ lpop <- function(lcomp,
   cpue %>%
     tidytable::mutate(st_num = mean(numcpue) * area,
                       tot = sum(numcpue), 
-                      .by = c(year, species_code, stratum, hauljoin)) %>%
+                      .by = c(year, species_code, stratum)) %>%
     tidytable::summarise(abund = mean(numcpue) / tot * st_num,
                          .by = c(year, species_code, stratum, hauljoin)) -> .pop
+  
+  .pop %>% 
+    tidytable::summarise(abund = sum(abund, na.rm = TRUE), .by = c(year, species_code))
+  
+  gap_lpop %>% 
+    tidytable::summarise(abund = sum(population_count, na.rm = TRUE), .by = c(year, species_code))
+  
+  
   
   # if there are any samples w/o lengths rejoin them
   if(nrow(.no_length) == 0){
