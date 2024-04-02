@@ -25,7 +25,8 @@ age_error <- function(age_dat,
           tidytable::filter(.N >= 10, 
                             .by = c(age, species_code)) %>% 
           group_by(age, species_code) %>% 
-          tidytable::mutate(new_age = sample(test_age, .N, replace = TRUE))
+          tidytable::mutate(new_age = sample(test_age, .N, replace = TRUE)) %>% 
+          ungroup
       ) %>% 
       group_by(id) %>% 
       tidytable::slice_sample(n = 1) %>% 
@@ -51,6 +52,7 @@ age_error <- function(age_dat,
                              tidytable::drop_na() %>% 
                              dplyr::group_by(species_code, year, age) %>% 
                              dplyr::mutate(new_age = rmultinom(1, aged, p_a)) %>% 
+                             ungroup %>% 
                              tidytable::filter(new_age[,1] != 0) %>% 
                              tidytable::select(species_code, year, age, test_age, new_age) %>% 
                              tidytable::uncount(., new_age)) %>% 

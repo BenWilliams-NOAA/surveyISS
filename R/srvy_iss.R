@@ -357,16 +357,16 @@ srvy_iss_ai_cmplx <- function(iters = 1,
   vroom::vroom_write(iss_length, here::here("output", region, paste0(save, "_iss_ln_", cmplx, ".csv")), delim = ",")    
   vroom::vroom_write(iss_age, here::here("output", region, paste0(save, "_iss_ag_", cmplx, ".csv")), delim = ",")
   # base age & length pop'n
-  vroom::vroom_write(oga, file = here::here("output", region, "base_age_", cmplx, ".csv"), delim = ",")
-  vroom::vroom_write(ogl, file = here::here("output", region, "base_length_", cmplx, ".csv"), delim = ",")
+  vroom::vroom_write(oga, file = here::here("output", region, paste0("base_age_", cmplx, ".csv")), delim = ",")
+  vroom::vroom_write(ogl, file = here::here("output", region, paste0("base_length_", cmplx, ".csv")), delim = ",")
   # if desired, write out bootstrapped age & length pop'n and realized sample sizes
   if(isTRUE(save_interm)) {
     r_length %>%
       tidytable::map_df(., ~as.data.frame(.x), .id = "sim") %>% 
-      vroom::vroom_write(here::here("output", region, "resampled_length_", cmplx, ".csv"), delim = ",")
+      vroom::vroom_write(here::here("output", region, paste0("resampled_length_", cmplx, ".csv")), delim = ",")
     r_age %>%
       tidytable::map_df(., ~as.data.frame(.x), .id = "sim") %>% 
-      vroom::vroom_write(here::here("output", region, "resampled_age_", cmplx, ".csv"), delim = ",")
+      vroom::vroom_write(here::here("output", region, paste0("resampled_age_", cmplx, ".csv")), delim = ",")
     vroom::vroom_write(.rss_length, here::here("output", region, paste0(save, "_iter_rss_ln_", cmplx, ".csv")), delim = ",")
     vroom::vroom_write(.rss_age, here::here("output", region, paste0(save, "_iter_rss_ag_", cmplx, ".csv")), delim = ",")
   }
@@ -569,16 +569,16 @@ srvy_iss_goa_cmplx <- function(iters = 1,
   vroom::vroom_write(iss_length, here::here("output", region, paste0(save, "_iss_ln_", cmplx, ".csv")), delim = ",")    
   vroom::vroom_write(iss_age, here::here("output", region, paste0(save, "_iss_ag_", cmplx, ".csv")), delim = ",")
   # base age & length pop'n
-  vroom::vroom_write(oga, file = here::here("output", region, "base_age_", cmplx, ".csv"), delim = ",")
-  vroom::vroom_write(ogl, file = here::here("output", region, "base_length_", cmplx, ".csv"), delim = ",")
+  vroom::vroom_write(oga, file = here::here("output", region, paste0("base_age_", cmplx, ".csv")), delim = ",")
+  vroom::vroom_write(ogl, file = here::here("output", region, paste0("base_length_", cmplx, ".csv")), delim = ",")
   # if desired, write out bootstrapped age & length pop'n and realized sample sizes
   if(isTRUE(save_interm)) {
     r_length %>%
       tidytable::map_df(., ~as.data.frame(.x), .id = "sim") %>% 
-      vroom::vroom_write(here::here("output", region, "resampled_length_", cmplx, ".csv"), delim = ",")
+      vroom::vroom_write(here::here("output", region, paste0("resampled_length_", cmplx, ".csv")), delim = ",")
     r_age %>%
       tidytable::map_df(., ~as.data.frame(.x), .id = "sim") %>% 
-      vroom::vroom_write(here::here("output", region, "resampled_age_", cmplx, ".csv"), delim = ",")
+      vroom::vroom_write(here::here("output", region, paste0("resampled_age_", cmplx, ".csv")), delim = ",")
     vroom::vroom_write(.rss_length, here::here("output", region, paste0(save, "_iter_rss_ln_", cmplx, ".csv")), delim = ",")
     vroom::vroom_write(.rss_age, here::here("output", region, paste0(save, "_iter_rss_ag_", cmplx, ".csv")), delim = ",")
   }

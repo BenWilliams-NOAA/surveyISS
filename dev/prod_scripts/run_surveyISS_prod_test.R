@@ -51,6 +51,19 @@ specimen %>%
 read_test %>% 
   tidytable::filter(!(species_code %in% c(30050, 30051, 30052, 30150, 30152, 10261, 10262, 10200))) -> .read_test
 
+# lfreq_data = .lfreq
+# specimen_data = .specimen
+# cpue_data = .cpue
+# strata_data = strata
+# r_t = .read_test
+# bin = 1
+# boot_hauls = TRUE
+# boot_lengths = TRUE
+# boot_ages = TRUE
+# al_var = TRUE
+# al_var_ann = TRUE
+# age_err = TRUE
+
 srvy_iss(iters = iters, 
          lfreq_data = .lfreq,
          specimen_data = .specimen, 
@@ -69,16 +82,15 @@ srvy_iss(iters = iters,
          save_interm = FALSE, 
          save = 'prodtest')
 
-
 # run for goa rougheye-blackspotted stock complex
 cpue %>% 
-  tidytable::filter.(species_code %in% c(30050, 30051, 30052)) -> .cpue_rebs
+  tidytable::filter(species_code %in% c(30050, 30051, 30052)) -> .cpue_rebs
 lfreq %>% 
-  tidytable::filter.(species_code %in% c(30050, 30051, 30052)) -> .lfreq_rebs
+  tidytable::filter(species_code %in% c(30050, 30051, 30052)) -> .lfreq_rebs
 specimen %>% 
-  tidytable::filter.(species_code %in% c(30050, 30051, 30052)) -> .specimen_rebs
+  tidytable::filter(species_code %in% c(30050, 30051, 30052)) -> .specimen_rebs
 read_test %>% 
-  tidytable::filter.(species_code %in% c(30050, 30051, 30052)) -> .read_test_rebs
+  tidytable::filter(species_code %in% c(30050, 30051, 30052)) -> .read_test_rebs
 
 srvy_iss_goa_cmplx(iters = iters, 
                    lfreq_data = .lfreq_rebs, 
@@ -102,13 +114,13 @@ srvy_iss_goa_cmplx(iters = iters,
 
 # run for goa dusky stock (has different historical species codes)
 cpue %>% 
-  tidytable::filter.(species_code %in% c(30150, 30152)) -> .cpue_dr
+  tidytable::filter(species_code %in% c(30150, 30152)) -> .cpue_dr
 lfreq %>% 
-  tidytable::filter.(species_code %in% c(30150, 30152)) -> .lfreq_dr
+  tidytable::filter(species_code %in% c(30150, 30152)) -> .lfreq_dr
 specimen %>% 
-  tidytable::filter.(species_code %in% c(30150, 30152)) -> .specimen_dr
+  tidytable::filter(species_code %in% c(30150, 30152)) -> .specimen_dr
 read_test %>% 
-  tidytable::filter.(species_code %in% c(30150, 30152)) -> .read_test_dr
+  tidytable::filter(species_code %in% c(30150, 30152)) -> .read_test_dr
 
 srvy_iss_goa_cmplx(iters = iters, 
                    lfreq_data = .lfreq_dr, 
@@ -132,13 +144,13 @@ srvy_iss_goa_cmplx(iters = iters,
 
 # run for goa northern/southern rock sole
 cpue %>% 
-  tidytable::filter.(species_code %in% c(10261, 10262)) -> .cpue_nsrs
+  tidytable::filter(species_code %in% c(10261, 10262)) -> .cpue_nsrs
 lfreq %>% 
-  tidytable::filter.(species_code %in% c(10261, 10262)) -> .lfreq_nsrs
+  tidytable::filter(species_code %in% c(10261, 10262)) -> .lfreq_nsrs
 specimen %>% 
-  tidytable::filter.(species_code %in% c(10261, 10262)) -> .specimen_nsrs
+  tidytable::filter(species_code %in% c(10261, 10262)) -> .specimen_nsrs
 read_test %>% 
-  tidytable::filter.(species_code %in% c(10261, 10262)) -> .read_test_nsrs
+  tidytable::filter(species_code %in% c(10261, 10262)) -> .read_test_nsrs
 
 srvy_iss_goa_w_c_e(iters = iters, 
                    lfreq_data = .lfreq_nsrs, 
@@ -160,13 +172,13 @@ srvy_iss_goa_w_c_e(iters = iters,
 
 # run for goa rex sole
 cpue %>% 
-  tidytable::filter.(species_code %in% c(10200)) -> .cpue_rex
+  tidytable::filter(species_code %in% c(10200)) -> .cpue_rex
 lfreq %>% 
-  tidytable::filter.(species_code %in% c(10200)) -> .lfreq_rex
+  tidytable::filter(species_code %in% c(10200)) -> .lfreq_rex
 specimen %>% 
-  tidytable::filter.(species_code %in% c(10200)) -> .specimen_rex
+  tidytable::filter(species_code %in% c(10200)) -> .specimen_rex
 read_test %>% 
-  tidytable::filter.(species_code %in% c(10200)) -> .read_test_rex
+  tidytable::filter(species_code %in% c(10200)) -> .read_test_rex
 
 srvy_iss_goa_wc_e(iters = iters, 
                   lfreq_data = .lfreq_rex, 
@@ -198,19 +210,19 @@ strata <- vroom::vroom(here::here('data', 'strata_ai.csv'))
 specimen <- vroom::vroom(here::here('data', 'specimen_ai.csv'))
 read_test <- vroom::vroom(here::here('data', 'reader_tester.csv')) %>% 
   dplyr::rename_all(tolower) %>% 
-  tidytable::select.(species_code, region, read_age, test_age) %>% 
-  tidytable::rename.(age = 'read_age') %>% 
-  tidytable::filter.(species_code %in% species)
+  tidytable::select(species_code, region, read_age, test_age) %>% 
+  tidytable::rename(age = 'read_age') %>% 
+  tidytable::filter(species_code %in% species)
 
 # run for all species (and subsetting out species cases so we don't have two places with those results)
 cpue %>% 
-  tidytable::filter.(!(species_code %in% c(30050, 30051, 30052, 30420))) -> .cpue
+  tidytable::filter(!(species_code %in% c(30050, 30051, 30052, 30420))) -> .cpue
 lfreq %>% 
-  tidytable::filter.(!(species_code %in% c(30050, 30051, 30052, 30420))) -> .lfreq
+  tidytable::filter(!(species_code %in% c(30050, 30051, 30052, 30420))) -> .lfreq
 specimen %>% 
-  tidytable::filter.(!(species_code %in% c(30050, 30051, 30052, 30420))) -> .specimen
+  tidytable::filter(!(species_code %in% c(30050, 30051, 30052, 30420))) -> .specimen
 read_test %>% 
-  tidytable::filter.(!(species_code %in% c(30050, 30051, 30052, 30420))) -> .read_test
+  tidytable::filter(!(species_code %in% c(30050, 30051, 30052, 30420))) -> .read_test
 
 srvy_iss(iters = iters, 
          lfreq_data = .lfreq,
@@ -232,13 +244,13 @@ srvy_iss(iters = iters,
 
 # Run for ai blackspotted-rougheye stock complex
 cpue %>% 
-  tidytable::filter.(species_code %in% c(30050, 30051, 30052)) -> .cpue_bsre
+  tidytable::filter(species_code %in% c(30050, 30051, 30052)) -> .cpue_bsre
 lfreq %>% 
-  tidytable::filter.(species_code %in% c(30050, 30051, 30052)) -> .lfreq_bsre
+  tidytable::filter(species_code %in% c(30050, 30051, 30052)) -> .lfreq_bsre
 specimen %>% 
-  tidytable::filter.(species_code %in% c(30050, 30051, 30052)) -> .specimen_bsre
+  tidytable::filter(species_code %in% c(30050, 30051, 30052)) -> .specimen_bsre
 read_test %>% 
-  tidytable::filter.(species_code %in% c(30050, 30051, 30052)) -> .read_test_bsre
+  tidytable::filter(species_code %in% c(30050, 30051, 30052)) -> .read_test_bsre
 
 srvy_iss_ai_cmplx(iters = iters, 
                   lfreq_data = .lfreq_bsre, 
@@ -262,13 +274,13 @@ srvy_iss_ai_cmplx(iters = iters,
 
 # Run for ai northern rockfish (subregion expansion)
 cpue %>% 
-  tidytable::filter.(species_code %in% c(30420)) -> .cpue_nr
+  tidytable::filter(species_code %in% c(30420)) -> .cpue_nr
 lfreq %>% 
-  tidytable::filter.(species_code %in% c(30420)) -> .lfreq_nr
+  tidytable::filter(species_code %in% c(30420)) -> .lfreq_nr
 specimen %>% 
-  tidytable::filter.(species_code %in% c(30420)) -> .specimen_nr
+  tidytable::filter(species_code %in% c(30420)) -> .specimen_nr
 read_test %>% 
-  tidytable::filter.(species_code %in% c(30420)) -> .read_test_nr
+  tidytable::filter(species_code %in% c(30420)) -> .read_test_nr
 
 srvy_iss_ai_subreg(iters = iters,
                    lfreq_data = .lfreq_nr, 
@@ -301,9 +313,9 @@ strata <- vroom::vroom(here::here('data', 'strata_ebs.csv'))
 specimen <- vroom::vroom(here::here('data', 'specimen_ebs.csv'))
 read_test <- vroom::vroom(here::here('data', 'reader_tester.csv')) %>% 
   dplyr::rename_all(tolower) %>% 
-  tidytable::select.(species_code, region, read_age, test_age) %>% 
-  tidytable::rename.(age = 'read_age') %>% 
-  tidytable::filter.(species_code %in% species)
+  tidytable::select(species_code, region, read_age, test_age) %>% 
+  tidytable::rename(age = 'read_age') %>% 
+  tidytable::filter(species_code %in% species)
 
 srvy_iss(iters = iters, 
          lfreq_data = lfreq,
@@ -336,9 +348,9 @@ strata_data <- vroom::vroom(here::here('data', 'strata_ebs_slope.csv'))
 specimen_data <- vroom::vroom(here::here('data', 'specimen_ebs_slope.csv'))
 read_test <- vroom::vroom(here::here('data', 'reader_tester.csv')) %>% 
   dplyr::rename_all(tolower) %>% 
-  tidytable::select.(species_code, region, read_age, test_age) %>% 
-  tidytable::rename.(age = 'read_age') %>% 
-  tidytable::filter.(species_code %in% species)
+  tidytable::select(species_code, region, read_age, test_age) %>% 
+  tidytable::rename(age = 'read_age') %>% 
+  tidytable::filter(species_code %in% species)
 
 srvy_iss(iters = iters, 
          lfreq_data = lfreq,
@@ -370,9 +382,9 @@ strata <- vroom::vroom(here::here('data', 'strata_nebs.csv'))
 specimen <- vroom::vroom(here::here('data', 'specimen_nebs.csv'))
 read_test <- vroom::vroom(here::here('data', 'reader_tester.csv')) %>% 
   dplyr::rename_all(tolower) %>% 
-  tidytable::select.(species_code, region, read_age, test_age) %>% 
-  tidytable::rename.(age = 'read_age') %>% 
-  tidytable::filter.(species_code %in% species)
+  tidytable::select(species_code, region, read_age, test_age) %>% 
+  tidytable::rename(age = 'read_age') %>% 
+  tidytable::filter(species_code %in% species)
 
 srvy_iss(iters = iters, 
          lfreq_data = lfreq,

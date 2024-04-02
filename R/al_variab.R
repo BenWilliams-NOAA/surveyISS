@@ -23,6 +23,7 @@ al_variab <- function(age_dat,
                              tidytable::drop_na() %>% 
                              dplyr::group_by(species_code, year, sex, age) %>% 
                              dplyr::mutate(samp_length = rmultinom(1, sum(lengthed), p_l)) %>% 
+                             ungroup %>% 
                              tidytable::filter(samp_length[,1] != 0) %>% 
                              tidytable::select(species_code, year, sex, age, length, samp_length) %>% 
                              tidytable::uncount(., samp_length) %>% 
@@ -45,6 +46,7 @@ al_variab <- function(age_dat,
                              tidytable::drop_na() %>% 
                              dplyr::group_by(species_code, sex, age) %>% 
                              dplyr::mutate(samp_length = rmultinom(1, sum(lengthed), p_l)) %>% 
+                             ungroup %>% 
                              tidytable::filter(samp_length[,1] != 0) %>% 
                              tidytable::select(species_code, sex, age, length, samp_length) %>% 
                              tidytable::uncount(., samp_length) %>% 

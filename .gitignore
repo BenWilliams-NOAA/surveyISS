@@ -4,8 +4,10 @@
 .Ruserdata
 database_specs.csv
 output/ai/
-output/bs/
+output/ebs/
 output/goa/
+output/nebs/
+output/ebs_slope/
 output/saved/ai/
 output/saved/bs/
 output/saved/goa/
