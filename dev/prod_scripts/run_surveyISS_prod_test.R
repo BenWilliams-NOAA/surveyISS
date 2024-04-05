@@ -43,13 +43,13 @@ read_test <- vroom::vroom(here::here('data', 'reader_tester.csv')) %>%
 
 # run for all species (and subsetting out special cases so we don't have two places with those results)
 cpue %>% 
-  tidytable::filter(!(species_code %in% c(30050, 30051, 30052, 30150, 30152, 10261, 10262, 10200))) -> .cpue
+  tidytable::filter(!(species_code %in% c(30050, 30051, 30052, 30150, 30152, 10261, 10262, 10200, 21740))) -> .cpue
 lfreq %>% 
-  tidytable::filter(!(species_code %in% c(30050, 30051, 30052, 30150, 30152, 10261, 10262, 10200))) -> .lfreq
+  tidytable::filter(!(species_code %in% c(30050, 30051, 30052, 30150, 30152, 10261, 10262, 10200, 21740))) -> .lfreq
 specimen %>% 
-  tidytable::filter(!(species_code %in% c(30050, 30051, 30052, 30150, 30152, 10261, 10262, 10200))) -> .specimen
+  tidytable::filter(!(species_code %in% c(30050, 30051, 30052, 30150, 30152, 10261, 10262, 10200, 21740))) -> .specimen
 read_test %>% 
-  tidytable::filter(!(species_code %in% c(30050, 30051, 30052, 30150, 30152, 10261, 10262, 10200))) -> .read_test
+  tidytable::filter(!(species_code %in% c(30050, 30051, 30052, 30150, 30152, 10261, 10262, 10200, 21740))) -> .read_test
 
 # lfreq_data = .lfreq
 # specimen_data = .specimen
@@ -81,6 +81,34 @@ srvy_iss(iters = iters,
          region = region, 
          save_interm = FALSE, 
          save = 'prodtest')
+
+# run for goa pollock (west of 140)
+cpue %>% 
+  tidytable::filter(species_code %in% c(21740)) -> .cpue_poll
+lfreq %>% 
+  tidytable::filter(species_code %in% c(21740)) -> .lfreq_poll
+specimen %>% 
+  tidytable::filter(species_code %in% c(21740)) -> .specimen_poll
+read_test %>% 
+  tidytable::filter(species_code %in% c(21740)) -> .read_test_poll
+
+srvy_iss_w140(iters = iters, 
+              lfreq_data = .lfreq_poll,
+              specimen_data = .specimen_poll, 
+              cpue_data = .cpue_poll, 
+              strata_data = strata, 
+              r_t = .read_test_poll, 
+              yrs = yrs, 
+              bin = 1, 
+              boot_hauls = TRUE, 
+              boot_lengths = TRUE, 
+              boot_ages = TRUE, 
+              al_var = TRUE, 
+              al_var_ann = TRUE, 
+              age_err = TRUE,
+              region = region, 
+              save_interm = FALSE, 
+              save = 'prodtest')
 
 # run for goa rougheye-blackspotted stock complex
 cpue %>% 

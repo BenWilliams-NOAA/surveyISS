@@ -1310,6 +1310,223 @@ srvy_iss_goa_wc_e <- function(iters = 1,
 
 }
 
+#' replicate survey input sample size function for goa west of 140
+#'
+#' @param iters number of iterations (500 recommended)
+#' @param lfreq_data  input dataframe
+#' @param specimen_data input dataframe
+#' @param cpue_data input dataframe
+#' @param strata_data input dataframe
+#' @param r_t input dataframe
+#' @param yrs any year filter >= (default = NULL)
+#' @param bin bin size (default = 1 cm)
+#' @param boot_hauls resample hauls w/replacement (default = FALSE)
+#' @param boot_lengths resample lengths w/replacement (default = FALSE)
+#' @param boot_ages resample ages w/replacement (default = FALSE)
+#' @param al_var include age-length variability (default = FALSE)
+#' @param al_var_ann resample age-length annually or pooled across years
+#' @param age_err include ageing error (default = FALSE)
+#' @param region region will create a folder and place results in said folder
+#' @param save_interm save the intermediate results: original comps, resampled comps (default = FALSE)
+#' @param save name to save output
+#'
+#' @return
+#' @export srvy_iss_w140
+#'
+#' @examples
+#'
+srvy_iss_w140 <- function(iters = 1, 
+                          lfreq_data,
+                          specimen_data, 
+                          cpue_data, 
+                          strata_data, 
+                          r_t, 
+                          yrs = NULL, 
+                          bin = 1, 
+                          boot_hauls = FALSE, 
+                          boot_lengths = FALSE, 
+                          boot_ages = FALSE, 
+                          al_var = FALSE, 
+                          al_var_ann = FALSE, 
+                          age_err = FALSE,
+                          region = NULL, 
+                          save_interm = FALSE, 
+                          save){
+  
+  # create storage location
+  region = tolower(region)
+  if(!dir.exists(here::here('output', region))){
+    dir.create(here::here('output', region), recursive = TRUE)
+  }
+  
+  # restructure data
+  lfreq_data <- tidytable::as_tidytable(lfreq_data) 
+  specimen_data <- tidytable::as_tidytable(specimen_data) 
+  cpue_data <- tidytable::as_tidytable(cpue_data) 
+  strata_data <- tidytable::as_tidytable(strata_data) 
+  
+  # subset data to be west of 140 and reclassify stratum 142 west of 140 to now be 141
+  lfreq_data %>% 
+    tidytable::filter(long_mid < -140) %>% 
+    tidytable::mutate(stratum = case_when(stratum == 142 ~ 141,
+                                          stratum != 142 ~ stratum)) -> lfreq_data
+  specimen_data %>% 
+    tidytable::filter(long_mid < -140) %>% 
+    tidytable::mutate(stratum = case_when(stratum == 142 ~ 141,
+                                          stratum != 142 ~ stratum)) -> specimen_data
+  cpue_data %>% 
+    tidytable::filter(long_mid < -140) %>% 
+    tidytable::mutate(stratum = case_when(stratum == 142 ~ 141,
+                                          stratum != 142 ~ stratum)) -> cpue_data
+  
+  # update stratum areas (from zack oyafuso provided in issue #88 in afsc-ga-products/data-requests)
+  updated_stratum_area <- 
+    data.table::data.table(
+      survey = 47, 
+      design_year = 1984,
+      stratum = c(40, 41, 140, 141, 240, 
+                  241, 340, 341, 440, 540),
+      area = c(4980.0055, 6714.745, 7346.035, 9993.9158, 2286.1398, 
+               1503.6357, 751.2782, 1296.7165, 1252.9542, 1609.551),
+      area_id = NA, subarea_name = NA, description = NA)
+  
+  strata_data <- tidytable::bind_rows(strata_data %>% 
+                                        tidytable::filter(!(stratum %in% c(updated_stratum_area$stratum,
+                                                                           142, 143, 
+                                                                           50, 150, 151, 250, 251, 
+                                                                           350, 351, 450, 550))),
+                                      updated_stratum_area)
+  
+  # get original age/length pop'n values ----
+  og <- srvy_comps(lfreq_data = lfreq_data, 
+                   specimen_data = specimen_data, 
+                   cpue_data = cpue_data, 
+                   strata_data = strata_data,
+                   r_t = r_t,
+                   yrs = yrs, 
+                   bin = bin,
+                   boot_hauls = FALSE, 
+                   boot_lengths = FALSE, 
+                   boot_ages = FALSE,
+                   al_var = FALSE,
+                   al_var_ann = FALSE,
+                   age_err = FALSE)
+  oga <- og$age
+  ogl <- og$length
+  
+  # run resampling iterations ----
+  rr <- purrr::map(1:iters, ~ srvy_comps(lfreq_data = lfreq_data, 
+                                         specimen_data = specimen_data, 
+                                         cpue_data = cpue_data, 
+                                         strata_data = strata_data,
+                                         r_t = r_t,
+                                         yrs = yrs, 
+                                         bin = bin,
+                                         boot_hauls = boot_hauls, 
+                                         boot_lengths = boot_lengths, 
+                                         boot_ages = boot_ages,
+                                         al_var = al_var,
+                                         al_var_ann = al_var_ann,
+                                         age_err = age_err))
+  
+  r_age <- do.call(mapply, c(list, rr, SIMPLIFY = FALSE))$age
+  r_length <- do.call(mapply, c(list, rr, SIMPLIFY = FALSE))$length
+  
+  # compute statistics ----
+  # compute realized sample size of bootstrapped age/length
+  r_age %>%
+    tidytable::map(., ~rss_age(sim_data = .x, og_data = oga)) %>%
+    tidytable::map_df(., ~as.data.frame(.x), .id = "sim") %>% 
+    tidytable::mutate(sex_desc = case_when(sex == 0 ~ 'total_pre',
+                                           sex == 1 ~ 'male',
+                                           sex == 2 ~ 'female',
+                                           sex == 4 ~ 'total_post')) -> .rss_age
+  
+  
+  r_length %>%
+    tidytable::map(., ~rss_length(sim_data = .x, og_data = ogl)) %>%
+    tidytable::map_df(., ~as.data.frame(.x), .id = "sim") %>% 
+    tidytable::mutate(sex_desc = case_when(sex == 0 ~ 'total_pre',
+                                           sex == 1 ~ 'male',
+                                           sex == 2 ~ 'female',
+                                           sex == 4 ~ 'total_post')) -> .rss_length
+  
+  # compute harmonic mean of iterated realized sample size, which is the input sample size (iss)
+  #   and compute average relative bias in pop'n estimates (avg relative bias across age or length)
+  .rss_age %>% 
+    tidytable::summarise(iss = psych::harmonic.mean(rss, na.rm = TRUE),
+                         .by = c(year, species_code, sex, sex_desc)) %>% 
+    tidytable::left_join(r_age %>%
+                           tidytable::map_df(., ~as.data.frame(.x), .id = "sim") %>% 
+                           tidytable::bind_rows(r_age %>% 
+                                                  tidytable::map_df(., ~as.data.frame(.x), .id = "sim") %>% 
+                                                  tidytable::filter(sex != 0) %>% 
+                                                  tidytable::summarise(agepop = sum(agepop), .by = c(sim, year, species_code, age)) %>% 
+                                                  tidytable::mutate(sex = 4)) %>% 
+                           tidytable::summarise(agepop = mean(agepop), .by = c(year, species_code, sex, age)) %>% 
+                           tidytable::mutate(p_sim = agepop / sum(agepop), .by = c(year, species_code, sex)) %>% 
+                           tidytable::drop_na() %>% 
+                           tidytable::select(-agepop) %>% 
+                           tidytable::left_join(oga %>% 
+                                                  tidytable::bind_rows(oga %>% 
+                                                                         tidytable::filter(sex != 0) %>% 
+                                                                         tidytable::summarise(agepop = sum(agepop), .by = c(year, species_code, age)) %>% 
+                                                                         tidytable::mutate(sex = 4)) %>% 
+                                                  tidytable::mutate(p_og = agepop / sum(agepop), .by = c(year, species_code, sex)) %>% 
+                                                  tidytable::select(-agepop)) %>% 
+                           tidytable::mutate(bias = (p_sim - p_og)) %>% 
+                           tidytable::drop_na() %>% 
+                           tidytable::summarise(bias = mean(bias), .by = c(year, species_code, sex))) %>% 
+    tidytable::filter(iss > 0) -> iss_age
+  
+  .rss_length %>% 
+    tidytable::summarise(iss = psych::harmonic.mean(rss, na.rm = TRUE),
+                         .by = c(year, species_code, sex, sex_desc)) %>% 
+    tidytable::left_join(r_length %>%
+                           tidytable::map_df(., ~as.data.frame(.x), .id = "sim") %>% 
+                           tidytable::bind_rows(r_length %>% 
+                                                  tidytable::map_df(., ~as.data.frame(.x), .id = "sim") %>% 
+                                                  tidytable::filter(sex != 0) %>% 
+                                                  tidytable::summarise(abund = sum(abund), .by = c(sim, year, species_code, length)) %>% 
+                                                  tidytable::mutate(sex = 4)) %>% 
+                           tidytable::summarise(abund = mean(abund), .by = c(year, species_code, sex, length)) %>% 
+                           tidytable::mutate(p_sim = abund / sum(abund), .by = c(year, species_code, sex)) %>% 
+                           tidytable::drop_na() %>% 
+                           tidytable::select(-abund) %>% 
+                           tidytable::left_join(ogl %>% 
+                                                  tidytable::bind_rows(ogl %>% 
+                                                                         tidytable::filter(sex != 0) %>% 
+                                                                         tidytable::summarise(abund = sum(abund), .by = c(year, species_code, length)) %>% 
+                                                                         tidytable::mutate(sex = 4)) %>% 
+                                                  tidytable::mutate(p_og = abund / sum(abund), .by = c(year, species_code, sex)) %>% 
+                                                  tidytable::select(-abund)) %>% 
+                           tidytable::mutate(bias = (p_sim - p_og)) %>% 
+                           tidytable::drop_na() %>% 
+                           tidytable::summarise(bias = mean(bias), .by = c(year, species_code, sex))) %>% 
+    tidytable::filter(iss > 0) -> iss_length
+  
+  # write results ----
+  # input sample size
+  vroom::vroom_write(iss_length, here::here("output", region, paste0(save, "_iss_ln_w140.csv")), delim = ",")    
+  vroom::vroom_write(iss_age, here::here("output", region, paste0(save, "_iss_ag_w140.csv")), delim = ",")
+  # base age & length pop'n
+  vroom::vroom_write(oga, file = here::here("output", region, "base_age_w140.csv"), delim = ",")
+  vroom::vroom_write(ogl, file = here::here("output", region, "base_length_w140.csv"), delim = ",")
+  # if desired, write out bootstrapped age & length pop'n and realized sample sizes
+  if(isTRUE(save_interm)) {
+    r_length %>%
+      tidytable::map_df(., ~as.data.frame(.x), .id = "sim") %>% 
+      vroom::vroom_write(here::here("output", region, "resampled_length_w140.csv"), delim = ",")
+    r_age %>%
+      tidytable::map_df(., ~as.data.frame(.x), .id = "sim") %>% 
+      vroom::vroom_write(here::here("output", region, "resampled_age_w140.csv"), delim = ",")
+    vroom::vroom_write(.rss_length, here::here("output", region, paste0(save, "_iter_rss_ln_w140.csv")), delim = ",")
+    vroom::vroom_write(.rss_age, here::here("output", region, paste0(save, "_iter_rss_ag_w140.csv")), delim = ",")
+  }
+  
+}
+
+
 #' replicate srvy_iss function for spatially-explicit input sample size for aleutian islands subregions
 #'
 #' @param iters number of iterations (500 recommended)
