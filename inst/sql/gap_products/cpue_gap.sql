@@ -4,6 +4,8 @@ SELECT
     gap_products.akfin_cpue.species_code,
     gap_products.akfin_haul.stratum,
     gap_products.akfin_cpue.hauljoin,
+    (gap_products.akfin_haul.latitude_dd_start + gap_products.akfin_haul.latitude_dd_end) / 2 as lat_mid,
+    (gap_products.akfin_haul.longitude_dd_start + gap_products.akfin_haul.longitude_dd_end) / 2 as long_mid,
     gap_products.akfin_cpue.cpue_nokm2 as numcpue
 FROM gap_products.akfin_haul INNER JOIN gap_products.akfin_cruise 
   ON gap_products.akfin_cruise.cruisejoin = gap_products.akfin_haul.cruisejoin
