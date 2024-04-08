@@ -5,7 +5,7 @@
 #' @param nonpar use either sampling with replacement or multinomial for reader-tester data (default = FALSE)
 #'
 #' @return
-#' @export
+#' @export age_error
 #'
 #' @examples
 age_error <- function(age_dat, 

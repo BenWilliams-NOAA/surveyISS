@@ -115,23 +115,14 @@ srvy_comps <- function(lfreq_data,
                              tidytable::mutate(sex = 0)) -> .agedat
   }
   
-  # add age-length variability ----
-  if(isTRUE(al_var)) {
-    al_variab(.agedat, annual = al_var_ann) -> .agedat_al
-  }
-  
-  # add ageing error ----
-  if(isTRUE(age_err)) {
-    age_error(.agedat, r_t) -> .agedat_ae
-  }
-  
   # with age-length and ageing error ----
   if(isTRUE(al_var) & isTRUE(age_err)) {
+    al_variab(.agedat, annual = al_var_ann) -> .agedat_al
     age_error(.agedat_al, r_t) -> .agedat
   } else if(isTRUE(al_var) & !isTRUE(age_err)){
-    .agedat_al -> .agedat
+    al_variab(.agedat, annual = al_var_ann) -> .agedat
   } else if(!isTRUE(al_var) & isTRUE(age_err)){
-    .agedat_ae -> .agedat
+    age_error(.agedat, r_t) -> .agedat
   }
   
   # bin lengths in age data ----

@@ -4,7 +4,7 @@
 #' @param annual resample age data annually or pooled across years
 #'
 #' @return
-#' @export
+#' @export al_variab
 #'
 #' @examples
 al_variab <- function(age_dat, 
