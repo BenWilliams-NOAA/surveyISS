@@ -32,7 +32,7 @@ rss_age <- function(sim_data,
     tidytable::mutate(p_og = og_agepop / sum(og_agepop),
                       p_sim = agepop / sum(agepop),
                       .by = c(year, species_code, sex)) %>% 
-    tidytable::summarise(rss = sum(p_og * (1 - p_og)) / sum((p_sim - p_og)^2),
+    tidytable::summarise(rss = sum(p_sim * (1 - p_sim)) / sum((p_sim - p_og)^2),
                          .by = c(year, species_code, sex)) %>% 
     tidytable::drop_na()
 
@@ -72,7 +72,7 @@ rss_age_reg <- function(sim_data,
     tidytable::mutate(p_og = og_agepop / sum(og_agepop),
                       p_sim = agepop / sum(agepop),
                       .by = c(year, region, species_code, sex)) %>% 
-    tidytable::summarise(rss = sum(p_og * (1 - p_og)) / sum((p_sim - p_og)^2),
+    tidytable::summarise(rss = sum(p_sim * (1 - p_sim)) / sum((p_sim - p_og)^2),
                          .by = c(year, region, species_code, sex)) %>% 
     tidytable::drop_na()
   
@@ -96,7 +96,7 @@ rss_caal <- function(sim_data,
                            tidytable::rename(og_caal = caal)) %>% 
     tidytable::replace_na(list(caal = 0)) %>% 
     tidytable::replace_na(list(og_caal = 0)) %>%
-    tidytable::summarise(rss = sum(og_caal * (1 - og_caal)) / sum((caal - og_caal)^2),
+    tidytable::summarise(rss = sum(caal * (1 - caal)) / sum((caal - og_caal)^2),
                          .by = c(year, species_code, sex, length)) %>% 
     tidytable::drop_na()
 
@@ -135,7 +135,7 @@ rss_length <- function(sim_data,
     tidytable::mutate(p_og = og_abund / sum(og_abund),
                       p_sim = abund / sum(abund),
                       .by = c(year, species_code, sex)) %>% 
-    tidytable::summarise(rss = sum(p_og * (1 - p_og)) / sum((p_sim - p_og)^2),
+    tidytable::summarise(rss = sum(p_sim * (1 - p_sim)) / sum((p_sim - p_og)^2),
                          .by = c(year, species_code, sex)) %>% 
     tidytable::drop_na()
   
@@ -174,7 +174,7 @@ rss_length_reg <- function(sim_data,
     tidytable::mutate(p_og = og_abund / sum(og_abund),
                       p_sim = abund / sum(abund),
                       .by = c(year, region, species_code, sex)) %>% 
-    tidytable::summarise(rss = sum(p_og * (1 - p_og)) / sum((p_sim - p_og)^2),
+    tidytable::summarise(rss = sum(p_sim * (1 - p_sim)) / sum((p_sim - p_og)^2),
                          .by = c(year, region, species_code, sex)) %>% 
     tidytable::drop_na()
   
