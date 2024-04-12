@@ -96,8 +96,8 @@ srvy_iss <- function(iters = 1,
     tidytable::mutate(sex_desc = case_when(sex == 0 ~ 'total_pre',
                                            sex == 1 ~ 'male',
                                            sex == 2 ~ 'female',
+                                           sex == 12 ~ 'female_male',
                                            sex == 4 ~ 'total_post')) -> .rss_age
-  
   
   r_length %>%
     tidytable::map(., ~rss_length(sim_data = .x, og_data = ogl)) %>%
@@ -105,8 +105,9 @@ srvy_iss <- function(iters = 1,
     tidytable::mutate(sex_desc = case_when(sex == 0 ~ 'total_pre',
                                            sex == 1 ~ 'male',
                                            sex == 2 ~ 'female',
+                                           sex == 12 ~ 'female_male',
                                            sex == 4 ~ 'total_post')) -> .rss_length
-  
+
   # compute harmonic mean of iterated realized sample size, which is the input sample size (iss)
   #   and compute average relative bias in pop'n estimates (avg relative bias across age or length)
   .rss_age %>% 
@@ -121,6 +122,12 @@ srvy_iss <- function(iters = 1,
                                                   tidytable::mutate(sex = 4)) %>% 
                            tidytable::summarise(agepop = mean(agepop), .by = c(year, species_code, sex, age)) %>% 
                            tidytable::mutate(p_sim = agepop / sum(agepop), .by = c(year, species_code, sex)) %>% 
+                           tidytable::bind_rows(r_age %>% 
+                                                  tidytable::map_df(., ~as.data.frame(.x), .id = "sim") %>% 
+                                                  tidytable::filter(sex %in% c(1, 2)) %>% 
+                                                  tidytable::summarise(agepop = mean(agepop), .by = c(year, species_code, sex, age)) %>% 
+                                                  tidytable::mutate(p_sim = agepop / sum(agepop), .by = c(year, species_code)) %>% 
+                                                  tidytable::mutate(sex = 12)) %>% 
                            tidytable::drop_na() %>% 
                            tidytable::select(-agepop) %>% 
                            tidytable::left_join(oga %>% 
@@ -129,6 +136,10 @@ srvy_iss <- function(iters = 1,
                                                                          tidytable::summarise(agepop = sum(agepop), .by = c(year, species_code, age)) %>% 
                                                                          tidytable::mutate(sex = 4)) %>% 
                                                   tidytable::mutate(p_og = agepop / sum(agepop), .by = c(year, species_code, sex)) %>% 
+                                                  tidytable::bind_rows(oga %>% 
+                                                                         tidytable::filter(sex %in% c(1, 2)) %>% 
+                                                                         tidytable::mutate(p_og = agepop / sum(agepop), .by = c(year, species_code)) %>% 
+                                                                         tidytable::mutate(sex = 12)) %>% 
                                                   tidytable::select(-agepop)) %>% 
                            tidytable::mutate(bias = (p_sim - p_og)) %>% 
                            tidytable::drop_na() %>% 
@@ -147,6 +158,12 @@ srvy_iss <- function(iters = 1,
                                                   tidytable::mutate(sex = 4)) %>% 
                            tidytable::summarise(abund = mean(abund), .by = c(year, species_code, sex, length)) %>% 
                            tidytable::mutate(p_sim = abund / sum(abund), .by = c(year, species_code, sex)) %>% 
+                           tidytable::bind_rows(r_length %>% 
+                                                  tidytable::map_df(., ~as.data.frame(.x), .id = "sim") %>% 
+                                                  tidytable::filter(sex %in% c(1, 2)) %>% 
+                                                  tidytable::summarise(abund = mean(abund), .by = c(year, species_code, sex, length)) %>% 
+                                                  tidytable::mutate(p_sim = abund / sum(abund), .by = c(year, species_code)) %>% 
+                                                  tidytable::mutate(sex = 12)) %>% 
                            tidytable::drop_na() %>% 
                            tidytable::select(-abund) %>% 
                            tidytable::left_join(ogl %>% 
@@ -155,6 +172,10 @@ srvy_iss <- function(iters = 1,
                                                                          tidytable::summarise(abund = sum(abund), .by = c(year, species_code, length)) %>% 
                                                                          tidytable::mutate(sex = 4)) %>% 
                                                   tidytable::mutate(p_og = abund / sum(abund), .by = c(year, species_code, sex)) %>% 
+                                                  tidytable::bind_rows(ogl %>% 
+                                                                         tidytable::filter(sex %in% c(1, 2)) %>% 
+                                                                         tidytable::mutate(p_og = abund / sum(abund), .by = c(year, species_code)) %>% 
+                                                                         tidytable::mutate(sex = 12)) %>% 
                                                   tidytable::select(-abund)) %>% 
                            tidytable::mutate(bias = (p_sim - p_og)) %>% 
                            tidytable::drop_na() %>% 

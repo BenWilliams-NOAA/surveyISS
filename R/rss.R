@@ -168,8 +168,8 @@ rss_length <- function(sim_data,
     # compute realized sample size for female-male comps that sum to 1
     tidytable::bind_rows(sim %>% 
                            tidytable::full_join(og) %>% 
-                           tidytable::replace_na(list(agepop = 0)) %>% 
-                           tidytable::replace_na(list(og_agepop = 0)) %>%
+                           tidytable::replace_na(list(abund = 0)) %>% 
+                           tidytable::replace_na(list(og_abund = 0)) %>%
                            tidytable::filter(sex %in% c(1,2)) %>% 
                            tidytable::mutate(p_og = og_abund / sum(og_abund),
                                              p_sim = abund / sum(abund),
@@ -221,8 +221,8 @@ rss_length_reg <- function(sim_data,
     # compute realized sample size for female-male comps that sum to 1
     tidytable::bind_rows(sim %>% 
                            tidytable::full_join(og) %>% 
-                           tidytable::replace_na(list(agepop = 0)) %>% 
-                           tidytable::replace_na(list(og_agepop = 0)) %>%
+                           tidytable::replace_na(list(abund = 0)) %>% 
+                           tidytable::replace_na(list(og_abund = 0)) %>%
                            tidytable::filter(sex %in% c(1,2)) %>% 
                            tidytable::mutate(p_og = og_abund / sum(og_abund),
                                              p_sim = abund / sum(abund),
