@@ -34,8 +34,21 @@ rss_age <- function(sim_data,
                       .by = c(year, species_code, sex)) %>% 
     tidytable::summarise(rss = sum(p_sim * (1 - p_sim)) / sum((p_sim - p_og)^2),
                          .by = c(year, species_code, sex)) %>% 
-    tidytable::drop_na()
-
+    tidytable::drop_na() %>% 
+  # compute realized sample size for female-male comps that sum to 1
+    tidytable::bind_rows(sim %>% 
+                           tidytable::full_join(og) %>% 
+                           tidytable::replace_na(list(agepop = 0)) %>% 
+                           tidytable::replace_na(list(og_agepop = 0)) %>%
+                           tidytable::filter(sex %in% c(1,2)) %>% 
+                           tidytable::mutate(p_og = og_agepop / sum(og_agepop),
+                                             p_sim = agepop / sum(agepop),
+                                             .by = c(year, species_code)) %>%
+                           tidytable::summarise(rss = sum(p_sim * (1 - p_sim)) / sum((p_sim - p_og)^2),
+                                                .by = c(year, species_code)) %>% 
+                           tidytable::drop_na() %>% 
+                           tidytable::mutate(sex = 12)) %>% 
+    tidytable::arrange(year, species_code)
 }
 
 #' calculate realized sample size for age comps by region
@@ -74,7 +87,21 @@ rss_age_reg <- function(sim_data,
                       .by = c(year, region, species_code, sex)) %>% 
     tidytable::summarise(rss = sum(p_sim * (1 - p_sim)) / sum((p_sim - p_og)^2),
                          .by = c(year, region, species_code, sex)) %>% 
-    tidytable::drop_na()
+    tidytable::drop_na() %>% 
+    # compute realized sample size for female-male comps that sum to 1
+    tidytable::bind_rows(sim %>% 
+                           tidytable::full_join(og) %>% 
+                           tidytable::replace_na(list(agepop = 0)) %>% 
+                           tidytable::replace_na(list(og_agepop = 0)) %>%
+                           tidytable::filter(sex %in% c(1,2)) %>% 
+                           tidytable::mutate(p_og = og_agepop / sum(og_agepop),
+                                             p_sim = agepop / sum(agepop),
+                                             .by = c(year, region, species_code)) %>%
+                           tidytable::summarise(rss = sum(p_sim * (1 - p_sim)) / sum((p_sim - p_og)^2),
+                                                .by = c(year, region, species_code)) %>% 
+                           tidytable::drop_na() %>% 
+                           tidytable::mutate(sex = 12)) %>% 
+    tidytable::arrange(year, species_code)
   
 }
 
@@ -137,7 +164,21 @@ rss_length <- function(sim_data,
                       .by = c(year, species_code, sex)) %>% 
     tidytable::summarise(rss = sum(p_sim * (1 - p_sim)) / sum((p_sim - p_og)^2),
                          .by = c(year, species_code, sex)) %>% 
-    tidytable::drop_na()
+    tidytable::drop_na() %>% 
+    # compute realized sample size for female-male comps that sum to 1
+    tidytable::bind_rows(sim %>% 
+                           tidytable::full_join(og) %>% 
+                           tidytable::replace_na(list(agepop = 0)) %>% 
+                           tidytable::replace_na(list(og_agepop = 0)) %>%
+                           tidytable::filter(sex %in% c(1,2)) %>% 
+                           tidytable::mutate(p_og = og_abund / sum(og_abund),
+                                             p_sim = abund / sum(abund),
+                                             .by = c(year, species_code)) %>%
+                           tidytable::summarise(rss = sum(p_sim * (1 - p_sim)) / sum((p_sim - p_og)^2),
+                                                .by = c(year, species_code)) %>% 
+                           tidytable::drop_na() %>% 
+                           tidytable::mutate(sex = 12)) %>% 
+    tidytable::arrange(year, species_code)
   
 }
 
@@ -176,7 +217,21 @@ rss_length_reg <- function(sim_data,
                       .by = c(year, region, species_code, sex)) %>% 
     tidytable::summarise(rss = sum(p_sim * (1 - p_sim)) / sum((p_sim - p_og)^2),
                          .by = c(year, region, species_code, sex)) %>% 
-    tidytable::drop_na()
+    tidytable::drop_na() %>% 
+    # compute realized sample size for female-male comps that sum to 1
+    tidytable::bind_rows(sim %>% 
+                           tidytable::full_join(og) %>% 
+                           tidytable::replace_na(list(agepop = 0)) %>% 
+                           tidytable::replace_na(list(og_agepop = 0)) %>%
+                           tidytable::filter(sex %in% c(1,2)) %>% 
+                           tidytable::mutate(p_og = og_abund / sum(og_abund),
+                                             p_sim = abund / sum(abund),
+                                             .by = c(year, region, species_code)) %>%
+                           tidytable::summarise(rss = sum(p_sim * (1 - p_sim)) / sum((p_sim - p_og)^2),
+                                                .by = c(year, region, species_code)) %>% 
+                           tidytable::drop_na() %>% 
+                           tidytable::mutate(sex = 12)) %>% 
+    tidytable::arrange(year, species_code)
   
 }
 
