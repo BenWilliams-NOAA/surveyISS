@@ -110,7 +110,7 @@ srvy_iss <- function(iters = 1,
 
   # age comps: compute harmonic mean of iterated realized sample size, which is the input sample size (iss)
   .rss_age %>% 
-    tidytable::summarise(iss = psych::harmonic.mean(rss, na.rm = TRUE),
+    tidytable::summarise(iss = psych::harmonic.mean(rss, na.rm = TRUE, zero = FALSE),
                          .by = c(year, species_code, sex, sex_desc)) %>% 
     # compute average relative bias in pop'n estimates (avg relative bias across age or length)
     tidytable::left_join(r_age %>%
@@ -183,7 +183,7 @@ srvy_iss <- function(iters = 1,
 
   # length comps: compute harmonic mean of iterated realized sample size, which is the input sample size (iss)
   .rss_length %>% 
-    tidytable::summarise(iss = psych::harmonic.mean(rss, na.rm = TRUE),
+    tidytable::summarise(iss = psych::harmonic.mean(rss, na.rm = TRUE, zero = FALSE),
                          .by = c(year, species_code, sex, sex_desc)) %>% 
     # compute average relative bias in pop'n estimates (avg relative bias across age or length)
     tidytable::left_join(r_length %>%
@@ -386,7 +386,7 @@ srvy_iss_ai_cmplx <- function(iters = 1,
   
   # age comps: compute harmonic mean of iterated realized sample size, which is the input sample size (iss)
   .rss_age %>% 
-    tidytable::summarise(iss = psych::harmonic.mean(rss, na.rm = TRUE),
+    tidytable::summarise(iss = psych::harmonic.mean(rss, na.rm = TRUE, zero = FALSE),
                          .by = c(year, species_code, sex, sex_desc)) %>% 
     # compute average relative bias in pop'n estimates (avg relative bias across age or length)
     tidytable::left_join(r_age %>%
@@ -459,7 +459,7 @@ srvy_iss_ai_cmplx <- function(iters = 1,
   
   # length comps: compute harmonic mean of iterated realized sample size, which is the input sample size (iss)
   .rss_length %>% 
-    tidytable::summarise(iss = psych::harmonic.mean(rss, na.rm = TRUE),
+    tidytable::summarise(iss = psych::harmonic.mean(rss, na.rm = TRUE, zero = FALSE),
                          .by = c(year, species_code, sex, sex_desc)) %>% 
     # compute average relative bias in pop'n estimates (avg relative bias across age or length)
     tidytable::left_join(r_length %>%
@@ -674,7 +674,7 @@ srvy_iss_goa_cmplx <- function(iters = 1,
   
   # age comps: compute harmonic mean of iterated realized sample size, which is the input sample size (iss)
   .rss_age %>% 
-    tidytable::summarise(iss = psych::harmonic.mean(rss, na.rm = TRUE),
+    tidytable::summarise(iss = psych::harmonic.mean(rss, na.rm = TRUE, zero = FALSE),
                          .by = c(year, species_code, sex, sex_desc)) %>% 
     # compute average relative bias in pop'n estimates (avg relative bias across age or length)
     tidytable::left_join(r_age %>%
@@ -753,7 +753,7 @@ srvy_iss_goa_cmplx <- function(iters = 1,
   
   # length comps: compute harmonic mean of iterated realized sample size, which is the input sample size (iss)
   .rss_length %>% 
-    tidytable::summarise(iss = psych::harmonic.mean(rss, na.rm = TRUE),
+    tidytable::summarise(iss = psych::harmonic.mean(rss, na.rm = TRUE, zero = FALSE),
                          .by = c(year, species_code, sex, sex_desc)) %>% 
     # compute average relative bias in pop'n estimates (avg relative bias across age or length)
     tidytable::left_join(r_length %>%
@@ -1145,7 +1145,7 @@ srvy_iss_goa_w_c_e <- function(iters = 1,
   
   # age comps: compute harmonic mean of iterated realized sample size, which is the input sample size (iss)
   .rss_age %>% 
-    tidytable::summarise(iss = psych::harmonic.mean(rss, na.rm = TRUE),
+    tidytable::summarise(iss = psych::harmonic.mean(rss, na.rm = TRUE, zero = FALSE),
                          .by = c(year, region, species_code, sex, sex_desc)) %>% 
     # compute average relative bias in pop'n estimates (avg relative bias across age or length)
     tidytable::left_join(r_age %>%
@@ -1218,7 +1218,7 @@ srvy_iss_goa_w_c_e <- function(iters = 1,
   
   # length comps: compute harmonic mean of iterated realized sample size, which is the input sample size (iss)
   .rss_length %>% 
-    tidytable::summarise(iss = psych::harmonic.mean(rss, na.rm = TRUE),
+    tidytable::summarise(iss = psych::harmonic.mean(rss, na.rm = TRUE, zero = FALSE),
                          .by = c(year, region, species_code, sex, sex_desc)) %>% 
     # compute average relative bias in pop'n estimates (avg relative bias across age or length)
     tidytable::left_join(r_length %>%
@@ -1541,7 +1541,7 @@ srvy_iss_goa_wc_e <- function(iters = 1,
   
   # age comps: compute harmonic mean of iterated realized sample size, which is the input sample size (iss)
   .rss_age %>% 
-    tidytable::summarise(iss = psych::harmonic.mean(rss, na.rm = TRUE),
+    tidytable::summarise(iss = psych::harmonic.mean(rss, na.rm = TRUE, zero = FALSE),
                          .by = c(year, region, species_code, sex, sex_desc)) %>% 
     # compute average relative bias in pop'n estimates (avg relative bias across age or length)
     tidytable::left_join(r_age %>%
@@ -1614,7 +1614,7 @@ srvy_iss_goa_wc_e <- function(iters = 1,
   
   # length comps: compute harmonic mean of iterated realized sample size, which is the input sample size (iss)
   .rss_length %>% 
-    tidytable::summarise(iss = psych::harmonic.mean(rss, na.rm = TRUE),
+    tidytable::summarise(iss = psych::harmonic.mean(rss, na.rm = TRUE, zero = FALSE),
                          .by = c(year, region, species_code, sex, sex_desc)) %>% 
     # compute average relative bias in pop'n estimates (avg relative bias across age or length)
     tidytable::left_join(r_length %>%
@@ -1842,7 +1842,7 @@ srvy_iss_w140 <- function(iters = 1,
   
   # age comps: compute harmonic mean of iterated realized sample size, which is the input sample size (iss)
   .rss_age %>% 
-    tidytable::summarise(iss = psych::harmonic.mean(rss, na.rm = TRUE),
+    tidytable::summarise(iss = psych::harmonic.mean(rss, na.rm = TRUE, zero = FALSE),
                          .by = c(year, species_code, sex, sex_desc)) %>% 
     # compute average relative bias in pop'n estimates (avg relative bias across age or length)
     tidytable::left_join(r_age %>%
@@ -1915,7 +1915,7 @@ srvy_iss_w140 <- function(iters = 1,
   
   # length comps: compute harmonic mean of iterated realized sample size, which is the input sample size (iss)
   .rss_length %>% 
-    tidytable::summarise(iss = psych::harmonic.mean(rss, na.rm = TRUE),
+    tidytable::summarise(iss = psych::harmonic.mean(rss, na.rm = TRUE, zero = FALSE),
                          .by = c(year, species_code, sex, sex_desc)) %>% 
     # compute average relative bias in pop'n estimates (avg relative bias across age or length)
     tidytable::left_join(r_length %>%
@@ -2378,7 +2378,7 @@ srvy_iss_ai_subreg <- function(iters = 1,
   
   # age comps: compute harmonic mean of iterated realized sample size, which is the input sample size (iss)
   .rss_age %>% 
-    tidytable::summarise(iss = psych::harmonic.mean(rss, na.rm = TRUE),
+    tidytable::summarise(iss = psych::harmonic.mean(rss, na.rm = TRUE, zero = FALSE),
                          .by = c(year, region, species_code, sex, sex_desc)) %>% 
     # compute average relative bias in pop'n estimates (avg relative bias across age or length)
     tidytable::left_join(r_age %>%
@@ -2451,7 +2451,7 @@ srvy_iss_ai_subreg <- function(iters = 1,
   
   # length comps: compute harmonic mean of iterated realized sample size, which is the input sample size (iss)
   .rss_length %>% 
-    tidytable::summarise(iss = psych::harmonic.mean(rss, na.rm = TRUE),
+    tidytable::summarise(iss = psych::harmonic.mean(rss, na.rm = TRUE, zero = FALSE),
                          .by = c(year, region, species_code, sex, sex_desc)) %>% 
     # compute average relative bias in pop'n estimates (avg relative bias across age or length)
     tidytable::left_join(r_length %>%
@@ -2620,7 +2620,7 @@ srvy_iss_caal <- function(iters = 1,
 
   # compute harmonic mean of iterated realized sample size, which is the input sample size (iss)
   .rss_caal %>% 
-    tidytable::summarise(iss = psych::harmonic.mean(rss, na.rm = TRUE),
+    tidytable::summarise(iss = psych::harmonic.mean(rss, na.rm = TRUE, zero = FALSE),
                          .by = c(year, species_code, sex, sex_desc, length)) %>% 
     # compute average relative bias in pop'n estimates (avg relative bias across age or length)
     tidytable::left_join(r_caal %>%
