@@ -381,10 +381,10 @@ read_test <- vroom::vroom(here::here('data', 'reader_tester.csv')) %>%
   tidytable::filter(species_code %in% species)
 
 srvy_iss(iters = iters, 
-         lfreq_data = lfreq,
-         specimen_data = specimen, 
-         cpue_data = cpue, 
-         strata_data = strata, 
+         lfreq_data = lfreq_data,
+         specimen_data = specimen_data, 
+         cpue_data = cpue_data, 
+         strata_data = strata_data, 
          r_t = read_test, 
          yrs = yrs, 
          bin = 1, 
@@ -432,7 +432,7 @@ srvy_iss(iters = iters,
          save_interm = FALSE, 
          save = 'prodtest')
 
-# caal test ----
+# caal ----
 region = 'goa'
 yrs = 1990
 species = c(21720)
