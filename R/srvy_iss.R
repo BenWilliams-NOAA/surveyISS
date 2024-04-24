@@ -1150,8 +1150,12 @@ srvy_iss_goa_w_c_e <- function(iters = 1,
     # compute average relative bias in pop'n estimates (avg relative bias across age or length)
     tidytable::left_join(r_age %>%
                            tidytable::map_df(., ~as.data.frame(.x), .id = "sim") %>% 
+                           tidytable::rename(sim = 'sim...1') %>% 
+                           tidytable::select(-'sim...2') %>% 
                            tidytable::bind_rows(r_age %>% 
                                                   tidytable::map_df(., ~as.data.frame(.x), .id = "sim") %>% 
+                                                  tidytable::rename(sim = 'sim...1') %>% 
+                                                  tidytable::select(-'sim...2') %>% 
                                                   tidytable::filter(sex != 0) %>% 
                                                   tidytable::summarise(agepop = sum(agepop), .by = c(sim, year, region, species_code, age)) %>% 
                                                   tidytable::mutate(sex = 4)) %>% 
@@ -1159,6 +1163,8 @@ srvy_iss_goa_w_c_e <- function(iters = 1,
                            tidytable::mutate(p_sim = agepop / sum(agepop), .by = c(year, region, species_code, sex)) %>% 
                            tidytable::bind_rows(r_age %>% 
                                                   tidytable::map_df(., ~as.data.frame(.x), .id = "sim") %>% 
+                                                  tidytable::rename(sim = 'sim...1') %>% 
+                                                  tidytable::select(-'sim...2') %>% 
                                                   tidytable::filter(sex %in% c(1, 2)) %>% 
                                                   tidytable::summarise(agepop = mean(agepop), .by = c(year, region, species_code, sex, age)) %>% 
                                                   tidytable::mutate(p_sim = agepop / sum(agepop), .by = c(year, region, species_code)) %>% 
@@ -1197,6 +1203,27 @@ srvy_iss_goa_w_c_e <- function(iters = 1,
                                                   tidytable::filter(sex != 3) %>% 
                                                   tidytable::summarize(nss = .N, .by = c(year, region, species_code)) %>% 
                                                   tidytable::mutate(sex = 12)) %>% 
+                           tidytable::bind_rows(.specimen_data %>% 
+                                                  tidytable::drop_na(age) %>% 
+                                                  tidytable::filter(sex != 3) %>% 
+                                                  tidytable::summarize(nss = .N, .by = c(year, species_code, sex)) %>% 
+                                                  tidytable::mutate(region = 'goa') %>% 
+                                                  tidytable::bind_rows(.specimen_data %>% 
+                                                                         tidytable::drop_na(age) %>% 
+                                                                         tidytable::summarize(nss = .N, .by = c(year, species_code)) %>% 
+                                                                         tidytable::mutate(sex = 0,
+                                                                                           region = 'goa')) %>% 
+                                                  tidytable::bind_rows(.specimen_data %>% 
+                                                                         tidytable::drop_na(age) %>% 
+                                                                         tidytable::summarize(nss = .N, .by = c(year, species_code)) %>% 
+                                                                         tidytable::mutate(sex = 4,
+                                                                                           region = 'goa')) %>% 
+                                                  tidytable::bind_rows(.specimen_data %>% 
+                                                                         tidytable::drop_na(age) %>% 
+                                                                         tidytable::filter(sex != 3) %>% 
+                                                                         tidytable::summarize(nss = .N, .by = c(year, species_code)) %>% 
+                                                                         tidytable::mutate(sex = 12,
+                                                                                           region = 'goa'))) %>% 
                            tidytable::left_join(.specimen_data %>% 
                                                   tidytable::drop_na(age) %>% 
                                                   tidytable::filter(sex != 3) %>% 
@@ -1213,7 +1240,28 @@ srvy_iss_goa_w_c_e <- function(iters = 1,
                                                                          tidytable::drop_na(age) %>% 
                                                                          tidytable::filter(sex != 3) %>% 
                                                                          tidytable::summarize(nhl = length(unique(hauljoin)), .by = c(year, region, species_code)) %>% 
-                                                                         tidytable::mutate(sex = 12)))) %>% 
+                                                                         tidytable::mutate(sex = 12)) %>% 
+                                                  tidytable::bind_rows(.specimen_data %>% 
+                                                                         tidytable::drop_na(age) %>% 
+                                                                         tidytable::filter(sex != 3) %>% 
+                                                                         tidytable::summarize(nhl = length(unique(hauljoin)), .by = c(year, species_code, sex)) %>% 
+                                                                         tidytable::mutate(region = 'goa') %>% 
+                                                                         tidytable::bind_rows(.specimen_data %>% 
+                                                                                                tidytable::drop_na(age) %>% 
+                                                                                                tidytable::summarize(nhl = length(unique(hauljoin)), .by = c(year, species_code)) %>% 
+                                                                                                tidytable::mutate(sex = 0,
+                                                                                                                  region = 'goa')) %>% 
+                                                                         tidytable::bind_rows(.specimen_data %>% 
+                                                                                                tidytable::drop_na(age) %>% 
+                                                                                                tidytable::summarize(nhl = length(unique(hauljoin)), .by = c(year, species_code)) %>% 
+                                                                                                tidytable::mutate(sex = 4,
+                                                                                                                  region = 'goa')) %>% 
+                                                                         tidytable::bind_rows(.specimen_data %>% 
+                                                                                                tidytable::drop_na(age) %>% 
+                                                                                                tidytable::filter(sex != 3) %>% 
+                                                                                                tidytable::summarize(nhl = length(unique(hauljoin)), .by = c(year, species_code)) %>% 
+                                                                                                tidytable::mutate(sex = 12,
+                                                                                                                  region = 'goa'))))) %>% 
     tidytable::filter(iss > 0) -> iss_age
   
   # length comps: compute harmonic mean of iterated realized sample size, which is the input sample size (iss)
@@ -1223,8 +1271,12 @@ srvy_iss_goa_w_c_e <- function(iters = 1,
     # compute average relative bias in pop'n estimates (avg relative bias across age or length)
     tidytable::left_join(r_length %>%
                            tidytable::map_df(., ~as.data.frame(.x), .id = "sim") %>% 
+                           tidytable::rename(sim = 'sim...1') %>% 
+                           tidytable::select(-'sim...2') %>% 
                            tidytable::bind_rows(r_length %>% 
                                                   tidytable::map_df(., ~as.data.frame(.x), .id = "sim") %>% 
+                                                  tidytable::rename(sim = 'sim...1') %>% 
+                                                  tidytable::select(-'sim...2') %>% 
                                                   tidytable::filter(sex != 0) %>% 
                                                   tidytable::summarise(abund = sum(abund), .by = c(sim, year, region, species_code, length)) %>% 
                                                   tidytable::mutate(sex = 4)) %>% 
@@ -1232,6 +1284,8 @@ srvy_iss_goa_w_c_e <- function(iters = 1,
                            tidytable::mutate(p_sim = abund / sum(abund), .by = c(year, region, species_code, sex)) %>% 
                            tidytable::bind_rows(r_length %>% 
                                                   tidytable::map_df(., ~as.data.frame(.x), .id = "sim") %>% 
+                                                  tidytable::rename(sim = 'sim...1') %>% 
+                                                  tidytable::select(-'sim...2') %>% 
                                                   tidytable::filter(sex %in% c(1, 2)) %>% 
                                                   tidytable::summarise(abund = mean(abund), .by = c(year, region, species_code, sex, length)) %>% 
                                                   tidytable::mutate(p_sim = abund / sum(abund), .by = c(year, region, species_code)) %>% 
@@ -1278,7 +1332,41 @@ srvy_iss_goa_w_c_e <- function(iters = 1,
                                                   tidytable::bind_rows(.lfreq_data %>% 
                                                                          tidytable::filter(sex != 3) %>% 
                                                                          tidytable::summarise(nhls = length(unique(hauljoin)), .by = c(year, region, species_code)) %>% 
-                                                                         tidytable::mutate(sex = 12)))) %>% 
+                                                                         tidytable::mutate(sex = 12))) %>% 
+                           tidytable::bind_rows(.lfreq_data %>% 
+                                                  tidytable::filter(sex != 3) %>% 
+                                                  tidytable::summarise(nss = sum(frequency), .by = c(year, species_code, sex)) %>% 
+                                                  tidytable::mutate(region = 'goa') %>% 
+                                                  tidytable::bind_rows(.lfreq_data %>% 
+                                                                         tidytable::summarise(nss = sum(frequency), .by = c(year, species_code)) %>% 
+                                                                         tidytable::mutate(sex = 0,
+                                                                                           region = 'goa')) %>% 
+                                                  tidytable::bind_rows(.lfreq_data %>% 
+                                                                         tidytable::summarise(nss = sum(frequency), .by = c(year, species_code)) %>% 
+                                                                         tidytable::mutate(sex = 4,
+                                                                                           region = 'goa')) %>% 
+                                                  tidytable::bind_rows(.lfreq_data %>% 
+                                                                         tidytable::filter(sex != 3) %>% 
+                                                                         tidytable::summarise(nss = sum(frequency), .by = c(year, species_code)) %>% 
+                                                                         tidytable::mutate(sex = 12,
+                                                                                           region = 'goa')) %>% 
+                                                  tidytable::left_join(.lfreq_data %>% 
+                                                                         tidytable::filter(sex != 3) %>% 
+                                                                         tidytable::summarise(nhls = length(unique(hauljoin)), .by = c(year, species_code, sex)) %>% 
+                                                                         tidytable::mutate(region = 'goa') %>%
+                                                                         tidytable::bind_rows(.lfreq_data %>% 
+                                                                                                tidytable::summarise(nhls = length(unique(hauljoin)), .by = c(year, species_code)) %>% 
+                                                                                                tidytable::mutate(sex = 0,
+                                                                                                                  region = 'goa')) %>% 
+                                                                         tidytable::bind_rows(.lfreq_data %>% 
+                                                                                                tidytable::summarise(nhls = length(unique(hauljoin)), .by = c(year, species_code)) %>% 
+                                                                                                tidytable::mutate(sex = 4,
+                                                                                                                  region = 'goa')) %>% 
+                                                                         tidytable::bind_rows(.lfreq_data %>% 
+                                                                                                tidytable::filter(sex != 3) %>% 
+                                                                                                tidytable::summarise(nhls = length(unique(hauljoin)), .by = c(year, species_code)) %>% 
+                                                                                                tidytable::mutate(sex = 12,
+                                                                                                                  region = 'goa'))))) %>% 
     tidytable::filter(iss > 0) -> iss_length
 
   # write results ----
@@ -1546,8 +1634,12 @@ srvy_iss_goa_wc_e <- function(iters = 1,
     # compute average relative bias in pop'n estimates (avg relative bias across age or length)
     tidytable::left_join(r_age %>%
                            tidytable::map_df(., ~as.data.frame(.x), .id = "sim") %>% 
+                           tidytable::rename(sim = 'sim...1') %>% 
+                           tidytable::select(-'sim...2') %>% 
                            tidytable::bind_rows(r_age %>% 
                                                   tidytable::map_df(., ~as.data.frame(.x), .id = "sim") %>% 
+                                                  tidytable::rename(sim = 'sim...1') %>% 
+                                                  tidytable::select(-'sim...2') %>% 
                                                   tidytable::filter(sex != 0) %>% 
                                                   tidytable::summarise(agepop = sum(agepop), .by = c(sim, year, region, species_code, age)) %>% 
                                                   tidytable::mutate(sex = 4)) %>% 
@@ -1555,6 +1647,8 @@ srvy_iss_goa_wc_e <- function(iters = 1,
                            tidytable::mutate(p_sim = agepop / sum(agepop), .by = c(year, region, species_code, sex)) %>% 
                            tidytable::bind_rows(r_age %>% 
                                                   tidytable::map_df(., ~as.data.frame(.x), .id = "sim") %>% 
+                                                  tidytable::rename(sim = 'sim...1') %>% 
+                                                  tidytable::select(-'sim...2') %>% 
                                                   tidytable::filter(sex %in% c(1, 2)) %>% 
                                                   tidytable::summarise(agepop = mean(agepop), .by = c(year, region, species_code, sex, age)) %>% 
                                                   tidytable::mutate(p_sim = agepop / sum(agepop), .by = c(year, region, species_code)) %>% 
@@ -1593,6 +1687,27 @@ srvy_iss_goa_wc_e <- function(iters = 1,
                                                   tidytable::filter(sex != 3) %>% 
                                                   tidytable::summarize(nss = .N, .by = c(year, region, species_code)) %>% 
                                                   tidytable::mutate(sex = 12)) %>% 
+                           tidytable::bind_rows(.specimen_data %>% 
+                                                  tidytable::drop_na(age) %>% 
+                                                  tidytable::filter(sex != 3) %>% 
+                                                  tidytable::summarize(nss = .N, .by = c(year, species_code, sex)) %>% 
+                                                  tidytable::mutate(region = 'goa') %>% 
+                                                  tidytable::bind_rows(.specimen_data %>% 
+                                                                         tidytable::drop_na(age) %>% 
+                                                                         tidytable::summarize(nss = .N, .by = c(year, species_code)) %>% 
+                                                                         tidytable::mutate(sex = 0,
+                                                                                           region = 'goa')) %>% 
+                                                  tidytable::bind_rows(.specimen_data %>% 
+                                                                         tidytable::drop_na(age) %>% 
+                                                                         tidytable::summarize(nss = .N, .by = c(year, species_code)) %>% 
+                                                                         tidytable::mutate(sex = 4,
+                                                                                           region = 'goa')) %>% 
+                                                  tidytable::bind_rows(.specimen_data %>% 
+                                                                         tidytable::drop_na(age) %>% 
+                                                                         tidytable::filter(sex != 3) %>% 
+                                                                         tidytable::summarize(nss = .N, .by = c(year, species_code)) %>% 
+                                                                         tidytable::mutate(sex = 12,
+                                                                                           region = 'goa'))) %>% 
                            tidytable::left_join(.specimen_data %>% 
                                                   tidytable::drop_na(age) %>% 
                                                   tidytable::filter(sex != 3) %>% 
@@ -1609,7 +1724,28 @@ srvy_iss_goa_wc_e <- function(iters = 1,
                                                                          tidytable::drop_na(age) %>% 
                                                                          tidytable::filter(sex != 3) %>% 
                                                                          tidytable::summarize(nhl = length(unique(hauljoin)), .by = c(year, region, species_code)) %>% 
-                                                                         tidytable::mutate(sex = 12)))) %>% 
+                                                                         tidytable::mutate(sex = 12)) %>% 
+                                                  tidytable::bind_rows(.specimen_data %>% 
+                                                                         tidytable::drop_na(age) %>% 
+                                                                         tidytable::filter(sex != 3) %>% 
+                                                                         tidytable::summarize(nhl = length(unique(hauljoin)), .by = c(year, species_code, sex)) %>% 
+                                                                         tidytable::mutate(region = 'goa') %>% 
+                                                                         tidytable::bind_rows(.specimen_data %>% 
+                                                                                                tidytable::drop_na(age) %>% 
+                                                                                                tidytable::summarize(nhl = length(unique(hauljoin)), .by = c(year, species_code)) %>% 
+                                                                                                tidytable::mutate(sex = 0,
+                                                                                                                  region = 'goa')) %>% 
+                                                                         tidytable::bind_rows(.specimen_data %>% 
+                                                                                                tidytable::drop_na(age) %>% 
+                                                                                                tidytable::summarize(nhl = length(unique(hauljoin)), .by = c(year, species_code)) %>% 
+                                                                                                tidytable::mutate(sex = 4,
+                                                                                                                  region = 'goa')) %>% 
+                                                                         tidytable::bind_rows(.specimen_data %>% 
+                                                                                                tidytable::drop_na(age) %>% 
+                                                                                                tidytable::filter(sex != 3) %>% 
+                                                                                                tidytable::summarize(nhl = length(unique(hauljoin)), .by = c(year, species_code)) %>% 
+                                                                                                tidytable::mutate(sex = 12,
+                                                                                                                  region = 'goa'))))) %>% 
     tidytable::filter(iss > 0) -> iss_age
   
   # length comps: compute harmonic mean of iterated realized sample size, which is the input sample size (iss)
@@ -1619,8 +1755,12 @@ srvy_iss_goa_wc_e <- function(iters = 1,
     # compute average relative bias in pop'n estimates (avg relative bias across age or length)
     tidytable::left_join(r_length %>%
                            tidytable::map_df(., ~as.data.frame(.x), .id = "sim") %>% 
+                           tidytable::rename(sim = 'sim...1') %>% 
+                           tidytable::select(-'sim...2') %>% 
                            tidytable::bind_rows(r_length %>% 
                                                   tidytable::map_df(., ~as.data.frame(.x), .id = "sim") %>% 
+                                                  tidytable::rename(sim = 'sim...1') %>% 
+                                                  tidytable::select(-'sim...2') %>% 
                                                   tidytable::filter(sex != 0) %>% 
                                                   tidytable::summarise(abund = sum(abund), .by = c(sim, year, region, species_code, length)) %>% 
                                                   tidytable::mutate(sex = 4)) %>% 
@@ -1628,6 +1768,8 @@ srvy_iss_goa_wc_e <- function(iters = 1,
                            tidytable::mutate(p_sim = abund / sum(abund), .by = c(year, region, species_code, sex)) %>% 
                            tidytable::bind_rows(r_length %>% 
                                                   tidytable::map_df(., ~as.data.frame(.x), .id = "sim") %>% 
+                                                  tidytable::rename(sim = 'sim...1') %>% 
+                                                  tidytable::select(-'sim...2') %>% 
                                                   tidytable::filter(sex %in% c(1, 2)) %>% 
                                                   tidytable::summarise(abund = mean(abund), .by = c(year, region, species_code, sex, length)) %>% 
                                                   tidytable::mutate(p_sim = abund / sum(abund), .by = c(year, region, species_code)) %>% 
@@ -1674,7 +1816,41 @@ srvy_iss_goa_wc_e <- function(iters = 1,
                                                   tidytable::bind_rows(.lfreq_data %>% 
                                                                          tidytable::filter(sex != 3) %>% 
                                                                          tidytable::summarise(nhls = length(unique(hauljoin)), .by = c(year, region, species_code)) %>% 
-                                                                         tidytable::mutate(sex = 12)))) %>% 
+                                                                         tidytable::mutate(sex = 12))) %>% 
+                           tidytable::bind_rows(.lfreq_data %>% 
+                                                  tidytable::filter(sex != 3) %>% 
+                                                  tidytable::summarise(nss = sum(frequency), .by = c(year, species_code, sex)) %>% 
+                                                  tidytable::mutate(region = 'goa') %>% 
+                                                  tidytable::bind_rows(.lfreq_data %>% 
+                                                                         tidytable::summarise(nss = sum(frequency), .by = c(year, species_code)) %>% 
+                                                                         tidytable::mutate(sex = 0,
+                                                                                           region = 'goa')) %>% 
+                                                  tidytable::bind_rows(.lfreq_data %>% 
+                                                                         tidytable::summarise(nss = sum(frequency), .by = c(year, species_code)) %>% 
+                                                                         tidytable::mutate(sex = 4,
+                                                                                           region = 'goa')) %>% 
+                                                  tidytable::bind_rows(.lfreq_data %>% 
+                                                                         tidytable::filter(sex != 3) %>% 
+                                                                         tidytable::summarise(nss = sum(frequency), .by = c(year, species_code)) %>% 
+                                                                         tidytable::mutate(sex = 12,
+                                                                                           region = 'goa')) %>% 
+                                                  tidytable::left_join(.lfreq_data %>% 
+                                                                         tidytable::filter(sex != 3) %>% 
+                                                                         tidytable::summarise(nhls = length(unique(hauljoin)), .by = c(year, species_code, sex)) %>% 
+                                                                         tidytable::mutate(region = 'goa') %>%
+                                                                         tidytable::bind_rows(.lfreq_data %>% 
+                                                                                                tidytable::summarise(nhls = length(unique(hauljoin)), .by = c(year, species_code)) %>% 
+                                                                                                tidytable::mutate(sex = 0,
+                                                                                                                  region = 'goa')) %>% 
+                                                                         tidytable::bind_rows(.lfreq_data %>% 
+                                                                                                tidytable::summarise(nhls = length(unique(hauljoin)), .by = c(year, species_code)) %>% 
+                                                                                                tidytable::mutate(sex = 4,
+                                                                                                                  region = 'goa')) %>% 
+                                                                         tidytable::bind_rows(.lfreq_data %>% 
+                                                                                                tidytable::filter(sex != 3) %>% 
+                                                                                                tidytable::summarise(nhls = length(unique(hauljoin)), .by = c(year, species_code)) %>% 
+                                                                                                tidytable::mutate(sex = 12,
+                                                                                                                  region = 'goa'))))) %>% 
     tidytable::filter(iss > 0) -> iss_length
   
   # write results ----
@@ -2385,6 +2561,8 @@ srvy_iss_ai_subreg <- function(iters = 1,
                            tidytable::map_df(., ~as.data.frame(.x), .id = "sim") %>% 
                            tidytable::bind_rows(r_age %>% 
                                                   tidytable::map_df(., ~as.data.frame(.x), .id = "sim") %>% 
+                                                  tidytable::rename(sim = 'sim...1') %>% 
+                                                  tidytable::select(-'sim...2') %>% 
                                                   tidytable::filter(sex != 0) %>% 
                                                   tidytable::summarise(agepop = sum(agepop), .by = c(sim, year, region, species_code, age)) %>% 
                                                   tidytable::mutate(sex = 4)) %>% 
@@ -2392,6 +2570,8 @@ srvy_iss_ai_subreg <- function(iters = 1,
                            tidytable::mutate(p_sim = agepop / sum(agepop), .by = c(year, region, species_code, sex)) %>% 
                            tidytable::bind_rows(r_age %>% 
                                                   tidytable::map_df(., ~as.data.frame(.x), .id = "sim") %>% 
+                                                  tidytable::rename(sim = 'sim...1') %>% 
+                                                  tidytable::select(-'sim...2') %>% 
                                                   tidytable::filter(sex %in% c(1, 2)) %>% 
                                                   tidytable::summarise(agepop = mean(agepop), .by = c(year, region, species_code, sex, age)) %>% 
                                                   tidytable::mutate(p_sim = agepop / sum(agepop), .by = c(year, region, species_code)) %>% 
@@ -2430,6 +2610,27 @@ srvy_iss_ai_subreg <- function(iters = 1,
                                                   tidytable::filter(sex != 3) %>% 
                                                   tidytable::summarize(nss = .N, .by = c(year, region, species_code)) %>% 
                                                   tidytable::mutate(sex = 12)) %>% 
+                           tidytable::bind_rows(.specimen_data %>% 
+                                                  tidytable::drop_na(age) %>% 
+                                                  tidytable::filter(sex != 3) %>% 
+                                                  tidytable::summarize(nss = .N, .by = c(year, species_code, sex)) %>% 
+                                                  tidytable::mutate(region = 'ai') %>% 
+                                                  tidytable::bind_rows(.specimen_data %>% 
+                                                                         tidytable::drop_na(age) %>% 
+                                                                         tidytable::summarize(nss = .N, .by = c(year, species_code)) %>% 
+                                                                         tidytable::mutate(sex = 0,
+                                                                                           region = 'ai')) %>% 
+                                                  tidytable::bind_rows(.specimen_data %>% 
+                                                                         tidytable::drop_na(age) %>% 
+                                                                         tidytable::summarize(nss = .N, .by = c(year, species_code)) %>% 
+                                                                         tidytable::mutate(sex = 4,
+                                                                                           region = 'ai')) %>% 
+                                                  tidytable::bind_rows(.specimen_data %>% 
+                                                                         tidytable::drop_na(age) %>% 
+                                                                         tidytable::filter(sex != 3) %>% 
+                                                                         tidytable::summarize(nss = .N, .by = c(year, species_code)) %>% 
+                                                                         tidytable::mutate(sex = 12,
+                                                                                           region = 'ai'))) %>% 
                            tidytable::left_join(.specimen_data %>% 
                                                   tidytable::drop_na(age) %>% 
                                                   tidytable::filter(sex != 3) %>% 
@@ -2446,7 +2647,28 @@ srvy_iss_ai_subreg <- function(iters = 1,
                                                                          tidytable::drop_na(age) %>% 
                                                                          tidytable::filter(sex != 3) %>% 
                                                                          tidytable::summarize(nhl = length(unique(hauljoin)), .by = c(year, region, species_code)) %>% 
-                                                                         tidytable::mutate(sex = 12)))) %>% 
+                                                                         tidytable::mutate(sex = 12)) %>% 
+                                                  tidytable::bind_rows(.specimen_data %>% 
+                                                                         tidytable::drop_na(age) %>% 
+                                                                         tidytable::filter(sex != 3) %>% 
+                                                                         tidytable::summarize(nhl = length(unique(hauljoin)), .by = c(year, species_code, sex)) %>% 
+                                                                         tidytable::mutate(region = 'ai') %>% 
+                                                                         tidytable::bind_rows(.specimen_data %>% 
+                                                                                                tidytable::drop_na(age) %>% 
+                                                                                                tidytable::summarize(nhl = length(unique(hauljoin)), .by = c(year, species_code)) %>% 
+                                                                                                tidytable::mutate(sex = 0,
+                                                                                                                  region = 'ai')) %>% 
+                                                                         tidytable::bind_rows(.specimen_data %>% 
+                                                                                                tidytable::drop_na(age) %>% 
+                                                                                                tidytable::summarize(nhl = length(unique(hauljoin)), .by = c(year, species_code)) %>% 
+                                                                                                tidytable::mutate(sex = 4,
+                                                                                                                  region = 'ai')) %>% 
+                                                                         tidytable::bind_rows(.specimen_data %>% 
+                                                                                                tidytable::drop_na(age) %>% 
+                                                                                                tidytable::filter(sex != 3) %>% 
+                                                                                                tidytable::summarize(nhl = length(unique(hauljoin)), .by = c(year, species_code)) %>% 
+                                                                                                tidytable::mutate(sex = 12,
+                                                                                                                  region = 'ai'))))) %>% 
     tidytable::filter(iss > 0) -> iss_age
   
   # length comps: compute harmonic mean of iterated realized sample size, which is the input sample size (iss)
@@ -2456,8 +2678,12 @@ srvy_iss_ai_subreg <- function(iters = 1,
     # compute average relative bias in pop'n estimates (avg relative bias across age or length)
     tidytable::left_join(r_length %>%
                            tidytable::map_df(., ~as.data.frame(.x), .id = "sim") %>% 
+                           tidytable::rename(sim = 'sim...1') %>% 
+                           tidytable::select(-'sim...2') %>% 
                            tidytable::bind_rows(r_length %>% 
                                                   tidytable::map_df(., ~as.data.frame(.x), .id = "sim") %>% 
+                                                  tidytable::rename(sim = 'sim...1') %>% 
+                                                  tidytable::select(-'sim...2') %>% 
                                                   tidytable::filter(sex != 0) %>% 
                                                   tidytable::summarise(abund = sum(abund), .by = c(sim, year, region, species_code, length)) %>% 
                                                   tidytable::mutate(sex = 4)) %>% 
@@ -2465,6 +2691,8 @@ srvy_iss_ai_subreg <- function(iters = 1,
                            tidytable::mutate(p_sim = abund / sum(abund), .by = c(year, region, species_code, sex)) %>% 
                            tidytable::bind_rows(r_length %>% 
                                                   tidytable::map_df(., ~as.data.frame(.x), .id = "sim") %>% 
+                                                  tidytable::rename(sim = 'sim...1') %>% 
+                                                  tidytable::select(-'sim...2') %>% 
                                                   tidytable::filter(sex %in% c(1, 2)) %>% 
                                                   tidytable::summarise(abund = mean(abund), .by = c(year, region, species_code, sex, length)) %>% 
                                                   tidytable::mutate(p_sim = abund / sum(abund), .by = c(year, region, species_code)) %>% 
@@ -2499,6 +2727,23 @@ srvy_iss_ai_subreg <- function(iters = 1,
                                                   tidytable::filter(sex != 3) %>% 
                                                   tidytable::summarise(nss = sum(frequency), .by = c(year, region, species_code)) %>% 
                                                   tidytable::mutate(sex = 12)) %>% 
+                           tidytable::bind_rows(.lfreq_data %>% 
+                                                  tidytable::filter(sex != 3) %>% 
+                                                  tidytable::summarise(nss = sum(frequency), .by = c(year, species_code, sex)) %>% 
+                                                  tidytable::mutate(region = 'ai') %>% 
+                                                  tidytable::bind_rows(.lfreq_data %>% 
+                                                                         tidytable::summarise(nss = sum(frequency), .by = c(year, species_code)) %>% 
+                                                                         tidytable::mutate(sex = 0,
+                                                                                           region = 'ai')) %>% 
+                                                  tidytable::bind_rows(.lfreq_data %>% 
+                                                                         tidytable::summarise(nss = sum(frequency), .by = c(year, species_code)) %>% 
+                                                                         tidytable::mutate(sex = 4,
+                                                                                           region = 'ai')) %>% 
+                                                  tidytable::bind_rows(.lfreq_data %>% 
+                                                                         tidytable::filter(sex != 3) %>% 
+                                                                         tidytable::summarise(nss = sum(frequency), .by = c(year, species_code)) %>% 
+                                                                         tidytable::mutate(sex = 12,
+                                                                                           region = 'ai'))) %>% 
                            tidytable::left_join(.lfreq_data %>% 
                                                   tidytable::filter(sex != 3) %>% 
                                                   tidytable::summarise(nhls = length(unique(hauljoin)), .by = c(year, region, species_code, sex)) %>% 
@@ -2511,7 +2756,24 @@ srvy_iss_ai_subreg <- function(iters = 1,
                                                   tidytable::bind_rows(.lfreq_data %>% 
                                                                          tidytable::filter(sex != 3) %>% 
                                                                          tidytable::summarise(nhls = length(unique(hauljoin)), .by = c(year, region, species_code)) %>% 
-                                                                         tidytable::mutate(sex = 12)))) %>% 
+                                                                         tidytable::mutate(sex = 12)) %>% 
+                                                  tidytable::bind_rows(.lfreq_data %>% 
+                                                                         tidytable::filter(sex != 3) %>% 
+                                                                         tidytable::summarise(nhls = length(unique(hauljoin)), .by = c(year, species_code, sex)) %>% 
+                                                                         tidytable::mutate(region = 'ai') %>% 
+                                                                         tidytable::bind_rows(.lfreq_data %>% 
+                                                                                                tidytable::summarise(nhls = length(unique(hauljoin)), .by = c(year, species_code)) %>% 
+                                                                                                tidytable::mutate(sex = 0,
+                                                                                                                  region = 'ai')) %>% 
+                                                                         tidytable::bind_rows(.lfreq_data %>% 
+                                                                                                tidytable::summarise(nhls = length(unique(hauljoin)), .by = c(year, species_code)) %>% 
+                                                                                                tidytable::mutate(sex = 4,
+                                                                                                                  region = 'ai')) %>% 
+                                                                         tidytable::bind_rows(.lfreq_data %>% 
+                                                                                                tidytable::filter(sex != 3) %>% 
+                                                                                                tidytable::summarise(nhls = length(unique(hauljoin)), .by = c(year, species_code)) %>% 
+                                                                                                tidytable::mutate(sex = 12,
+                                                                                                                  region = 'ai'))))) %>% 
     tidytable::filter(iss > 0) -> iss_length
   
   # write results ----
