@@ -68,6 +68,18 @@ query_data_gap <- function(survey,
     vroom::vroom_write(here::here('data', paste0("cpue_", tolower(region), ".csv")), 
                        delim = ',')
 
+  # catch data ----
+  # cp = sql_read('catch_gap.sql')
+  cp = readLines(here::here('inst', 'sql', 'gap_products', 'catch_gap.sql'))
+  cp = sql_filter(sql_precode = "IN", x = survey, sql_code = cp, flag = '-- insert survey')
+  cp = sql_filter(sql_precode = "IN", x = species, sql_code = cp, flag = '-- insert species')
+  cp = sql_filter(sql_precode = ">=", x = yrs, sql_code = cp, flag = '-- insert year')
+  
+  sql_run(conn, cp) %>% 
+    dplyr::rename_all(tolower) %>% 
+    vroom::vroom_write(here::here('data', paste0("catch_", tolower(region), ".csv")), 
+                       delim = ',')
+  
   # strata data ----
   # st = sql_read('strata_gap.sql')
   st = readLines(here::here('inst', 'sql', 'gap_products', 'strata_gap.sql'))
