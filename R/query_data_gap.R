@@ -32,6 +32,7 @@ query_data_gap <- function(survey,
   if (is.null(yrs)) yrs <- 0
   
   # length frequency data ----
+  cat("pulling length frequency...\n")
   # lfreq = sql_read('length_freq_gap.sql')
   lfreq = readLines(here::here('inst', 'sql', 'gap_products', 'length_freq_gap.sql'))
   lfreq = sql_filter(sql_precode = "IN", x = survey, sql_code = lfreq, flag = '-- insert survey')
@@ -44,6 +45,7 @@ query_data_gap <- function(survey,
                        delim = ',')
   
   # specimen data ----
+  cat("pulling specimen...\n")
   # sp = sql_read('specimen_gap.sql')
   sp = readLines(here::here('inst', 'sql', 'gap_products', 'specimen_gap.sql'))
   sp = sql_filter(sql_precode = "IN", x = survey, sql_code = sp, flag = '-- insert survey')
@@ -57,30 +59,45 @@ query_data_gap <- function(survey,
                        delim = ',')
   
   # cpue data ----
+  cat("pulling cpue...\n")
+  # get gap_products cpue
   # cp = sql_read('cpue_gap.sql')
   cp = readLines(here::here('inst', 'sql', 'gap_products', 'cpue_gap.sql'))
   cp = sql_filter(sql_precode = "IN", x = survey, sql_code = cp, flag = '-- insert survey')
   cp = sql_filter(sql_precode = "IN", x = species, sql_code = cp, flag = '-- insert species')
   cp = sql_filter(sql_precode = ">=", x = yrs, sql_code = cp, flag = '-- insert year')
   
-  sql_run(conn, cp) %>% 
-    dplyr::rename_all(tolower) %>% 
-    vroom::vroom_write(here::here('data', paste0("cpue_", tolower(region), ".csv")), 
-                       delim = ',')
-
-  # catch data ----
+  cpue <- sql_run(conn, cp) %>% 
+    dplyr::rename_all(tolower)
+  
+  # get gap_products catch
   # cp = sql_read('catch_gap.sql')
   cp = readLines(here::here('inst', 'sql', 'gap_products', 'catch_gap.sql'))
   cp = sql_filter(sql_precode = "IN", x = survey, sql_code = cp, flag = '-- insert survey')
   cp = sql_filter(sql_precode = "IN", x = species, sql_code = cp, flag = '-- insert species')
   cp = sql_filter(sql_precode = ">=", x = yrs, sql_code = cp, flag = '-- insert year')
   
-  sql_run(conn, cp) %>% 
-    dplyr::rename_all(tolower) %>% 
-    vroom::vroom_write(here::here('data', paste0("catch_", tolower(region), ".csv")), 
+  catch <- sql_run(conn, cp) %>% 
+    dplyr::rename_all(tolower)
+  
+  # compute cpue from catch data
+  catch %>% 
+    tidytable::mutate(numcpue = count / (distance_fished_km * (0.001 * net_width_m))) %>% 
+    tidytable::select(-count, -distance_fished_km, -net_width_m) -> cpue_calc
+  
+  # filling in 0's like gapindex and write cpue data
+  tidytable::expand_grid(hauljoin = unique(cpue$hauljoin), species_code = species) %>% 
+    tidytable::left_join(cpue %>% 
+                           tidytable::select(-species_code, -numcpue) %>% 
+                           tidytable::slice_head(n = 1, .by = c(year, survey, stratum, lat_mid, long_mid)), .by = hauljoin) %>% 
+    tidytable::left_join(cpue_calc %>% 
+                           tidytable::replace_na(list(numcpue = -1))) %>% 
+    tidytable::replace_na(list(numcpue = 0)) %>% 
+    vroom::vroom_write(here::here('data', paste0("cpue_", tolower(region), ".csv")), 
                        delim = ',')
   
   # strata data ----
+  cat("pulling strata...\n")
   # st = sql_read('strata_gap.sql')
   st = readLines(here::here('inst', 'sql', 'gap_products', 'strata_gap.sql'))
   st = sql_filter(sql_precode = "IN", x = survey, sql_code = st, flag = '-- insert survey')
@@ -97,6 +114,7 @@ query_data_gap <- function(survey,
                        delim = ',') 
   
   # sizecomp ----
+  cat("pulling popn at size...\n")
   # lpop = sql_read('lpop_gap.sql')
   lpop = readLines(here::here('inst', 'sql', 'gap_products', 'lpop_gap.sql'))
   lpop = sql_filter(sql_precode = "IN", x = survey, sql_code = lpop, flag = '-- insert survey')
@@ -109,6 +127,7 @@ query_data_gap <- function(survey,
                        delim = ',')
   
   # agecomp ----
+  cat("pulling popn at age...\n")
   # apop = sql_read('apop_gap.sql')
   apop = readLines(here::here('inst', 'sql', 'gap_products', 'apop_gap.sql'))
   apop = sql_filter(sql_precode = "IN", x = survey, sql_code = apop, flag = '-- insert survey')
@@ -121,6 +140,7 @@ query_data_gap <- function(survey,
                        delim = ',')
   
   # species names ----
+  cat("pulling species info...\n")
   # .s = sql_read('species_gap.sql')
   .s = readLines(here::here('inst', 'sql', 'gap_products', 'species_gap.sql'))
   .s = sql_filter(sql_precode = "IN", x = species, sql_code = .s, flag = '-- insert species')
@@ -130,7 +150,7 @@ query_data_gap <- function(survey,
                        delim = ',')
 
   DBI::dbDisconnect(conn)
-  
+  cat("finished.\n")
 }
 
 
