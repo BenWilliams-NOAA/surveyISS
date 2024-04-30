@@ -50,8 +50,7 @@ srvy_comps <- function(lfreq_data,
     tidytable::left_join(strata_data) -> .cpue
   
   data.table::setDT(lfreq_data) %>%
-    tidytable::filter(year >= yrs) %>% 
-    tidytable::drop_na() -> .lfreq
+    tidytable::filter(year >= yrs & !is.na(frequency)) -> .lfreq
   
   .lfreq %>% 
     tidytable::uncount(frequency) -> .lfreq_un
@@ -100,11 +99,14 @@ srvy_comps <- function(lfreq_data,
   .lfreq_un %>% 
     tidytable::mutate(length = 10 * (bin * ceiling((length / 10) / bin))) -> .lfreq_un
   
-  # length comp ----
-  lcomp(.lfreq_un) -> .lcomp
-  
+  # # length comp ----
+  # lcomp(.lfreq_un) -> .lcomp
+  # 
+  # # length population ----
+  # lpop(.lcomp, .cpue, .lngs) -> .lpop
+  # 
   # length population ----
-  lpop(.lcomp, .cpue, .lngs) -> .lpop
+  lpop_gap(.lfreq_un, .cpue) -> .lpop
   
   # randomize age  (and add sex = 0 for sex-combined (total) comp calculations) ----
   if(isTRUE(boot_ages)) {

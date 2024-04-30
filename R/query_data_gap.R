@@ -113,32 +113,6 @@ query_data_gap <- function(survey,
     vroom::vroom_write(here::here('data', paste0("strata_", tolower(region), ".csv")), 
                        delim = ',') 
   
-  # sizecomp ----
-  cat("pulling popn at size...\n")
-  # lpop = sql_read('lpop_gap.sql')
-  lpop = readLines(here::here('inst', 'sql', 'gap_products', 'lpop_gap.sql'))
-  lpop = sql_filter(sql_precode = "IN", x = survey, sql_code = lpop, flag = '-- insert survey')
-  lpop = sql_filter(sql_precode = "IN", x = species, sql_code = lpop, flag = '-- insert species')
-  lpop = sql_filter(sql_precode = ">=", x = yrs, sql_code = lpop, flag = '-- insert year')
-  
-  sql_run(conn, lpop) %>% 
-    dplyr::rename_all(tolower) %>% 
-    vroom::vroom_write(here::here('data', paste0("lpop_", tolower(region), ".csv")), 
-                       delim = ',')
-  
-  # agecomp ----
-  cat("pulling popn at age...\n")
-  # apop = sql_read('apop_gap.sql')
-  apop = readLines(here::here('inst', 'sql', 'gap_products', 'apop_gap.sql'))
-  apop = sql_filter(sql_precode = "IN", x = survey, sql_code = apop, flag = '-- insert survey')
-  apop = sql_filter(sql_precode = "IN", x = species, sql_code = apop, flag = '-- insert species')
-  apop = sql_filter(sql_precode = ">=", x = yrs, sql_code = apop, flag = '-- insert year')
-  
-  sql_run(conn, apop) %>% 
-    dplyr::rename_all(tolower) %>% 
-    vroom::vroom_write(here::here('data', paste0("apop_", tolower(region), ".csv")), 
-                       delim = ',')
-  
   # species names ----
   cat("pulling species info...\n")
   # .s = sql_read('species_gap.sql')

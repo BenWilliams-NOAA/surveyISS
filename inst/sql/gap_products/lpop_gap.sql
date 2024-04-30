@@ -14,4 +14,3 @@ AND gap_products.akfin_sizecomp.species_code
 -- insert species
 AND gap_products.akfin_sizecomp.year
 -- insert year 
-AND gap_products.akfin_sizecomp.area_id >= '99900'
