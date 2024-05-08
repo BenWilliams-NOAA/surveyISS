@@ -155,11 +155,18 @@ srvy_comps <- function(lfreq_data,
       tidytable::mutate(length = 10 * (bin * ceiling((length / 10) / bin))) -> .lngs
     # compute age pop'n
     apop_gap(.lpop, .agedat, .lngs, by_strata = by_strata) -> .apop
-    
   } else{
     apop(.lpop, .agedat) -> .apop
   }
   
+  # return age and length pop'n estimates
+  if(isTRUE(by_strata)){
+    .lpop %>% 
+      tidytable::summarise(abund = sum(abund), .by = c(year, species_code, length, sex)) -> .lpop
+  }
+  
+  list(age = .apop, length = .lpop)
+
 }
 
 #' primary survey expansion for age/length pop'n numbers function
