@@ -94,7 +94,7 @@ apop <- function(lpop,
 #' @param lpop length population data
 #' @param agedat age dataframe
 #' @param lngs all combinations of possible lengths and ages
-#' @param by_strata are the length pop'n by strata or summed to region level? default = FALSE
+#' @param by_strata are the length pop'n by strata or summed to region level (default = FALSE)
 #'
 #' @return
 #' @export apop_gap

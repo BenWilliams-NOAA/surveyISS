@@ -63,7 +63,7 @@ lpop <- function(lcomp,
 #'
 #' @param lfreq_un uncounted length frequency data
 #' @param cpue cpue data
-#' @param by_strata are the results to be given by strata, or summed to region level? default = FALSE
+#' @param by_strata are the results to be given by strata, or summed to region level (default = FALSE)
 #'
 #' @return
 #' @export lpop_gap

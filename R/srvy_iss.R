@@ -14,6 +14,8 @@
 #' @param al_var include age-length variability (default = FALSE)
 #' @param al_var_ann resample age-length annually or pooled across years
 #' @param age_err include ageing error (default = FALSE)
+#' @param use_gapindex use functions derived from gapindex package (default = TRUE)
+#' @param by_strata should length/age pop'n values be computed at stratum level (default = FALSE)
 #' @param region region will create a folder and place results in said folder
 #' @param save_interm save the intermediate results: original comps, resampled comps (default = FALSE)
 #' @param save name to save output
@@ -37,6 +39,8 @@ srvy_iss <- function(iters = 1,
                      al_var = FALSE, 
                      al_var_ann = FALSE, 
                      age_err = FALSE,
+                     use_gapindex = TRUE,
+                     by_strata = FALSE,
                      region = NULL, 
                      save_interm = FALSE, 
                      save){
@@ -66,7 +70,9 @@ srvy_iss <- function(iters = 1,
                    boot_ages = FALSE,
                    al_var = FALSE,
                    al_var_ann = FALSE,
-                   age_err = FALSE)
+                   age_err = FALSE,
+                   use_gapindex = use_gapindex,
+                   by_strata = by_strata)
   oga <- og$age
   ogl <- og$length
   
@@ -83,7 +89,9 @@ srvy_iss <- function(iters = 1,
                                          boot_ages = boot_ages,
                                          al_var = al_var,
                                          al_var_ann = al_var_ann,
-                                         age_err = age_err))
+                                         age_err = age_err,
+                                         use_gapindex = use_gapindex,
+                                         by_strata = by_strata))
   
   r_age <- do.call(mapply, c(list, rr, SIMPLIFY = FALSE))$age
   r_length <- do.call(mapply, c(list, rr, SIMPLIFY = FALSE))$length

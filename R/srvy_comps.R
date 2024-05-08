@@ -13,6 +13,8 @@
 #' @param al_var switch for including age-length variability (default = FALSE)
 #' @param al_var_ann resample age-length annually or pooled across years (default = FALSE)
 #' @param age_err switch for including ageing error (default = FALSE)
+#' @param use_gapindex use functions derived from gapindex package (default = TRUE)
+#' @param by_strata should length/age pop'n values be computed at stratum level (default = FALSE)
 #'
 #' @return
 #' @export srvy_comps
@@ -32,29 +34,33 @@ srvy_comps <- function(lfreq_data,
                        boot_ages = FALSE, 
                        al_var = FALSE,
                        al_var_ann = FALSE,
-                       age_err = FALSE) {
+                       age_err = FALSE,
+                       use_gapindex = TRUE,
+                       by_strata = FALSE) {
   # globals ----
   # year switch
   if (is.null(yrs)) yrs <- 0
   
   # prep data ----
-  # complete cases by length/sex/strata for all years (original)
-  lfreq_data %>%
+  if(isTRUE(use_gapindex)){
+    # complete cases by year/length/sex/strata for all years (following gapindex)
+    tidytable::expand_grid(year = unique(lfreq_data$year),
+                           species_code = unique(specimen_data$species_code),
+                           sex = unique(specimen_data$sex),
+                           length = seq(from = min(lfreq_data$length, na.rm = TRUE), 
+                                        to = max(lfreq_data$length, na.rm = TRUE), 
+                                        by = 10),
+                           age = seq(from = min(specimen_data$age, na.rm = TRUE), 
+                                     to = max(specimen_data$age, na.rm = TRUE),
+                                     by = 1)) -> .lngs
+  } else{
+    # complete cases by length/sex/strata for all years (original)
+    lfreq_data %>%
       tidytable::filter(year >= yrs) %>% 
       tidytable::distinct(year, species_code, length) %>% 
       tidytable::expand(year, length, .by = species_code) -> .lngs
-  
-  # complete cases by year/length/sex/strata for all years (following gapindex)
-  tidytable::expand_grid(year = unique(lfreq_data$year),
-                         species_code = unique(specimen_data$species_code),
-                         sex = unique(specimen_data$sex),
-                         length = seq(from = min(lfreq_data$length, na.rm = TRUE), 
-                                      to = max(lfreq_data$length, na.rm = TRUE), 
-                                      by = 10),
-                         age = seq(from = min(specimen_data$age, na.rm = TRUE), 
-                                   to = max(specimen_data$age, na.rm = TRUE),
-                                   by = 1)) -> .lngs_gap
-  
+  }
+
   # first pass of filtering
   data.table::setDT(cpue_data) %>%
     tidytable::filter(year >= yrs) %>% 
@@ -110,12 +116,13 @@ srvy_comps <- function(lfreq_data,
   .lfreq_un %>% 
     tidytable::mutate(length = 10 * (bin * ceiling((length / 10) / bin))) -> .lfreq_un
   
-  # length comp ----
-  # lcomp(.lfreq_un) -> .lcomp
-
   # length population ----
-  # lpop(.lcomp, .cpue, .lngs) -> .lpop
-  lpop_gap(.lfreq_un, .cpue, by_strata = TRUE) -> .lpop
+  if(isTRUE(use_gapindex)){
+    lpop_gap(.lfreq_un, .cpue, by_strata = by_strata) -> .lpop
+  } else{
+    lcomp(.lfreq_un) -> .lcomp
+    lpop(.lcomp, .cpue, .lngs) -> .lpop
+  }
   
   # randomize age  (and add sex = 0 for sex-combined (total) comp calculations) ----
   if(isTRUE(boot_ages)) {
@@ -142,10 +149,16 @@ srvy_comps <- function(lfreq_data,
     tidytable::mutate(length = 10 * (bin * ceiling((length / 10) / bin))) -> .agedat
   
   # age population ----
-  # apop(.lpop, .agedat) -> .apop
-  apop_gap(.lpop, .agedat, .lngs_gap, by_strata = TRUE) -> .apop
-  
-  list(age = .apop, length = .lpop)
+  if(isTRUE(use_gapindex)){
+    # bin lengths in complete cases
+    .lngs %>% 
+      tidytable::mutate(length = 10 * (bin * ceiling((length / 10) / bin))) -> .lngs
+    # compute age pop'n
+    apop_gap(.lpop, .agedat, .lngs, by_strata = by_strata) -> .apop
+    
+  } else{
+    apop(.lpop, .agedat) -> .apop
+  }
   
 }
 
