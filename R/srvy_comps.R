@@ -38,11 +38,22 @@ srvy_comps <- function(lfreq_data,
   if (is.null(yrs)) yrs <- 0
   
   # prep data ----
-  # complete cases by length/sex/strata for all years
+  # complete cases by length/sex/strata for all years (original)
   lfreq_data %>%
       tidytable::filter(year >= yrs) %>% 
       tidytable::distinct(year, species_code, length) %>% 
       tidytable::expand(year, length, .by = species_code) -> .lngs
+  
+  # complete cases by year/length/sex/strata for all years (following gapindex)
+  tidytable::expand_grid(year = unique(lfreq_data$year),
+                         species_code = unique(specimen_data$species_code),
+                         sex = unique(specimen_data$sex),
+                         length = seq(from = min(lfreq_data$length, na.rm = TRUE), 
+                                      to = max(lfreq_data$length, na.rm = TRUE), 
+                                      by = 10),
+                         age = seq(from = min(specimen_data$age, na.rm = TRUE), 
+                                   to = max(specimen_data$age, na.rm = TRUE),
+                                   by = 1)) -> .lngs_gap
   
   # first pass of filtering
   data.table::setDT(cpue_data) %>%
@@ -99,14 +110,12 @@ srvy_comps <- function(lfreq_data,
   .lfreq_un %>% 
     tidytable::mutate(length = 10 * (bin * ceiling((length / 10) / bin))) -> .lfreq_un
   
-  # # length comp ----
+  # length comp ----
   # lcomp(.lfreq_un) -> .lcomp
-  # 
-  # # length population ----
-  # lpop(.lcomp, .cpue, .lngs) -> .lpop
-  # 
+
   # length population ----
-  lpop_gap(.lfreq_un, .cpue) -> .lpop
+  # lpop(.lcomp, .cpue, .lngs) -> .lpop
+  lpop_gap(.lfreq_un, .cpue, by_strata = TRUE) -> .lpop
   
   # randomize age  (and add sex = 0 for sex-combined (total) comp calculations) ----
   if(isTRUE(boot_ages)) {
@@ -133,7 +142,8 @@ srvy_comps <- function(lfreq_data,
     tidytable::mutate(length = 10 * (bin * ceiling((length / 10) / bin))) -> .agedat
   
   # age population ----
-  apop(.lpop, .agedat) -> .apop
+  # apop(.lpop, .agedat) -> .apop
+  apop_gap(.lpop, .agedat, .lngs_gap, by_strata = TRUE) -> .apop
   
   list(age = .apop, length = .lpop)
   

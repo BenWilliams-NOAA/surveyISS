@@ -5,7 +5,7 @@
 #' @param lngs complete lengths by year
 #'
 #' @return
-#' @export
+#' @export lpop
 #'
 #' @examples
 lpop <- function(lcomp, 
@@ -63,13 +63,15 @@ lpop <- function(lcomp,
 #'
 #' @param lfreq_un uncounted length frequency data
 #' @param cpue cpue data
+#' @param by_strata are the results to be given by strata, or summed to region level? default = FALSE
 #'
 #' @return
-#' @export
+#' @export lpop_gap
 #'
 #' @examples
 lpop_gap <- function(lfreq_un, 
-                     cpue) {
+                     cpue,
+                     by_strata = FALSE) {
   
   # remove ebs strata 82 & 90 pre-1985 (to match results of gapindex)
   if(unique(cpue$survey) == 98){
@@ -276,9 +278,15 @@ lpop_gap <- function(lfreq_un,
                            tidytable::filter(number > 0) %>% 
                            tidytable::select(-S_iklm, - S_ik, -abund) %>% 
                            # rename
-                           tidytable::rename(abund = 'number')) %>%
+                           tidytable::rename(abund = 'number')) -> lpopn
+  
+  if(isTRUE(by_strata)){
+    lpopn
+  } else{
     # get annual pop'n @ length
-    tidytable::summarise(abund = sum(abund, na.rm = T),
-                         .by = c(year, species_code, length, sex))
+    lpopn %>% 
+      tidytable::summarise(abund = sum(abund, na.rm = T),
+                           .by = c(year, species_code, length, sex))
+  }
   
 }
