@@ -2,10 +2,11 @@
 #'
 #' @param cpue_data cpue dataframe
 #'
-#' @return
+#' @return data.table
 #' @export
 #'
 #' @examples
+#' \dontrun(boot_haul(cpue_data))
 boot_haul <- function(cpue_data) {
   
   cpue_data %>% 
