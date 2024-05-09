@@ -9,9 +9,6 @@ library(gapindex)
 library(afscdata)
 library(DBI)
 
-source_files <- list.files(here::here("R"), "*.R$")
-map(here::here("R", source_files), source)
-
 # species/region/year to test
 species_test = c(10110, 21720, 21740, 30060)
 region = 'goa'
@@ -63,19 +60,11 @@ gap_ac %>%
   tidytable::summarise(agepop_gapindex = sum(population_count), .by = c(year, species_code, sex, age)) -> gapindx_agecomp
 
 
-
 # get data from gap_products on akfin ----
 
 # get connected to akfin
 db = 'akfin'
-username <- getPass::getPass(msg = paste("Enter your", db, 
-                                         "Oracle Database Username: "))
-password <- getPass::getPass(msg = paste("Enter your", db, 
-                                         "Oracle Database Password: "))
-
-conn = DBI::dbConnect(odbc::odbc(), db,
-                      UID = username, PWD = password)
-
+conn = afscdata::connect(db)
 
 # pull akfin_sizecomp table
 dplyr::tbl(conn, dplyr::sql('gap_products.akfin_sizecomp')) %>% 
