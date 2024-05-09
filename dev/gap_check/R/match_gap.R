@@ -271,6 +271,7 @@ reg_match_gapprod <- function(region = 'goa',
 #' @param species species set to query gap data
 #' @param suvey survey number
 #' @param yrs survey start year
+#' @param fill_NA_method method to fill NAs when no size data (either GOA/AI or EBS)
 #' 
 #' @return
 #' @export reg_match_gapindex
@@ -281,7 +282,8 @@ reg_match_gapindex <- function(region = 'goa',
                                query = FALSE,
                                species = NULL,
                                survey = 47,
-                               yrs = 1990){
+                               yrs = 1990,
+                               fill_NA_method = NULL){
   
   # get survey ISS output ----
   
@@ -391,7 +393,8 @@ reg_match_gapindex <- function(region = 'goa',
   # get pop'n at length
   gap_lc <- gapindex::calc_sizecomp_stratum(gapdata,
                                             cpue,
-                                            racebase_stratum_popn) 
+                                            racebase_stratum_popn,
+                                            fill_NA_method = fill_NA_method) 
   
   # get age-length key
   alk <- gapindex::calc_alk(gapdata,
