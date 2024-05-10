@@ -37,7 +37,7 @@ gap_lc <- gapindex::calc_sizecomp_stratum(gapdata,
 # get age-length key
 alk <- gapindex::calc_alk(gapdata,
                           unsex = "all",
-                          global = FALSE)
+                          global = TRUE)
 
 # get stratum-level age pop'n
 gap_age_comp_st <- gapindex::calc_agecomp_stratum(gapdata,
