@@ -235,29 +235,19 @@ lpop_gap <- function(lfreq_un,
                                                  .by = c(year, species_code, stratum, hauljoin)) %>% 
                             tidytable::summarise(abund = sum(abund, na.rm = TRUE), 
                                                  .by = c(year, species_code, stratum))) %>% 
-    ## There are some strata with no length data. In these cases, the length
-    ## is coded as -9 and sex = 3. S_ik and S_ik are set to 1 to ease calculations
-    tidytable::replace_na(list(length = -9)) %>% 
-    tidytable::replace_na(list(sex = 3)) %>% 
-    tidytable::replace_na(list(S_iklm = 1)) %>% 
-    tidytable::replace_na(list(S_ik = 1)) %>% 
-    ## Stratum-level population calculation
-    tidytable::mutate(number = round(abund * S_iklm / S_ik)) %>% 
-    ## Remove zero-records
-    tidytable::filter(number > 0) %>% 
+    tidytable::replace_na(list(length = -9, sex = 3, S_iklm = 1, S_ik = 1)) %>%   # There are some strata with no length data. In these cases, the length
+    # is coded as -9 and sex = 3. S_ik and S_ik are set to 1 to ease calculations
+    tidytable::mutate(number = round(abund * S_iklm / S_ik)) %>% # Stratum-level population calculation
+    tidytable::filter(number > 0) %>% ## Remove zero-records
     tidytable::select(-S_iklm, - S_ik, -abund) %>% 
-    # rename
-    tidytable::rename(abund = 'number') %>% 
+    tidytable::rename(abund = 'number') %>% # rename
     # combined sex
-    tidytable::bind_rows(size_tot %>% 
-                           ## Aggregate S_ijklm across stratum, species_code, length bin, and sex
+    tidytable::bind_rows(size_tot %>% # Aggregate S_ijklm across stratum, species_code, length bin, and sex
                            tidytable::summarise(S_iklm = sum(S_ijklm), .by = c(year, stratum, species_code, length, sex)) %>% 
-                           ## Aggregate S_ijklm across stratum and species_code
-                           tidytable::inner_join(size_tot %>% 
+                           tidytable::inner_join(size_tot %>% ## Aggregate S_ijklm across stratum and species_code
                                                    tidytable::summarise(S_ik = sum(S_ijklm),
                                                                         .by = c(year, stratum, species_code))) %>% 
-                           # join pop'n estimates
-                           tidytable::inner_join(cpue %>%
+                           tidytable::inner_join(cpue %>% # join pop'n estimates
                                                    tidytable::filter(numcpue >= 0) %>%
                                                    tidytable::mutate(st_num = mean(numcpue) * area,
                                                                      tot = sum(numcpue), 
@@ -268,10 +258,7 @@ lpop_gap <- function(lfreq_un,
                                                                         .by = c(year, species_code, stratum))) %>% 
                            ## There are some strata with no length data. In these cases, the length
                            ## is coded as -9 and sex = 3. S_ik and S_ik are set to 1 to ease calculations
-                           tidytable::replace_na(list(length = -9)) %>% 
-                           tidytable::replace_na(list(sex = 3)) %>% 
-                           tidytable::replace_na(list(S_iklm = 1)) %>% 
-                           tidytable::replace_na(list(S_ik = 1)) %>% 
+                           tidytable::replace_na(list(length = -9, sex = 3, S_iklm = 1, S_ik = 1)) %>% 
                            ## Stratum-level population calculation
                            tidytable::mutate(number = round(abund * S_iklm / S_ik)) %>% 
                            ## Remove zero-records
