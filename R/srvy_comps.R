@@ -14,8 +14,9 @@
 #' @param al_var_ann resample age-length annually or pooled across years (default = FALSE)
 #' @param age_err switch for including ageing error (default = FALSE)
 #' @param use_gapindex use functions derived from gapindex package (default = TRUE)
-#' @param by_strata should length/age pop'n values be computed at stratum level (default = FALSE)
-#'
+#' @param by_strata should length/age pop'n values be computed at stratum level in gap fcns (default = FALSE)
+#' @param global fills in missing length bins with global alk in gap fcns (default = FALSE)
+#' 
 #' @return
 #' @export srvy_comps
 #'
@@ -36,7 +37,8 @@ srvy_comps <- function(lfreq_data,
                        al_var_ann = FALSE,
                        age_err = FALSE,
                        use_gapindex = TRUE,
-                       by_strata = FALSE) {
+                       by_strata = FALSE,
+                       global = FALSE) {
   # globals ----
   # year switch
   if (is.null(yrs)) yrs <- 0
@@ -155,7 +157,7 @@ srvy_comps <- function(lfreq_data,
     .lngs %>% 
       tidytable::mutate(length = 10 * (bin * ceiling((length / 10) / bin))) -> .lngs
     # compute age pop'n
-    apop_gap(.lpop, .agedat, .lngs, by_strata = by_strata) -> .apop
+    apop_gap(.lpop, .agedat, .lngs, by_strata = by_strata, global = global) -> .apop
   } else{
     apop(.lpop, .agedat) -> .apop
   }

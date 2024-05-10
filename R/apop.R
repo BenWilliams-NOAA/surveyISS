@@ -109,27 +109,24 @@ apop_gap <- function(lpop,
   
   # Calculate distribution of age proportions for a given length, `p_yklm`. This is the non-global age-length key.
   # female/male/unsexed
-  lngs %>% 
-    tidytable::left_join(agedat %>%
+  agedat %>%
+    tidytable::filter(sex != 0) %>%
+    tidytable::filter(!(sex %in% c(0, 3))) %>%
+    tidytable::bind_rows(agedat %>%
                            tidytable::filter(sex != 0) %>%
-                           tidytable::filter(!(sex %in% c(0, 3))) %>%
-                           tidytable::bind_rows(agedat %>%
-                                                  tidytable::filter(sex != 0) %>%
-                                                  tidytable::mutate(sex = 3)) %>%
-                           tidytable::summarise(age_num = .N,
-                                                .by = c(year, species_code, sex, length, age)) %>%
-                           tidytable::mutate(age_frac = age_num/sum(age_num), 
-                                             .by = c(year, species_code, sex, length))) -> p_yklm
+                           tidytable::mutate(sex = 3)) %>%
+    tidytable::summarise(age_num = .N,
+                         .by = c(year, species_code, sex, length, age)) %>%
+    tidytable::mutate(age_frac = age_num/sum(age_num), 
+                      .by = c(year, species_code, sex, length)) -> p_yklm
+  
   # combined sex categories
-  lngs %>% 
-    tidytable::filter(sex == 1) %>% 
-    tidytable::mutate(sex = 0) %>% 
-    tidytable::left_join(agedat %>%
-                           tidytable::filter(sex == 0) %>%
-                           tidytable::summarise(age_num = .N,
-                                                .by = c(year, species_code, sex, length, age)) %>%
-                           tidytable::mutate(age_frac = age_num/sum(age_num), 
-                                             .by = c(year, species_code, sex, length))) -> p_yklm_comb
+  agedat %>%
+    tidytable::filter(sex == 0) %>%
+    tidytable::summarise(age_num = .N,
+                         .by = c(year, species_code, sex, length, age)) %>%
+    tidytable::mutate(age_frac = age_num/sum(age_num), 
+                      .by = c(year, species_code, sex, length)) -> p_yklm_comb
   
   if(isTRUE(global)){
     # Append the globally-filled lengths with the the non-global `p_yklm` alk to get a now global alk. 
@@ -137,7 +134,8 @@ apop_gap <- function(lpop,
     lngs %>% 
       tidytable::left_join(p_yklm %>% 
                              tidytable::filter(!is.na(age_frac)) %>% 
-                             tidytable::bind_rows(p_yklm %>% 
+                             tidytable::bind_rows(lngs %>% 
+                                                    tidytable::left_join(p_yklm) %>% 
                                                     # Determine missing lengths
                                                     tidytable::summarise(age_frac = sum(age_frac, na.rm = TRUE), .by = c(year, species_code, sex, length)) %>% 
                                                     tidytable::filter(age_frac == 0) %>% 
@@ -159,7 +157,10 @@ apop_gap <- function(lpop,
       tidytable::mutate(sex = 0) %>% 
       tidytable::left_join(p_yklm_comb %>% 
                              tidytable::filter(!is.na(age_frac)) %>% 
-                             tidytable::bind_rows(p_yklm_comb %>% 
+                             tidytable::bind_rows(lngs %>% 
+                                                    tidytable::filter(sex == 1) %>% 
+                                                    tidytable::mutate(sex = 0) %>% 
+                                                    tidytable::left_join(p_yklm_comb) %>% 
                                                     # Determine missing lengths
                                                     tidytable::summarise(age_frac = sum(age_frac, na.rm = TRUE), .by = c(year, species_code, sex, length)) %>% 
                                                     tidytable::filter(age_frac == 0) %>% 
