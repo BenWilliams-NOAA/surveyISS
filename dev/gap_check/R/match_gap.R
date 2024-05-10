@@ -90,6 +90,7 @@ match_gap <- function(oga,
 #' @param species species set to query gap data
 #' @param suvey survey number
 #' @param yrs survey start year
+#' @param global fills in missing length bins with global alk (default = FALSE)
 #' 
 #' @return
 #' @export reg_match_gapprod
@@ -101,7 +102,8 @@ reg_match_gapprod <- function(region = 'goa',
                               reg_stratum = 99903,
                               species = NULL,
                               survey = 47,
-                              yrs = 1990){
+                              yrs = 1990,
+                              global = FALSE){
   
   # get survey ISS output ----
   
@@ -125,7 +127,8 @@ reg_match_gapprod <- function(region = 'goa',
                    al_var_ann = FALSE,
                    age_err = FALSE,
                    use_gapindex = FALSE,
-                   by_strata = FALSE)
+                   by_strata = FALSE,
+                   global = global)
   
   oga_og <- og$age
   ogl_og <- og$length
@@ -145,7 +148,8 @@ reg_match_gapprod <- function(region = 'goa',
                        al_var_ann = FALSE,
                        age_err = FALSE,
                        use_gapindex = TRUE,
-                       by_strata = FALSE)
+                       by_strata = FALSE,
+                       global = global)
   
   oga_gap <- og_gap$age
   ogl_gap <- og_gap$length
@@ -165,7 +169,8 @@ reg_match_gapprod <- function(region = 'goa',
                           al_var_ann = FALSE,
                           age_err = FALSE,
                           use_gapindex = TRUE,
-                          by_strata = TRUE)
+                          by_strata = TRUE,
+                          global = global)
   
   oga_gap_st <- og_gap_st$age
   ogl_gap_st <- og_gap_st$length
@@ -174,43 +179,38 @@ reg_match_gapprod <- function(region = 'goa',
   
   if(isTRUE(query)){
     
-    # get database username/password (ai = 52, goa = 47, ebs = 98, nbs = 143, ebs slope = 78)
-    db <- vroom::vroom(here::here("database_specs.csv"))
-    username = db$username[db$database == "AKFIN"]
-    password = db$password[db$database == "AKFIN"]
-    database = 'akfin'
+    # get connected to akfin
+    db = 'akfin'
+    conn = afscdata::connect(db)
     
-    # connect to database
-    conn = DBI::dbConnect(odbc::odbc(), database,
-                          UID = username, PWD = password)
-    
-    # sizecomp
-    lpop = readLines(here::here('inst', 'sql', 'gap_products', 'lpop_gap.sql'))
-    lpop = sql_filter(sql_precode = "IN", x = survey, sql_code = lpop, flag = '-- insert survey')
-    lpop = sql_filter(sql_precode = "IN", x = species, sql_code = lpop, flag = '-- insert species')
-    lpop = sql_filter(sql_precode = ">=", x = yrs, sql_code = lpop, flag = '-- insert year')
-    
-    gap_lpop_full <- sql_run(conn, lpop) %>% 
-      dplyr::rename_all(tolower)
+    # pull akfin_sizecomp table
+    dplyr::tbl(conn, dplyr::sql('gap_products.akfin_sizecomp')) %>% 
+      dplyr::rename_all(tolower) %>% 
+      dplyr::filter(survey_definition_id %in% survey,
+                    species_code %in% species,
+                    year >= yrs) %>% 
+      tidytable::select(survey = survey_definition_id, year, stratum = area_id, species_code, sex, length = length_mm, population_count) %>% 
+      collect() -> gap_lpop_full
     
     vroom::vroom_write(gap_lpop_full, file = here::here("dev", "gap_check", "data", paste0("gap_lpop_full_", region, ".csv")), delim = ",")
     
     gap_lpop_full %>% 
       tidytable::filter(stratum == reg_stratum & length > 0) -> gap_lpop
     
-    # agecomp
-    apop = readLines(here::here('inst', 'sql', 'gap_products', 'apop_gap.sql'))
-    apop = sql_filter(sql_precode = "IN", x = survey, sql_code = apop, flag = '-- insert survey')
-    apop = sql_filter(sql_precode = "IN", x = species, sql_code = apop, flag = '-- insert species')
-    apop = sql_filter(sql_precode = ">=", x = yrs, sql_code = apop, flag = '-- insert year')
-    
-    gap_apop_full <- sql_run(conn, apop) %>% 
-      dplyr::rename_all(tolower)
+    # pull akfin_agecomp table
+    dplyr::tbl(conn, dplyr::sql('gap_products.akfin_agecomp')) %>% 
+      dplyr::rename_all(tolower) %>% 
+      dplyr::filter(survey_definition_id %in% survey,
+                    species_code %in% species,
+                    year >= yrs) %>% 
+      tidytable::select(survey = survey_definition_id, year, stratum = area_id, species_code, sex, age, population_count) %>% 
+      collect() -> gap_apop_full
     
     vroom::vroom_write(gap_apop_full, file = here::here("dev", "gap_check", "data", paste0("gap_apop_full_", region, ".csv")), delim = ",")
     
     gap_apop_full %>% 
       filter(stratum == reg_stratum & age > 0) -> gap_apop
+
   } else{
     gap_lpop <- vroom::vroom(here::here("dev", "gap_check", "data", paste0("gap_lpop_full_", region, ".csv"))) %>% 
       tidytable::filter(stratum == reg_stratum & length > 0)
@@ -272,6 +272,7 @@ reg_match_gapprod <- function(region = 'goa',
 #' @param suvey survey number
 #' @param yrs survey start year
 #' @param fill_NA_method method to fill NAs when no size data (either GOA/AI or EBS)
+#' @param global fills in missing length bins with global alk (default = FALSE)
 #' 
 #' @return
 #' @export reg_match_gapindex
@@ -283,7 +284,8 @@ reg_match_gapindex <- function(region = 'goa',
                                species = NULL,
                                survey = 47,
                                yrs = 1990,
-                               fill_NA_method = NULL){
+                               fill_NA_method = NULL,
+                               global = FALSE){
   
   # get survey ISS output ----
   
@@ -310,7 +312,8 @@ reg_match_gapindex <- function(region = 'goa',
                    al_var_ann = FALSE,
                    age_err = FALSE,
                    use_gapindex = FALSE,
-                   by_strata = FALSE)
+                   by_strata = FALSE,
+                   global = global)
   
   oga_og <- og$age
   ogl_og <- og$length
@@ -330,7 +333,8 @@ reg_match_gapindex <- function(region = 'goa',
                        al_var_ann = FALSE,
                        age_err = FALSE,
                        use_gapindex = TRUE,
-                       by_strata = FALSE)
+                       by_strata = FALSE,
+                       global = global)
   
   oga_gap <- og_gap$age
   ogl_gap <- og_gap$length
@@ -350,7 +354,8 @@ reg_match_gapindex <- function(region = 'goa',
                           al_var_ann = FALSE,
                           age_err = FALSE,
                           use_gapindex = TRUE,
-                          by_strata = TRUE)
+                          by_strata = TRUE,
+                          global = global)
   
   oga_gap_st <- og_gap_st$age
   ogl_gap_st <- og_gap_st$length
@@ -398,7 +403,8 @@ reg_match_gapindex <- function(region = 'goa',
   
   # get age-length key
   alk <- gapindex::calc_alk(gapdata,
-                            unsex = "all")
+                            unsex = "all",
+                            global = global)
   
   # get stratum-level age pop'n
   gap_age_comp_st <- gapindex::calc_agecomp_stratum(gapdata,

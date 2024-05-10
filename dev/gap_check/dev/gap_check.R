@@ -73,7 +73,8 @@ reg_match_gapindex(region = 'goa',
                    species = species2,
                    survey = 47,
                    yrs = 1990,
-                   fill_NA_method = "AIGOA")
+                   fill_NA_method = "AIGOA",
+                   global = FALSE)
 
 ## check ai ----
 species1 = c(10110, 10112, 21720, 21740, 21921, 30060, 30420, 30050, 30051, 30052)
@@ -84,7 +85,8 @@ reg_match_gapindex(region = 'ai',
                    species = species2,
                    survey = 52,
                    yrs = 1991,
-                   fill_NA_method = "AIGOA")
+                   fill_NA_method = "AIGOA",
+                   global = FALSE)
 
 ## check ebs ----
 species1 = c(10110, 10112, 10115, 10130, 10210, 10261, 10285, 21720, 21740)
@@ -95,7 +97,8 @@ reg_match_gapindex(region = 'ebs',
                    species = species2,
                    survey = 98,
                    yrs = 1979,
-                   fill_NA_method = "BS")
+                   fill_NA_method = "BS",
+                   global = FALSE)
 
 ## check nbs ----
 species1 = c(10110, 10112, 10115, 10130, 10210, 10261, 10285, 21720, 21740)
@@ -106,7 +109,8 @@ reg_match_gapindex(region = 'nbs',
                    species = species2,
                    survey = 143,
                    yrs = 1979,
-                   fill_NA_method = "BS")
+                   fill_NA_method = "BS",
+                   global = FALSE)
 
 ## check ebs slope ----
 species1 = c(10110, 10112, 10115,30060)
@@ -116,5 +120,6 @@ reg_match_gapindex(region = 'ebs_slope',
                    species = species1,
                    survey = 78,
                    yrs = 2002,
-                   fill_NA_method = "BS")
+                   fill_NA_method = "BS",
+                   global = FALSE)
 
