@@ -3,8 +3,6 @@
 # load/source libraries/functions
 library(tidyverse)
 library(tidytable)
-library(vroom)
-library(here)
 library(gapindex)
 library(afscdata)
 library(DBI)
@@ -38,7 +36,8 @@ gap_lc <- gapindex::calc_sizecomp_stratum(gapdata,
 
 # get age-length key
 alk <- gapindex::calc_alk(gapdata,
-                          unsex = "all")
+                          unsex = "all",
+                          global = FALSE)
 
 # get stratum-level age pop'n
 gap_age_comp_st <- gapindex::calc_agecomp_stratum(gapdata,

@@ -74,7 +74,8 @@ srvy_comps <- function(lfreq_data,
   
   data.table::setDT(specimen_data) %>%
     tidytable::filter(year >= yrs) %>% 
-    tidytable::drop_na() -> .agedat
+    tidytable::drop_na() %>% 
+    tidytable::mutate(length = round(length / 10) * 10) -> .agedat
   
   # randomize hauls ----  
   if(isTRUE(boot_hauls)) {

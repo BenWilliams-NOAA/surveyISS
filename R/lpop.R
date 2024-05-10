@@ -73,7 +73,7 @@ lpop_gap <- function(lfreq_un,
                      cpue,
                      by_strata = FALSE) {
   
-  # remove ebs strata 82 & 90 pre-1985 (to match results of gapindex)
+  # remove ebs strata 82 & 90 (to match results of gapindex)
   if(unique(cpue$survey) == 98){
     cpue <- cpue %>% 
       tidytable::filter(!(stratum %in% c(82, 90) & year <= 1985))

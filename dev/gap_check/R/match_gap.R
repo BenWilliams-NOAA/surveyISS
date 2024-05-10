@@ -408,6 +408,12 @@ reg_match_gapindex <- function(region = 'goa',
   # get regional level age pop'n
   gap_ac <- gapindex::calc_agecomp_region(gapdata,
                                           gap_age_comp_st)
+  
+  # filter for ebs to only have standard
+  if(region == 'ebs'){
+    gap_ac %>% 
+      tidytable::filter(AREA_ID == 99901) -> gap_ac
+  }
 
 
   # rename and summarise

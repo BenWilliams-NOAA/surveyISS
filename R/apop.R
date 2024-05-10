@@ -104,7 +104,7 @@ apop_gap <- function(lpop,
                      agedat,
                      lngs,
                      by_strata = FALSE){
-  
+
   # Calculate distribution of age proportions for a given length, `p_yklm`. This is the non-global age-length key.
   # female/male/unsexed
   lngs %>% 
