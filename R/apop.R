@@ -95,6 +95,7 @@ apop <- function(lpop,
 #' @param agedat age dataframe
 #' @param lngs all combinations of possible lengths and ages
 #' @param by_strata are the length pop'n by strata or summed to region level (default = FALSE)
+#' @param global fills in missing length bins with global alk (default = TRUE)
 #'
 #' @return
 #' @export apop_gap
@@ -103,8 +104,9 @@ apop <- function(lpop,
 apop_gap <- function(lpop, 
                      agedat,
                      lngs,
-                     by_strata = FALSE){
-
+                     by_strata = FALSE,
+                     global = TRUE){
+  
   # Calculate distribution of age proportions for a given length, `p_yklm`. This is the non-global age-length key.
   # female/male/unsexed
   lngs %>% 
@@ -117,7 +119,7 @@ apop_gap <- function(lpop,
                            tidytable::summarise(age_num = .N,
                                                 .by = c(year, species_code, sex, length, age)) %>%
                            tidytable::mutate(age_frac = age_num/sum(age_num), 
-                                             .by = c(year, species_code, sex, length))) -> .p_yklm
+                                             .by = c(year, species_code, sex, length))) -> p_yklm
   # combined sex categories
   lngs %>% 
     tidytable::filter(sex == 1) %>% 
@@ -127,51 +129,53 @@ apop_gap <- function(lpop,
                            tidytable::summarise(age_num = .N,
                                                 .by = c(year, species_code, sex, length, age)) %>%
                            tidytable::mutate(age_frac = age_num/sum(age_num), 
-                                             .by = c(year, species_code, sex, length))) -> .p_yklm_comb
+                                             .by = c(year, species_code, sex, length))) -> p_yklm_comb
   
-  # Append the globally-filled lengths with the the non-global `p_yklm` alk to get a now global alk. 
-  # female/male/unsexed
-  lngs %>% 
-    tidytable::left_join(.p_yklm %>% 
-                           tidytable::filter(!is.na(age_frac)) %>% 
-                           tidytable::bind_rows(.p_yklm %>% 
-                                                  # Determine missing lengths
-                                                  tidytable::summarise(age_frac = sum(age_frac, na.rm = TRUE), .by = c(year, species_code, sex, length)) %>% 
-                                                  tidytable::filter(age_frac == 0) %>% 
-                                                  tidytable::select(-age_frac) %>% 
-                                                  # for missing lengths, merge age probabilities from golbal ALK
-                                                  tidytable::left_join(agedat %>%
-                                                                         # Aggregate specimen information over years to calculate a global ALK,
-                                                                         tidytable::filter(sex != 0) %>%
-                                                                         tidytable::summarise(age_num = .N,
-                                                                                              .by = c(species_code, sex, length, age)) %>%
-                                                                         tidytable::mutate(age_frac = age_num/sum(age_num), 
-                                                                                           .by = c(species_code, sex, length))) %>% 
-                                                  tidytable::filter(!is.na(age_frac)))) %>% 
-    tidytable::select(-age_num) %>% 
-    tidytable::replace_na(list(age_frac = 0)) -> p_yklm
-  # combined sex categories
-  lngs %>% 
-    tidytable::filter(sex == 1) %>% 
-    tidytable::mutate(sex = 0) %>% 
-    tidytable::left_join(.p_yklm_comb %>% 
-                           tidytable::filter(!is.na(age_frac)) %>% 
-                           tidytable::bind_rows(.p_yklm_comb %>% 
-                                                  # Determine missing lengths
-                                                  tidytable::summarise(age_frac = sum(age_frac, na.rm = TRUE), .by = c(year, species_code, sex, length)) %>% 
-                                                  tidytable::filter(age_frac == 0) %>% 
-                                                  tidytable::select(-age_frac) %>% 
-                                                  # for missing lengths, merge age probabilities from golbal ALK
-                                                  tidytable::left_join(agedat %>%
-                                                                         # Aggregate specimen information over years to calculate a global ALK,
-                                                                         tidytable::filter(sex == 0) %>%
-                                                                         tidytable::summarise(age_num = .N,
-                                                                                              .by = c(species_code, sex, length, age)) %>%
-                                                                         tidytable::mutate(age_frac = age_num/sum(age_num), 
-                                                                                           .by = c(species_code, sex, length))) %>% 
-                                                  tidytable::filter(!is.na(age_frac)))) %>% 
-    tidytable::select(-age_num) %>% 
-    tidytable::replace_na(list(age_frac = 0)) -> p_yklm_comb
+  if(isTRUE(global)){
+    # Append the globally-filled lengths with the the non-global `p_yklm` alk to get a now global alk. 
+    # female/male/unsexed
+    lngs %>% 
+      tidytable::left_join(p_yklm %>% 
+                             tidytable::filter(!is.na(age_frac)) %>% 
+                             tidytable::bind_rows(p_yklm %>% 
+                                                    # Determine missing lengths
+                                                    tidytable::summarise(age_frac = sum(age_frac, na.rm = TRUE), .by = c(year, species_code, sex, length)) %>% 
+                                                    tidytable::filter(age_frac == 0) %>% 
+                                                    tidytable::select(-age_frac) %>% 
+                                                    # for missing lengths, merge age probabilities from golbal ALK
+                                                    tidytable::left_join(agedat %>%
+                                                                           # Aggregate specimen information over years to calculate a global ALK,
+                                                                           tidytable::filter(sex != 0) %>%
+                                                                           tidytable::summarise(age_num = .N,
+                                                                                                .by = c(species_code, sex, length, age)) %>%
+                                                                           tidytable::mutate(age_frac = age_num/sum(age_num), 
+                                                                                             .by = c(species_code, sex, length))) %>% 
+                                                    tidytable::filter(!is.na(age_frac)))) %>% 
+      tidytable::select(-age_num) %>% 
+      tidytable::replace_na(list(age_frac = 0)) -> p_yklm
+    # combined sex categories
+    lngs %>% 
+      tidytable::filter(sex == 1) %>% 
+      tidytable::mutate(sex = 0) %>% 
+      tidytable::left_join(p_yklm_comb %>% 
+                             tidytable::filter(!is.na(age_frac)) %>% 
+                             tidytable::bind_rows(p_yklm_comb %>% 
+                                                    # Determine missing lengths
+                                                    tidytable::summarise(age_frac = sum(age_frac, na.rm = TRUE), .by = c(year, species_code, sex, length)) %>% 
+                                                    tidytable::filter(age_frac == 0) %>% 
+                                                    tidytable::select(-age_frac) %>% 
+                                                    # for missing lengths, merge age probabilities from golbal ALK
+                                                    tidytable::left_join(agedat %>%
+                                                                           # Aggregate specimen information over years to calculate a global ALK,
+                                                                           tidytable::filter(sex == 0) %>%
+                                                                           tidytable::summarise(age_num = .N,
+                                                                                                .by = c(species_code, sex, length, age)) %>%
+                                                                           tidytable::mutate(age_frac = age_num/sum(age_num), 
+                                                                                             .by = c(species_code, sex, length))) %>% 
+                                                    tidytable::filter(!is.na(age_frac)))) %>% 
+      tidytable::select(-age_num) %>% 
+      tidytable::replace_na(list(age_frac = 0)) -> p_yklm_comb
+  }
   
   # Calculate numbers at age as the product of the age_frac and the numbers at length
   # at strata level
