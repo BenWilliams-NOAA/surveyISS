@@ -95,7 +95,7 @@ apop <- function(lpop,
 #' @param agedat age dataframe
 #' @param lngs all combinations of possible lengths and ages
 #' @param by_strata are the length pop'n by strata or summed to region level (default = FALSE)
-#' @param global fills in missing length bins with global alk (default = TRUE)
+#' @param global fills in missing length bins with global alk (default = FALSE)
 #'
 #' @return
 #' @export apop_gap
@@ -105,7 +105,7 @@ apop_gap <- function(lpop,
                      agedat,
                      lngs,
                      by_strata = FALSE,
-                     global = TRUE){
+                     global = FALSE){
   
   # Calculate distribution of age proportions for a given length, `p_yklm`. This is the non-global age-length key.
   # female/male/unsexed
@@ -232,7 +232,7 @@ apop_gap <- function(lpop,
       tidytable::select(-age_frac, -abund) %>% 
       # summarize numbers at age across length, and compute mean length
       tidytable::mutate(mean_length = round(sum(length * agepop, na.rm = TRUE) / sum(agepop, na.rm = TRUE), digits = 2), 
-                        .by = c(year, species_code, stratum, sex, age)) %>% 
+                        .by = c(year, species_code, sex, age)) %>% 
       tidytable::summarise(agepop = round(sum(agepop)),
                            mean_length = mean(mean_length),
                            sd_length = round(sqrt(sum(agepop / sum(agepop, na.rm = TRUE) * (length - mean_length) ^ 2)), digits = 2),
@@ -248,7 +248,7 @@ apop_gap <- function(lpop,
                              tidytable::select(-age_frac, -abund) %>% 
                              # summarize numbers at age across length, and compute mean length
                              tidytable::mutate(mean_length = round(sum(length * agepop, na.rm = TRUE) / sum(agepop, na.rm = TRUE), digits = 2), 
-                                               .by = c(year, species_code, stratum, sex, age)) %>% 
+                                               .by = c(year, species_code, sex, age)) %>% 
                              tidytable::summarise(agepop = round(sum(agepop)),
                                                   mean_length = mean(mean_length),
                                                   sd_length = round(sqrt(sum(agepop / sum(agepop, na.rm = TRUE) * (length - mean_length) ^ 2)), digits = 2),

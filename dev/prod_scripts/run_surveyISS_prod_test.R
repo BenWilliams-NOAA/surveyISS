@@ -63,6 +63,8 @@ read_test %>%
 # al_var = TRUE
 # al_var_ann = TRUE
 # age_err = TRUE
+# use_gapindex = TRUE
+# by_strata = TRUE
 
 srvy_iss(iters = iters, 
          lfreq_data = .lfreq,
@@ -78,6 +80,8 @@ srvy_iss(iters = iters,
          al_var = TRUE, 
          al_var_ann = TRUE, 
          age_err = TRUE,
+         use_gapindex = TRUE,
+         by_strata = TRUE,
          region = region, 
          save_interm = FALSE, 
          save = 'prodtest')

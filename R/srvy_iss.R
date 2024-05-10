@@ -123,8 +123,10 @@ srvy_iss <- function(iters = 1,
   # compute average relative bias in pop'n estimates (avg relative bias across age)
   .bias_age <- bias_age(r_age, oga)
   
-  # compute mean length-at-age and sd
-  .mean_length <- grwth_stats(r_age, oga)
+  # compute mean length-at-age and sd (if using gap fcns)
+  if(isTRUE(use_gapindex)){
+    .mean_length <- grwth_stats(r_age, oga)
+  }
   
   # length comps: 
   # compute harmonic mean of iterated realized sample size, which is the input sample size (iss)
@@ -135,17 +137,19 @@ srvy_iss <- function(iters = 1,
   
   # write results ----
   # input sample size
-  vroom::vroom_write(iss_length, here::here("output", region, paste0(save, "_iss_ln.csv")), delim = ",")    
-  vroom::vroom_write(iss_age, here::here("output", region, paste0(save, "_iss_ag.csv")), delim = ",")
+  vroom::vroom_write(.iss_length, here::here("output", region, paste0(save, "_iss_ln.csv")), delim = ",")    
+  vroom::vroom_write(.iss_age, here::here("output", region, paste0(save, "_iss_ag.csv")), delim = ",")
   # base age & length pop'n
   vroom::vroom_write(oga, file = here::here("output", region, paste0(save, "_base_age.csv")), delim = ",")
   vroom::vroom_write(ogl, file = here::here("output", region, paste0(save, "_base_length.csv")), delim = ",")
   # bias in age & length pop'n
   vroom::vroom_write(.bias_age, file = here::here("output", region, paste0(save, "_bias_age.csv")), delim = ",")
   vroom::vroom_write(.bias_length, file = here::here("output", region, paste0(save, "_bias_length.csv")), delim = ",")
-  # mean length-at-age and sd
-  vroom::vroom_write(.mean_length, file = here::here("output", region, paste0(save, "_mean_length.csv")), delim = ",")
-
+  # mean length-at-age and sd (if using gap fcns)
+  if(isTRUE(use_gapindex)){
+    vroom::vroom_write(.mean_length, file = here::here("output", region, paste0(save, "_mean_length.csv")), delim = ",")
+  }
+  
   # if desired, write out bootstrapped age & length pop'n and realized sample sizes
   if(isTRUE(save_interm)) {
     r_length %>%
