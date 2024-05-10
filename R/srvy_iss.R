@@ -116,151 +116,36 @@ srvy_iss <- function(iters = 1,
                                            sex == 12 ~ 'female_male',
                                            sex == 4 ~ 'total_post')) -> .rss_length
 
-  # age comps: compute harmonic mean of iterated realized sample size, which is the input sample size (iss)
-  .rss_age %>% 
-    tidytable::summarise(iss = psych::harmonic.mean(rss, na.rm = TRUE, zero = FALSE),
-                         .by = c(year, species_code, sex, sex_desc)) %>% 
-    # compute average relative bias in pop'n estimates (avg relative bias across age or length)
-    tidytable::left_join(r_age %>%
-                           tidytable::map_df(., ~as.data.frame(.x), .id = "sim") %>% 
-                           tidytable::bind_rows(r_age %>% 
-                                                  tidytable::map_df(., ~as.data.frame(.x), .id = "sim") %>% 
-                                                  tidytable::filter(sex != 0) %>% 
-                                                  tidytable::summarise(agepop = sum(agepop), .by = c(sim, year, species_code, age)) %>% 
-                                                  tidytable::mutate(sex = 4)) %>% 
-                           tidytable::summarise(agepop = mean(agepop), .by = c(year, species_code, sex, age)) %>% 
-                           tidytable::mutate(p_sim = agepop / sum(agepop), .by = c(year, species_code, sex)) %>% 
-                           tidytable::bind_rows(r_age %>% 
-                                                  tidytable::map_df(., ~as.data.frame(.x), .id = "sim") %>% 
-                                                  tidytable::filter(sex %in% c(1, 2)) %>% 
-                                                  tidytable::summarise(agepop = mean(agepop), .by = c(year, species_code, sex, age)) %>% 
-                                                  tidytable::mutate(p_sim = agepop / sum(agepop), .by = c(year, species_code)) %>% 
-                                                  tidytable::mutate(sex = 12)) %>% 
-                           tidytable::drop_na() %>% 
-                           tidytable::select(-agepop) %>% 
-                           tidytable::left_join(oga %>% 
-                                                  tidytable::bind_rows(oga %>% 
-                                                                         tidytable::filter(sex != 0) %>% 
-                                                                         tidytable::summarise(agepop = sum(agepop), .by = c(year, species_code, age)) %>% 
-                                                                         tidytable::mutate(sex = 4)) %>% 
-                                                  tidytable::mutate(p_og = agepop / sum(agepop), .by = c(year, species_code, sex)) %>% 
-                                                  tidytable::bind_rows(oga %>% 
-                                                                         tidytable::filter(sex %in% c(1, 2)) %>% 
-                                                                         tidytable::mutate(p_og = agepop / sum(agepop), .by = c(year, species_code)) %>% 
-                                                                         tidytable::mutate(sex = 12)) %>% 
-                                                  tidytable::select(-agepop)) %>% 
-                           tidytable::mutate(bias = (p_sim - p_og)) %>% 
-                           tidytable::drop_na() %>% 
-                           tidytable::summarise(bias = mean(bias), .by = c(year, species_code, sex))) %>% 
-    # add nominal sample size (nss) and number of hauls (nhls)
-    tidytable::left_join(specimen_data %>% 
-                           tidytable::drop_na(age) %>% 
-                           tidytable::filter(sex != 3) %>% 
-                           tidytable::summarize(nss = .N, .by = c(year, species_code, sex)) %>% 
-                           tidytable::bind_rows(specimen_data %>% 
-                                                  tidytable::drop_na(age) %>% 
-                                                  tidytable::summarize(nss = .N, .by = c(year, species_code)) %>% 
-                                                  tidytable::mutate(sex = 0)) %>% 
-                           tidytable::bind_rows(specimen_data %>% 
-                                                  tidytable::drop_na(age) %>% 
-                                                  tidytable::summarize(nss = .N, .by = c(year, species_code)) %>% 
-                                                  tidytable::mutate(sex = 4)) %>% 
-                           tidytable::bind_rows(specimen_data %>% 
-                                                  tidytable::drop_na(age) %>% 
-                                                  tidytable::filter(sex != 3) %>% 
-                                                  tidytable::summarize(nss = .N, .by = c(year, species_code)) %>% 
-                                                  tidytable::mutate(sex = 12)) %>% 
-                           tidytable::left_join(specimen_data %>% 
-                                                  tidytable::drop_na(age) %>% 
-                                                  tidytable::filter(sex != 3) %>% 
-                                                  tidytable::summarize(nhl = length(unique(hauljoin)), .by = c(year, species_code, sex)) %>% 
-                                                  tidytable::bind_rows(specimen_data %>% 
-                                                                         tidytable::drop_na(age) %>% 
-                                                                         tidytable::summarize(nhl = length(unique(hauljoin)), .by = c(year, species_code)) %>% 
-                                                                         tidytable::mutate(sex = 0)) %>% 
-                                                  tidytable::bind_rows(specimen_data %>% 
-                                                                         tidytable::drop_na(age) %>% 
-                                                                         tidytable::summarize(nhl = length(unique(hauljoin)), .by = c(year, species_code)) %>% 
-                                                                         tidytable::mutate(sex = 4)) %>% 
-                                                  tidytable::bind_rows(specimen_data %>% 
-                                                                         tidytable::drop_na(age) %>% 
-                                                                         tidytable::filter(sex != 3) %>% 
-                                                                         tidytable::summarize(nhl = length(unique(hauljoin)), .by = c(year, species_code)) %>% 
-                                                                         tidytable::mutate(sex = 12)))) %>% 
-    tidytable::filter(iss > 0) -> iss_age
-
-  # length comps: compute harmonic mean of iterated realized sample size, which is the input sample size (iss)
-  .rss_length %>% 
-    tidytable::summarise(iss = psych::harmonic.mean(rss, na.rm = TRUE, zero = FALSE),
-                         .by = c(year, species_code, sex, sex_desc)) %>% 
-    # compute average relative bias in pop'n estimates (avg relative bias across age or length)
-    tidytable::left_join(r_length %>%
-                           tidytable::map_df(., ~as.data.frame(.x), .id = "sim") %>% 
-                           tidytable::bind_rows(r_length %>% 
-                                                  tidytable::map_df(., ~as.data.frame(.x), .id = "sim") %>% 
-                                                  tidytable::filter(sex != 0) %>% 
-                                                  tidytable::summarise(abund = sum(abund), .by = c(sim, year, species_code, length)) %>% 
-                                                  tidytable::mutate(sex = 4)) %>% 
-                           tidytable::summarise(abund = mean(abund), .by = c(year, species_code, sex, length)) %>% 
-                           tidytable::mutate(p_sim = abund / sum(abund), .by = c(year, species_code, sex)) %>% 
-                           tidytable::bind_rows(r_length %>% 
-                                                  tidytable::map_df(., ~as.data.frame(.x), .id = "sim") %>% 
-                                                  tidytable::filter(sex %in% c(1, 2)) %>% 
-                                                  tidytable::summarise(abund = mean(abund), .by = c(year, species_code, sex, length)) %>% 
-                                                  tidytable::mutate(p_sim = abund / sum(abund), .by = c(year, species_code)) %>% 
-                                                  tidytable::mutate(sex = 12)) %>% 
-                           tidytable::drop_na() %>% 
-                           tidytable::select(-abund) %>% 
-                           tidytable::left_join(ogl %>% 
-                                                  tidytable::bind_rows(ogl %>% 
-                                                                         tidytable::filter(sex != 0) %>% 
-                                                                         tidytable::summarise(abund = sum(abund), .by = c(year, species_code, length)) %>% 
-                                                                         tidytable::mutate(sex = 4)) %>% 
-                                                  tidytable::mutate(p_og = abund / sum(abund), .by = c(year, species_code, sex)) %>% 
-                                                  tidytable::bind_rows(ogl %>% 
-                                                                         tidytable::filter(sex %in% c(1, 2)) %>% 
-                                                                         tidytable::mutate(p_og = abund / sum(abund), .by = c(year, species_code)) %>% 
-                                                                         tidytable::mutate(sex = 12)) %>% 
-                                                  tidytable::select(-abund)) %>% 
-                           tidytable::mutate(bias = (p_sim - p_og)) %>% 
-                           tidytable::drop_na() %>% 
-                           tidytable::summarise(bias = mean(bias), .by = c(year, species_code, sex))) %>% 
-    # add nominal sample size (nss) and number of hauls (nhls)
-    tidytable::left_join(lfreq_data %>% 
-                           tidytable::filter(sex != 3) %>% 
-                           tidytable::summarise(nss = sum(frequency), .by = c(year, species_code, sex)) %>% 
-                           tidytable::bind_rows(lfreq_data %>% 
-                                                  tidytable::summarise(nss = sum(frequency), .by = c(year, species_code)) %>% 
-                                                  tidytable::mutate(sex = 0)) %>% 
-                           tidytable::bind_rows(lfreq_data %>% 
-                                                  tidytable::summarise(nss = sum(frequency), .by = c(year, species_code)) %>% 
-                                                  tidytable::mutate(sex = 4)) %>% 
-                           tidytable::bind_rows(lfreq_data %>% 
-                                                  tidytable::filter(sex != 3) %>% 
-                                                  tidytable::summarise(nss = sum(frequency), .by = c(year, species_code)) %>% 
-                                                  tidytable::mutate(sex = 12)) %>% 
-                           tidytable::left_join(lfreq_data %>% 
-                                                  tidytable::filter(sex != 3) %>% 
-                                                  tidytable::summarise(nhls = length(unique(hauljoin)), .by = c(year, species_code, sex)) %>% 
-                                                  tidytable::bind_rows(lfreq_data %>% 
-                                                                         tidytable::summarise(nhls = length(unique(hauljoin)), .by = c(year, species_code)) %>% 
-                                                                         tidytable::mutate(sex = 0)) %>% 
-                                                  tidytable::bind_rows(lfreq_data %>% 
-                                                                         tidytable::summarise(nhls = length(unique(hauljoin)), .by = c(year, species_code)) %>% 
-                                                                         tidytable::mutate(sex = 4)) %>% 
-                                                  tidytable::bind_rows(lfreq_data %>% 
-                                                                         tidytable::filter(sex != 3) %>% 
-                                                                         tidytable::summarise(nhls = length(unique(hauljoin)), .by = c(year, species_code)) %>% 
-                                                                         tidytable::mutate(sex = 12)))) %>% 
-    tidytable::filter(iss > 0) -> iss_length
-
+  # age comps: 
+  # compute harmonic mean of iterated realized sample size, which is the input sample size (iss)
+  .iss_age <- iss_age(.rss_age, specimen_data)
+  
+  # compute average relative bias in pop'n estimates (avg relative bias across age)
+  .bias_age <- bias_age(r_age, oga)
+  
+  # compute mean length-at-age and sd
+  .mean_length <- grwth_stats(r_age, oga)
+  
+  # length comps: 
+  # compute harmonic mean of iterated realized sample size, which is the input sample size (iss)
+  .iss_length <- iss_length(.rss_length, lfreq_data)
+  
+  # compute average relative bias in pop'n estimates (avg relative bias across length)
+  .bias_length <- bias_length(r_length, ogl)
+  
   # write results ----
   # input sample size
   vroom::vroom_write(iss_length, here::here("output", region, paste0(save, "_iss_ln.csv")), delim = ",")    
   vroom::vroom_write(iss_age, here::here("output", region, paste0(save, "_iss_ag.csv")), delim = ",")
   # base age & length pop'n
-  vroom::vroom_write(oga, file = here::here("output", region, "base_age.csv"), delim = ",")
-  vroom::vroom_write(ogl, file = here::here("output", region, "base_length.csv"), delim = ",")
+  vroom::vroom_write(oga, file = here::here("output", region, paste0(save, "_base_age.csv")), delim = ",")
+  vroom::vroom_write(ogl, file = here::here("output", region, paste0(save, "_base_length.csv")), delim = ",")
+  # bias in age & length pop'n
+  vroom::vroom_write(.bias_age, file = here::here("output", region, paste0(save, "_bias_age.csv")), delim = ",")
+  vroom::vroom_write(.bias_length, file = here::here("output", region, paste0(save, "_bias_length.csv")), delim = ",")
+  # mean length-at-age and sd
+  vroom::vroom_write(.mean_length, file = here::here("output", region, paste0(save, "_mean_length.csv")), delim = ",")
+
   # if desired, write out bootstrapped age & length pop'n and realized sample sizes
   if(isTRUE(save_interm)) {
     r_length %>%

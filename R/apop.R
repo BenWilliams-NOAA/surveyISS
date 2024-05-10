@@ -188,8 +188,10 @@ apop_gap <- function(lpop,
       tidytable::mutate(agepop = abund * age_frac) %>% 
       tidytable::select(-age_frac, -abund) %>% 
       # summarize numbers at age across length, and compute mean length and sd by strata
+      tidytable::mutate(mean_length = round(sum(length * agepop, na.rm = TRUE) / sum(agepop, na.rm = TRUE), digits = 2),
+                        .by = c(year, species_code, stratum, sex, age)) %>% 
       tidytable::summarise(agepop = round(sum(agepop)),
-                           mean_length = round(sum(length * agepop, na.rm = TRUE) / sum(agepop, na.rm = TRUE), digits = 2),
+                           mean_length = mean(mean_length),
                            sd_length = round(sqrt(sum(agepop / sum(agepop, na.rm = TRUE) * (length - mean_length) ^ 2)), digits = 2),
                            .by = c(year, species_code, stratum, sex, age)) %>% 
       tidytable::filter(agepop > 0 & age > 0) %>% 
@@ -201,8 +203,10 @@ apop_gap <- function(lpop,
                              tidytable::mutate(agepop = abund * age_frac) %>% 
                              tidytable::select(-age_frac, -abund) %>% 
                              # summarize numbers at age across length, and compute mean length and sd by strata
+                             tidytable::mutate(mean_length = round(sum(length * agepop, na.rm = TRUE) / sum(agepop, na.rm = TRUE), digits = 2), 
+                                               .by = c(year, species_code, stratum, sex, age)) %>% 
                              tidytable::summarise(agepop = round(sum(agepop)),
-                                                  mean_length = round(sum(length * agepop, na.rm = TRUE) / sum(agepop, na.rm = TRUE), digits = 2),
+                                                  mean_length = mean(mean_length),
                                                   sd_length = round(sqrt(sum(agepop / sum(agepop, na.rm = TRUE) * (length - mean_length) ^ 2)), digits = 2),
                                                   .by = c(year, species_code, stratum, sex, age)) %>% 
                              tidytable::filter(agepop > 0 & age > 0)) -> agecomp_st
@@ -227,8 +231,10 @@ apop_gap <- function(lpop,
       tidytable::mutate(agepop = abund * age_frac) %>% 
       tidytable::select(-age_frac, -abund) %>% 
       # summarize numbers at age across length, and compute mean length
+      tidytable::mutate(mean_length = round(sum(length * agepop, na.rm = TRUE) / sum(agepop, na.rm = TRUE), digits = 2), 
+                        .by = c(year, species_code, stratum, sex, age)) %>% 
       tidytable::summarise(agepop = round(sum(agepop)),
-                           mean_length = round(sum(length * agepop, na.rm = TRUE) / sum(agepop, na.rm = TRUE), digits = 2),
+                           mean_length = mean(mean_length),
                            sd_length = round(sqrt(sum(agepop / sum(agepop, na.rm = TRUE) * (length - mean_length) ^ 2)), digits = 2),
                            .by = c(year, species_code, sex, age)) %>% 
       tidytable::filter(agepop > 0 & age > 0) %>% 
@@ -241,8 +247,10 @@ apop_gap <- function(lpop,
                              tidytable::mutate(agepop = abund * age_frac) %>% 
                              tidytable::select(-age_frac, -abund) %>% 
                              # summarize numbers at age across length, and compute mean length
+                             tidytable::mutate(mean_length = round(sum(length * agepop, na.rm = TRUE) / sum(agepop, na.rm = TRUE), digits = 2), 
+                                               .by = c(year, species_code, stratum, sex, age)) %>% 
                              tidytable::summarise(agepop = round(sum(agepop)),
-                                                  mean_length = round(sum(length * agepop, na.rm = TRUE) / sum(agepop, na.rm = TRUE), digits = 2),
+                                                  mean_length = mean(mean_length),
                                                   sd_length = round(sqrt(sum(agepop / sum(agepop, na.rm = TRUE) * (length - mean_length) ^ 2)), digits = 2),
                                                   .by = c(year, species_code, sex, age)) %>% 
                              tidytable::filter(agepop > 0 & age > 0))
