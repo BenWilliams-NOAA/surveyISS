@@ -201,11 +201,17 @@ apop_gap <- function(lpop,
                              tidytable::summarise(agepop = round(sum(agepop)),
                                                   mean_length = round(sum(length * agepop, na.rm = TRUE) / sum(agepop, na.rm = TRUE), digits = 2),
                                                   .by = c(year, species_code, stratum, sex, age)) %>% 
-                             tidytable::filter(agepop > 0 & age > 0)) %>% 
-      # summarize numbers at age across length, and compute mean length at region level
+                             tidytable::filter(agepop > 0 & age > 0)) -> agecomp_st
+    # remove strata 82 and 90 from ebs data
+    if(length(unique(agedat$survey)) == 1 & unique(agedat$survey) == 98){
+      agecomp_st %>% 
+        tidytable::filter(!(stratum %in% c(82, 90))) -> agecomp_st
+    }
+    # summarize numbers at age across length, and compute mean length at region level
+    agecomp_st %>% 
       tidytable::summarise(agepop = sum(agepop),
                            mean_length = round(sum(mean_length * agepop, na.rm = TRUE) / sum(agepop, na.rm = TRUE), digits = 2),
-                           .by = c(year, species_code, sex, age))
+                           .by = c(year, species_code, sex, age)) -> t_ebs
   } else{
     # region level
     # female/male/unsexed

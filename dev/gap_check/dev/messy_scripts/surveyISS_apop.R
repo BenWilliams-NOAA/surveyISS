@@ -63,10 +63,6 @@ data.table::setDT(specimen_data) %>%
 # get length pop'n
 lpop_gap(lfreq_un, cpue, by_strata = TRUE) -> lpop
 
-# add combined sex to agedat
-agedat %>% 
-  tidytable::bind_rows(agedat %>% 
-                         tidytable::mutate(sex = 0)) -> agedat
 
 # start of apop fcn ----
 
@@ -151,32 +147,20 @@ gap_age_comp_st$length_at_age %>%
   tidytable::summarise(test1 = sum(diff_af),
                        test2 = sum(diff_ap))
 
-# stratum level agepop matches
-
-
-age_comp_srvyISS %>% 
-  tidytable::select(-age_frac, -abund) %>% 
-  # summarize numbers at age across length, and compute mean length by strata
-  tidytable::summarise(agepop = round(sum(agepop)),
-                       mean_length = round(sum(length * agepop, na.rm = TRUE) / sum(agepop, na.rm = TRUE), digits = 2),
-                       .by = c(year, species_code, stratum, sex, age)) -> age_comp_srvyISS
-
-
-
 # compare stratum level agepop agg across lengths
 
-nrow(age_comp_srvyISS)
+age_comp_srvyISS %>% 
+  tidytable::summarise(agepop = round(sum(agepop)), .by = c(year, stratum, species_code, sex, age)) -> age_comp_srvyISS_st
+
+nrow(age_comp_srvyISS_st)
 nrow(gap_age_comp_st$age_comp)
 
 gap_age_comp_st$age_comp %>% 
   dplyr::rename_all(tolower) %>% 
   tidytable::select(year, species_code, stratum, sex, age, agepop_gap = population_count) %>% 
-  tidytable::filter(age > 0) %>% 
-  tidytable::left_join(age_comp_srvyISS %>% 
-                         tidytable::select(year, stratum, species_code, sex, age, agepop) %>% 
-                         tidytable::filter(age > 0)) %>% 
+  tidytable::left_join(age_comp_srvyISS_st) %>% 
   tidytable::mutate(diff_ap = agepop - agepop_gap) %>% 
-  tidytable::summarise(test2 = sum(diff_ap))
+  tidytable::summarise(test = sum(diff_ap, na.rm = TRUE))
 
 # stratum level agepop matches
 
@@ -187,35 +171,58 @@ gap_age_comp_st$age_comp %>%
 
 # compare region level
 
-age_comp_srvyISS %>% 
-  tidytable::filter(agepop > 0 & age > 0) %>% 
+age_comp_srvyISS_st %>% 
   # summarize numbers at age across length, and compute mean length at region level
   tidytable::summarise(agepop = sum(agepop),
-                       mean_length = round(sum(mean_length * agepop, na.rm = TRUE) / sum(agepop, na.rm = TRUE), digits = 2),
-                       .by = c(year, species_code, sex, age)) -> age_comp_srvyISS_test
+                       .by = c(year, species_code, sex, age)) -> age_comp_srvyISS_wNW
 
+age_comp_srvyISS_st %>% 
+  tidytable::filter(!(stratum %in% c(82, 90))) %>% 
+  # summarize numbers at age across length, and compute mean length at region level
+  tidytable::summarise(agepop = sum(agepop),
+                       .by = c(year, species_code, sex, age)) -> age_comp_srvyISS_ebs
+
+gap_ac %>% 
+  dplyr::rename_all(tolower) %>% 
+  tidytable::filter(area_id == 99900) %>% 
+  tidytable::select(year, species_code, sex, age, agepop_gap = population_count) %>% 
+  tidytable::left_join(age_comp_srvyISS_wNW) %>% 
+  tidytable::mutate(diff_ap = agepop - agepop_gap) %>% 
+  tidytable::summarise(test2 = sum(diff_ap), .by = year) %>% 
+  print(n = 200)
 
 
 gap_ac %>% 
   dplyr::rename_all(tolower) %>% 
-  tidytable::filter(area_id == 99900 & age > 0) %>% 
+  tidytable::filter(area_id == 99901) %>% 
   tidytable::select(year, species_code, sex, age, agepop_gap = population_count) %>% 
-  tidytable::left_join(age_comp_srvyISS_test) %>% 
+  tidytable::left_join(age_comp_srvyISS_ebs) %>% 
   tidytable::mutate(diff_ap = agepop - agepop_gap) %>% 
   tidytable::summarise(test2 = sum(diff_ap), .by = year) %>% 
   print(n = 200)
 
 
 
+gap_ac %>% 
+  dplyr::rename_all(tolower) %>% 
+  tidytable::filter(area_id == 99900) %>% 
+  tidytable::select(year, species_code, sex, age, agepop_gap = population_count) %>% 
+  tidytable::left_join(t_wNW) %>% 
+  tidytable::mutate(diff_ap = agepop - agepop_gap) %>% 
+  tidytable::summarise(test2 = sum(diff_ap, na.rm = TRUE), .by = year) %>% 
+  print(n = 200)
 
 
 
 
-
-
-
-
-
+gap_ac %>% 
+  dplyr::rename_all(tolower) %>% 
+  tidytable::filter(area_id == 99901) %>% 
+  tidytable::select(year, species_code, sex, age, agepop_gap = population_count) %>% 
+  tidytable::left_join(t_ebs) %>% 
+  tidytable::mutate(diff_ap = agepop - agepop_gap) %>% 
+  tidytable::summarise(test2 = sum(diff_ap, na.rm = TRUE), .by = year) %>% 
+  print(n = 200)
 
 
 
