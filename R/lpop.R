@@ -270,11 +270,6 @@ lpop_gap <- function(lfreq_un,
   if(isTRUE(by_strata)){
     lpopn
   } else{
-    # subset out strata 82 and 90 from ebs data
-    if(length(unique(lfreq_un$survey)) == 1 & unique(lfreq_un$survey) == 98){
-      lpopn %>% 
-        tidytable::filter(!(stratum %in% c(82, 90))) -> lpopn
-    }
     # get annual pop'n @ length
     lpopn %>% 
       tidytable::summarise(abund = sum(abund, na.rm = T),

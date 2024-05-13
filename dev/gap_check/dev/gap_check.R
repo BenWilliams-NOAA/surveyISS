@@ -4,10 +4,8 @@
 # 2. sum of absolute difference in proportions at age and length, called sad - gives indication of how much the age/length comp used in assessments is different
 
 # load/source libraries/functions
-library(purrr)
 library(tidyverse)
 library(tidytable)
-library(psych)
 library(vroom)
 library(here)
 library(gapindex)
@@ -22,43 +20,48 @@ map(here::here("dev", "gap_check", "R", source_files), source)
 
 ## check goa ----
 reg_match_gapprod(region = 'goa',
-                  query = FALSE,
+                  query = TRUE,
                   reg_stratum = 99903,
                   species = c(10110, 10130, 10180, 20510, 21720, 21740, 30060, 30420, 30050, 30051, 30052, 30150, 30152, 10261, 10262, 10200),
                   survey = 47,
-                  yrs = 1990)
+                  yrs = 1990,
+                  global = FALSE)
 
 ## check ai ----
 reg_match_gapprod(region = 'ai',
-                  query = FALSE,
+                  query = TRUE,
                   reg_stratum = 99904,
                   species = c(10110, 10130, 10180, 20510, 21720, 21740, 30060, 30420, 30050, 30051, 30052, 30150, 30152, 10261, 10262, 10200),
                   survey = 52,
-                  yrs = 1991)
+                  yrs = 1991,
+                  global = FALSE)
 
 ## check ebs ----
 reg_match_gapprod(region = 'ebs',
-                  query = FALSE,
+                  query = TRUE,
                   reg_stratum = 99900,
                   species = c(10110, 10112, 10115, 10130, 10210, 10261, 10285, 21720, 21740),
                   survey = 98,
-                  yrs = 1979)
+                  yrs = 1979,
+                  global = FALSE)
 
 ## check nbs ----
 reg_match_gapprod(region = 'nbs',
-                  query = FALSE,
+                  query = TRUE,
                   reg_stratum = 99902,
                   species = c(10110, 10112, 10115, 10130, 10210, 10261, 10285, 21720, 21740),
                   survey = 143,
-                  yrs = 1979)
+                  yrs = 1979,
+                  global = FALSE)
 
 ## check ebs slope ----
 reg_match_gapprod(region = 'ebs_slope',
-                  query = FALSE,
+                  query = TRUE,
                   reg_stratum = 99905,
                   species = c(10110, 10112, 10115,30060),
                   survey = 78,
-                  yrs = 2002)
+                  yrs = 2002,
+                  global = FALSE)
 
 
 # check gapindex ----

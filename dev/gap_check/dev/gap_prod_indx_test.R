@@ -17,7 +17,7 @@ stratum = 99903
 # compute using gapindex ----
 
 # get data
-gapdata <- gapindex::get_data(year_set = seq(yrs, 2025),
+gapdata <- gapindex::get_data(year_set = seq(yrs, 2023),
                               survey_set = toupper(region),
                               spp_codes = species_test,
                               pull_lengths = TRUE)
@@ -37,7 +37,7 @@ gap_lc <- gapindex::calc_sizecomp_stratum(gapdata,
 # get age-length key
 alk <- gapindex::calc_alk(gapdata,
                           unsex = "all",
-                          global = TRUE)
+                          global = FALSE)
 
 # get stratum-level age pop'n
 gap_age_comp_st <- gapindex::calc_agecomp_stratum(gapdata,

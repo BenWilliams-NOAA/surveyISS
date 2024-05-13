@@ -189,7 +189,7 @@ reg_match_gapprod <- function(region = 'goa',
       dplyr::filter(survey_definition_id %in% survey,
                     species_code %in% species,
                     year >= yrs) %>% 
-      tidytable::select(survey = survey_definition_id, year, stratum = area_id, species_code, sex, length = length_mm, population_count) %>% 
+      dplyr::select(survey = survey_definition_id, year, stratum = area_id, species_code, sex, length = length_mm, population_count) %>% 
       collect() -> gap_lpop_full
     
     vroom::vroom_write(gap_lpop_full, file = here::here("dev", "gap_check", "data", paste0("gap_lpop_full_", region, ".csv")), delim = ",")
@@ -203,7 +203,7 @@ reg_match_gapprod <- function(region = 'goa',
       dplyr::filter(survey_definition_id %in% survey,
                     species_code %in% species,
                     year >= yrs) %>% 
-      tidytable::select(survey = survey_definition_id, year, stratum = area_id, species_code, sex, age, population_count) %>% 
+      dplyr::select(survey = survey_definition_id, year, stratum = area_id, species_code, sex, age, population_count) %>% 
       collect() -> gap_apop_full
     
     vroom::vroom_write(gap_apop_full, file = here::here("dev", "gap_check", "data", paste0("gap_apop_full_", region, ".csv")), delim = ",")
