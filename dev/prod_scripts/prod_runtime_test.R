@@ -59,7 +59,8 @@ read_test %>%
 # al_var_ann = TRUE
 # age_err = TRUE
 # use_gapindex = TRUE
-# by_strata = TRUE
+# by_strata = FALSE
+# global = FALSE
 
 ## original fcns ----
 
@@ -121,33 +122,33 @@ end_gap_reg <- Sys.time()
 ## gap fcns at strata level ----
 
 # for testing run time
-st_gap_st <- Sys.time()
-
-srvy_iss(iters = iters, 
-         lfreq_data = .lfreq,
-         specimen_data = .specimen, 
-         cpue_data = .cpue, 
-         strata_data = strata, 
-         r_t = .read_test, 
-         yrs = yrs, 
-         bin = 1, 
-         boot_hauls = TRUE, 
-         boot_lengths = TRUE, 
-         boot_ages = TRUE, 
-         al_var = TRUE, 
-         al_var_ann = TRUE, 
-         age_err = TRUE,
-         use_gapindex = TRUE,
-         by_strata = TRUE,
-         global = FALSE,
-         region = region, 
-         save_interm = FALSE, 
-         save = 'gapst_test')
-
-end_gap_st <- Sys.time()
+# st_gap_st <- Sys.time()
+# 
+# srvy_iss(iters = iters, 
+#          lfreq_data = .lfreq,
+#          specimen_data = .specimen, 
+#          cpue_data = .cpue, 
+#          strata_data = strata, 
+#          r_t = .read_test, 
+#          yrs = yrs, 
+#          bin = 1, 
+#          boot_hauls = TRUE, 
+#          boot_lengths = TRUE, 
+#          boot_ages = TRUE, 
+#          al_var = TRUE, 
+#          al_var_ann = TRUE, 
+#          age_err = TRUE,
+#          use_gapindex = TRUE,
+#          by_strata = TRUE,
+#          global = FALSE,
+#          region = region, 
+#          save_interm = FALSE, 
+#          save = 'gapst_test')
+# 
+# end_gap_st <- Sys.time()
 
 # For testing run time ----
 
 end_og - st_og
 end_gap_reg - st_gap_reg
-end_gap_st - st_gap_st
+# end_gap_st - st_gap_st
