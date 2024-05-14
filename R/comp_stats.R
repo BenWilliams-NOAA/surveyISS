@@ -16,12 +16,13 @@ rss_age <- function(sim_data,
                            tidytable::filter(sex != 0) %>% 
                            tidytable::summarise(agepop = sum(agepop), .by = c(year, species_code, age)) %>% 
                            tidytable::mutate(sex = 4)) %>% 
-    tidytable::rename(og_agepop = agepop) -> og
+    tidytable::select(year, species_code, sex, age, og_agepop = agepop) -> og
   sim_data %>% 
     tidytable::bind_rows(sim_data %>% 
                            tidytable::filter(sex != 0) %>% 
                            tidytable::summarise(agepop = sum(agepop), .by = c(year, species_code, age)) %>% 
-                           tidytable::mutate(sex = 4)) -> sim
+                           tidytable::mutate(sex = 4)) %>% 
+    tidytable::select(year, species_code, sex, age, agepop)  -> sim
     
   # compute realized sample size
   sim %>% 
@@ -69,12 +70,13 @@ rss_age_reg <- function(sim_data,
                            tidytable::filter(sex != 0) %>% 
                            tidytable::summarise(agepop = sum(agepop), .by = c(year, region, species_code, age)) %>% 
                            tidytable::mutate(sex = 4)) %>% 
-    tidytable::rename(og_agepop = agepop) -> og
+    tidytable::select(year, region, species_code, sex, age, og_agepop = agepop)  -> og
   sim_data %>% 
     tidytable::bind_rows(sim_data %>% 
                            tidytable::filter(sex != 0) %>% 
                            tidytable::summarise(agepop = sum(agepop), .by = c(year, region, species_code, age)) %>% 
-                           tidytable::mutate(sex = 4)) -> sim
+                           tidytable::mutate(sex = 4)) %>% 
+    tidytable::select(year, region, species_code, sex, age, agepop) -> sim
   
   # compute realized sample size  
   sim %>% 
