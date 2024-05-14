@@ -191,6 +191,9 @@ srvy_comps <- function(lfreq_data,
 #' @param al_var_ann resample age-length annually or pooled across years
 #' @param age_err switch for including ageing error (default = FALSE)
 #' @param cmplx_code numeric value to replace the individual species codes with a complex code (default = NULL)
+#' @param use_gapindex use functions derived from gapindex package (default = TRUE)
+#' @param by_strata should length/age pop'n values be computed at stratum level in gap fcns (default = FALSE)
+#' @param global fills in missing length bins with global alk in gap fcns (default = FALSE)
 #'
 #' @return
 #' @export srvy_comps_ai_cmplx
@@ -211,7 +214,10 @@ srvy_comps_ai_cmplx <- function(lfreq_data,
                                 al_var = FALSE,
                                 al_var_ann = FALSE,
                                 age_err = FALSE,
-                                cmplx_code = NULL) {
+                                cmplx_code = NULL,
+                                use_gapindex = TRUE,
+                                by_strata = FALSE,
+                                global = FALSE) {
   # globals ----
   # year switch
   if (is.null(yrs)) yrs <- 0
@@ -279,13 +285,17 @@ srvy_comps_ai_cmplx <- function(lfreq_data,
   .lfreq_un %>% 
     tidytable::mutate(length = 10 * (bin * ceiling((length / 10) / bin))) -> .lfreq_un
   
-  # length comp ----
-  lcomp(.lfreq_un) -> .lcomp
-  
   # length population ----
-  lpop(.lcomp, .cpue, .lngs) %>% 
-    tidytable::summarise(abund = sum(abund), .by = c(year, length, sex)) %>% 
-    tidytable::mutate(species_code = cmplx_code) -> .lpop
+  if(isTRUE(use_gapindex)){
+    lpop_gap(.lfreq_un, .cpue, by_strata = by_strata) %>% 
+      tidytable::summarise(abund = sum(abund), .by = c(year, length, sex)) %>% 
+      tidytable::mutate(species_code = cmplx_code) -> .lpop
+  } else{
+    lcomp(.lfreq_un) -> .lcomp
+    lpop(.lcomp, .cpue, .lngs) %>% 
+      tidytable::summarise(abund = sum(abund), .by = c(year, length, sex)) %>% 
+      tidytable::mutate(species_code = cmplx_code) -> .lpop
+  }
   
   # randomize age  (and add sex = 0 for sex-combined (total) comp calculations) ----
   if(isTRUE(boot_ages)) {
@@ -322,7 +332,15 @@ srvy_comps_ai_cmplx <- function(lfreq_data,
     tidytable::mutate(length = 10 * (bin * ceiling((length / 10) / bin))) -> .agedat
   
   # age population ----
-  apop(.lpop, .agedat) -> .apop
+  if(isTRUE(use_gapindex)){
+    # bin lengths in complete cases
+    .lngs %>% 
+      tidytable::mutate(length = 10 * (bin * ceiling((length / 10) / bin))) -> .lngs
+    # compute age pop'n
+    apop_gap(.lpop, .agedat, .lngs, by_strata = by_strata, global = global) -> .apop
+  } else{
+    apop(.lpop, .agedat) -> .apop
+  }
 
   list(age = .apop, length = .lpop)
   
@@ -416,7 +434,6 @@ srvy_comps_caal <- function(specimen_data,
   # note that this automatically converts from mm to cm
   .agedat %>% 
     tidytable::mutate(length = 10 * (bin * ceiling((length / 10) / bin))) -> .agedat
-  
   
   # caal ----
   apop_caal(.agedat) -> .caal
