@@ -19,6 +19,7 @@
 #' @param global fills in missing length bins with global alk in gap fcns (default = FALSE)
 #' @param region region will create a folder and place results in said folder
 #' @param save_interm save the intermediate results: original comps, resampled comps (default = FALSE)
+#' @param save_stats save other statistics: base age/length comps, mean length at age, bootstrap bias (default = FALSE)
 #' @param save name to save output
 #'
 #' @return
@@ -45,6 +46,7 @@ srvy_iss <- function(iters = 1,
                      global = FALSE,
                      region = NULL, 
                      save_interm = FALSE, 
+                     save_stats = FALSE,
                      save){
   
   # create storage location
@@ -58,7 +60,7 @@ srvy_iss <- function(iters = 1,
   specimen_data <- tidytable::as_tidytable(specimen_data) 
   cpue_data <- tidytable::as_tidytable(cpue_data) 
   strata_data <- tidytable::as_tidytable(strata_data) 
-
+  
   # get original age/length pop'n values ----
   og <- srvy_comps(lfreq_data = lfreq_data, 
                    specimen_data = specimen_data, 
@@ -119,7 +121,7 @@ srvy_iss <- function(iters = 1,
                                            sex == 2 ~ 'female',
                                            sex == 12 ~ 'female_male',
                                            sex == 4 ~ 'total_post')) -> .rss_length
-
+  
   # age comps: 
   # compute harmonic mean of iterated realized sample size, which is the input sample size (iss)
   .iss_age <- iss_age(.rss_age, specimen_data)
@@ -143,15 +145,19 @@ srvy_iss <- function(iters = 1,
   # input sample size
   vroom::vroom_write(.iss_length, here::here("output", region, paste0(save, "_iss_ln.csv")), delim = ",")    
   vroom::vroom_write(.iss_age, here::here("output", region, paste0(save, "_iss_ag.csv")), delim = ",")
-  # base age & length pop'n
-  vroom::vroom_write(oga, file = here::here("output", region, paste0(save, "_base_age.csv")), delim = ",")
-  vroom::vroom_write(ogl, file = here::here("output", region, paste0(save, "_base_length.csv")), delim = ",")
-  # bias in age & length pop'n
-  vroom::vroom_write(.bias_age, file = here::here("output", region, paste0(save, "_bias_age.csv")), delim = ",")
-  vroom::vroom_write(.bias_length, file = here::here("output", region, paste0(save, "_bias_length.csv")), delim = ",")
-  # mean length-at-age and sd (if using gap fcns)
-  if(isTRUE(use_gapindex)){
-    vroom::vroom_write(.mean_length, file = here::here("output", region, paste0(save, "_mean_length.csv")), delim = ",")
+  
+  # if desired, write out additional statistics
+  if(isTRUE(save_stats)){
+    # base age & length pop'n
+    vroom::vroom_write(oga, file = here::here("output", region, paste0(save, "_base_age.csv")), delim = ",")
+    vroom::vroom_write(ogl, file = here::here("output", region, paste0(save, "_base_length.csv")), delim = ",")
+    # bias in age & length pop'n
+    vroom::vroom_write(.bias_age, file = here::here("output", region, paste0(save, "_bias_age.csv")), delim = ",")
+    vroom::vroom_write(.bias_length, file = here::here("output", region, paste0(save, "_bias_length.csv")), delim = ",")
+    # mean length-at-age and sd (if using gap fcns)
+    if(isTRUE(use_gapindex)){
+      vroom::vroom_write(.mean_length, file = here::here("output", region, paste0(save, "_mean_length.csv")), delim = ",")
+    }
   }
   
   # if desired, write out bootstrapped age & length pop'n and realized sample sizes
@@ -165,7 +171,7 @@ srvy_iss <- function(iters = 1,
     vroom::vroom_write(.rss_length, here::here("output", region, paste0(save, "_iter_rss_ln.csv")), delim = ",")
     vroom::vroom_write(.rss_age, here::here("output", region, paste0(save, "_iter_rss_ag.csv")), delim = ",")
   }
-
+  
 }
 
 #' replicate survey input sample size function for production run for ai stock complexes (e.g., blackspotted-rougheye)
@@ -191,6 +197,7 @@ srvy_iss <- function(iters = 1,
 #' @param cmplx complex name for saving results (default = NULL)
 #' @param region region will create a folder and place results in said folder (default = 'ai')
 #' @param save_interm save the intermediate results: original comps, resampled comps (default = FALSE)
+#' @param save_stats save other statistics: base age/length comps, mean length at age, bootstrap bias (default = FALSE)
 #' @param save name to save output
 #'
 #' @return
@@ -220,6 +227,7 @@ srvy_iss_ai_cmplx <- function(iters = 1,
                               cmplx = NULL,
                               region = 'ai', 
                               save_interm = FALSE, 
+                              save_stats = FALSE, 
                               save){
   
   # create storage location
@@ -320,16 +328,21 @@ srvy_iss_ai_cmplx <- function(iters = 1,
   # input sample size
   vroom::vroom_write(.iss_length, here::here("output", region, paste0(save, "_iss_ln_", cmplx, ".csv")), delim = ",")    
   vroom::vroom_write(.iss_age, here::here("output", region, paste0(save, "_iss_ag_", cmplx, ".csv")), delim = ",")
-  # base age & length pop'n
-  vroom::vroom_write(oga, file = here::here("output", region, paste0(save, "_base_age_", cmplx, ".csv")), delim = ",")
-  vroom::vroom_write(ogl, file = here::here("output", region, paste0(save, "_base_length_", cmplx, ".csv")), delim = ",")
-  # bias in age & length pop'n
-  vroom::vroom_write(.bias_age, file = here::here("output", region, paste0(save, "_bias_age_", cmplx, ".csv")), delim = ",")
-  vroom::vroom_write(.bias_length, file = here::here("output", region, paste0(save, "_bias_length_", cmplx, ".csv")), delim = ",")
-  # mean length-at-age and sd (if using gap fcns)
-  if(isTRUE(use_gapindex)){
-    vroom::vroom_write(.mean_length, file = here::here("output", region, paste0(save, "_mean_length_", cmplx, ".csv")), delim = ",")
+  
+  # if desired, write out additional statistics
+  if(isTRUE(save_stats)){
+    # base age & length pop'n
+    vroom::vroom_write(oga, file = here::here("output", region, paste0(save, "_base_age_", cmplx, ".csv")), delim = ",")
+    vroom::vroom_write(ogl, file = here::here("output", region, paste0(save, "_base_length_", cmplx, ".csv")), delim = ",")
+    # bias in age & length pop'n
+    vroom::vroom_write(.bias_age, file = here::here("output", region, paste0(save, "_bias_age_", cmplx, ".csv")), delim = ",")
+    vroom::vroom_write(.bias_length, file = here::here("output", region, paste0(save, "_bias_length_", cmplx, ".csv")), delim = ",")
+    # mean length-at-age and sd (if using gap fcns)
+    if(isTRUE(use_gapindex)){
+      vroom::vroom_write(.mean_length, file = here::here("output", region, paste0(save, "_mean_length_", cmplx, ".csv")), delim = ",")
+    }
   }
+  
   # if desired, write out bootstrapped age & length pop'n and realized sample sizes
   if(isTRUE(save_interm)) {
     r_length %>%
@@ -367,6 +380,7 @@ srvy_iss_ai_cmplx <- function(iters = 1,
 #' @param cmplx complex name for saving results (default = NULL)
 #' @param region region will create a folder and place results in said folder (default = 'goa')
 #' @param save_interm save the intermediate results: original comps, resampled comps (default = FALSE)
+#' @param save_stats save other statistics: base age/length comps, mean length at age, bootstrap bias (default = FALSE)
 #' @param save name to save output
 #'
 #' @return
@@ -395,7 +409,8 @@ srvy_iss_goa_cmplx <- function(iters = 1,
                                global = FALSE,
                                cmplx = NULL,
                                region = 'goa', 
-                               save_interm = FALSE, 
+                               save_interm = FALSE,  
+                               save_stats = FALSE,
                                save){
   
   # create storage location
@@ -514,16 +529,21 @@ srvy_iss_goa_cmplx <- function(iters = 1,
   # input sample size
   vroom::vroom_write(.iss_length, here::here("output", region, paste0(save, "_iss_ln_", cmplx, ".csv")), delim = ",")    
   vroom::vroom_write(.iss_age, here::here("output", region, paste0(save, "_iss_ag_", cmplx, ".csv")), delim = ",")
-  # base age & length pop'n
-  vroom::vroom_write(oga, file = here::here("output", region, paste0(save, "_base_age_", cmplx, ".csv")), delim = ",")
-  vroom::vroom_write(ogl, file = here::here("output", region, paste0(save, "_base_length_", cmplx, ".csv")), delim = ",")
-  # bias in age & length pop'n
-  vroom::vroom_write(.bias_age, file = here::here("output", region, paste0(save, "_bias_age_", cmplx, ".csv")), delim = ",")
-  vroom::vroom_write(.bias_length, file = here::here("output", region, paste0(save, "_bias_length_", cmplx, ".csv")), delim = ",")
-  # mean length-at-age and sd (if using gap fcns)
-  if(isTRUE(use_gapindex)){
-    vroom::vroom_write(.mean_length, file = here::here("output", region, paste0(save, "_mean_length_", cmplx, ".csv")), delim = ",")
+  
+  # if desired, write out additional statistics
+  if(isTRUE(save_stats)){
+    # base age & length pop'n
+    vroom::vroom_write(oga, file = here::here("output", region, paste0(save, "_base_age_", cmplx, ".csv")), delim = ",")
+    vroom::vroom_write(ogl, file = here::here("output", region, paste0(save, "_base_length_", cmplx, ".csv")), delim = ",")
+    # bias in age & length pop'n
+    vroom::vroom_write(.bias_age, file = here::here("output", region, paste0(save, "_bias_age_", cmplx, ".csv")), delim = ",")
+    vroom::vroom_write(.bias_length, file = here::here("output", region, paste0(save, "_bias_length_", cmplx, ".csv")), delim = ",")
+    # mean length-at-age and sd (if using gap fcns)
+    if(isTRUE(use_gapindex)){
+      vroom::vroom_write(.mean_length, file = here::here("output", region, paste0(save, "_mean_length_", cmplx, ".csv")), delim = ",")
+    }
   }
+  
   # if desired, write out bootstrapped age & length pop'n and realized sample sizes
   if(isTRUE(save_interm)) {
     r_length %>%
@@ -558,6 +578,7 @@ srvy_iss_goa_cmplx <- function(iters = 1,
 #' @param global fills in missing length bins with global alk in gap fcns (default = FALSE)
 #' @param region region will create a folder and place results in said folder
 #' @param save_interm save the intermediate results: original comps, resampled comps (default = FALSE)
+#' @param save_stats save other statistics: base age/length comps, mean length at age, bootstrap bias (default = FALSE)
 #' @param save name to save output
 #'
 #' @return
@@ -584,7 +605,8 @@ srvy_iss_goa_w_c_e <- function(iters = 1,
                                by_strata = FALSE,
                                global = FALSE,
                                region = NULL,
-                               save_interm = FALSE,
+                               save_interm = FALSE, 
+                               save_stats = FALSE,
                                save){
   
   # create storage location
@@ -640,10 +662,10 @@ srvy_iss_goa_w_c_e <- function(iters = 1,
                      use_gapindex = use_gapindex,
                      by_strata = by_strata,
                      global = global)
-
+  
   oga_w <- og_w$age
   ogl_w <- og_w$length
-
+  
   # central goa
   og_c <- srvy_comps(lfreq_data = subset(.lfreq_data, .lfreq_data$region == "cgoa"), 
                      specimen_data = subset(.specimen_data, .specimen_data$region == "cgoa"), 
@@ -724,7 +746,7 @@ srvy_iss_goa_w_c_e <- function(iters = 1,
                            tidytable::mutate(abund = abund_w + abund_c + abund_e,
                                              region = 'goa') %>% 
                            tidytable::select(year, species_code, sex, length, abund, region))
-
+  
   # run resampling iterations ----
   # western goa
   rr <- purrr::map(1:iters, ~ srvy_comps(lfreq_data = subset(.lfreq_data, .lfreq_data$region == "wgoa"), 
@@ -746,7 +768,7 @@ srvy_iss_goa_w_c_e <- function(iters = 1,
   
   r_age_w <- do.call(mapply, c(list, rr, SIMPLIFY = FALSE))$age
   r_length_w <- do.call(mapply, c(list, rr, SIMPLIFY = FALSE))$length
-
+  
   # central goa
   rr <- purrr::map(1:iters, ~ srvy_comps(lfreq_data = subset(.lfreq_data, .lfreq_data$region == "cgoa"), 
                                          specimen_data = subset(.specimen_data, .specimen_data$region == "cgoa"), 
@@ -842,7 +864,7 @@ srvy_iss_goa_w_c_e <- function(iters = 1,
                                              region = 'goa') %>% 
                            tidytable::select(sim, year, species_code, sex, length, abund, region)) %>% 
     split(., .[,'sim'])
-
+  
   # compute statistics ----
   # compute realized sample size of bootstrapped age/length
   r_age %>%
@@ -881,20 +903,24 @@ srvy_iss_goa_w_c_e <- function(iters = 1,
   
   # compute average relative bias in pop'n estimates (avg relative bias across length)
   .bias_length <- bias_length_reg(r_length, ogl)
-
+  
   # write results ----
   # input sample size
   vroom::vroom_write(.iss_length, here::here("output", region, paste0(save, "_iss_ln_w_c_egoa.csv")), delim = ",")    
   vroom::vroom_write(.iss_age, here::here("output", region, paste0(save, "_iss_ag_w_c_egoa.csv")), delim = ",")
-  # base age & length pop'n
-  vroom::vroom_write(oga, file = here::here("output", region, paste0(save, "_base_age_w_c_egoa.csv")), delim = ",")
-  vroom::vroom_write(ogl, file = here::here("output", region, paste0(save, "_base_length_w_c_egoa.csv")), delim = ",")
-  # bias in age & length pop'n
-  vroom::vroom_write(.bias_age, file = here::here("output", region, paste0(save, "_bias_age_w_c_egoa.csv")), delim = ",")
-  vroom::vroom_write(.bias_length, file = here::here("output", region, paste0(save, "_bias_length_w_c_egoa.csv")), delim = ",")
-  # mean length-at-age and sd (if using gap fcns)
-  if(isTRUE(use_gapindex)){
-    vroom::vroom_write(.mean_length, file = here::here("output", region, paste0(save, "_mean_length_w_c_egoa.csv")), delim = ",")
+  
+  # if desired, write out additional statistics
+  if(isTRUE(save_stats)){
+    # base age & length pop'n
+    vroom::vroom_write(oga, file = here::here("output", region, paste0(save, "_base_age_w_c_egoa.csv")), delim = ",")
+    vroom::vroom_write(ogl, file = here::here("output", region, paste0(save, "_base_length_w_c_egoa.csv")), delim = ",")
+    # bias in age & length pop'n
+    vroom::vroom_write(.bias_age, file = here::here("output", region, paste0(save, "_bias_age_w_c_egoa.csv")), delim = ",")
+    vroom::vroom_write(.bias_length, file = here::here("output", region, paste0(save, "_bias_length_w_c_egoa.csv")), delim = ",")
+    # mean length-at-age and sd (if using gap fcns)
+    if(isTRUE(use_gapindex)){
+      vroom::vroom_write(.mean_length, file = here::here("output", region, paste0(save, "_mean_length_w_c_egoa.csv")), delim = ",")
+    }
   }
   
   # if desired, write out bootstrapped age & length pop'n and realized sample sizes
@@ -908,7 +934,7 @@ srvy_iss_goa_w_c_e <- function(iters = 1,
     vroom::vroom_write(.rss_length, here::here("output", region, paste0(save, "_iter_rss_ln._w_c_egoacsv")), delim = ",")
     vroom::vroom_write(.rss_age, here::here("output", region, paste0(save, "_iter_rss_ag_w_c_egoa.csv")), delim = ",")
   }
-
+  
 }
 
 #' replicate srvy_iss function for spatially-explicit input sample size for western-central and eastern gulf subregions
@@ -932,6 +958,7 @@ srvy_iss_goa_w_c_e <- function(iters = 1,
 #' @param global fills in missing length bins with global alk in gap fcns (default = FALSE)
 #' @param region region will create a folder and place results in said folder
 #' @param save_interm save the intermediate results: original comps, resampled comps (default = FALSE)
+#' @param save_stats save other statistics: base age/length comps, mean length at age, bootstrap bias (default = FALSE)
 #' @param save name to save output
 #'
 #' @return
@@ -958,7 +985,8 @@ srvy_iss_goa_wc_e <- function(iters = 1,
                               by_strata = FALSE,
                               global = FALSE,
                               region = NULL,
-                              save_interm = FALSE,
+                              save_interm = FALSE, 
+                              save_stats = FALSE,
                               save){
   # create storage location
   region = tolower(region)
@@ -992,7 +1020,7 @@ srvy_iss_goa_wc_e <- function(iters = 1,
     tidytable::select(-design_year, -area, -area_id, -subarea_name, -description)  -> .cpue_data
   
   # get original age/length pop'n values ----
-
+  
   # western & central goa
   og_c <- srvy_comps(lfreq_data = subset(.lfreq_data, .lfreq_data$region == "wcgoa"), 
                      specimen_data = subset(.specimen_data, .specimen_data$region == "wcgoa"), 
@@ -1034,7 +1062,7 @@ srvy_iss_goa_wc_e <- function(iters = 1,
   
   oga_e <- og_e$age
   ogl_e <- og_e$length
-
+  
   # compile og results 
   oga <- oga_wc %>% 
     tidytable::mutate(region = "wcgoa") %>% 
@@ -1085,7 +1113,7 @@ srvy_iss_goa_wc_e <- function(iters = 1,
   
   r_age_wc <- do.call(mapply, c(list, rr, SIMPLIFY = FALSE))$age
   r_length_wc <- do.call(mapply, c(list, rr, SIMPLIFY = FALSE))$length
-
+  
   # eastern goa
   rr <- purrr::map(1:iters, ~ srvy_comps(lfreq_data = subset(.lfreq_data, .lfreq_data$region == "egoa"), 
                                          specimen_data = subset(.specimen_data, .specimen_data$region == "egoa"), 
@@ -1189,15 +1217,19 @@ srvy_iss_goa_wc_e <- function(iters = 1,
   # input sample size
   vroom::vroom_write(.iss_length, here::here("output", region, paste0(save, "_iss_ln_wc_egoa.csv")), delim = ",")    
   vroom::vroom_write(.iss_age, here::here("output", region, paste0(save, "_iss_ag_wc_egoa.csv")), delim = ",")
-  # base age & length pop'n
-  vroom::vroom_write(oga, file = here::here("output", region, paste0(save, "_base_age_wc_egoa.csv")), delim = ",")
-  vroom::vroom_write(ogl, file = here::here("output", region, paste0(save, "_base_length_wc_egoa.csv")), delim = ",")
-  # bias in age & length pop'n
-  vroom::vroom_write(.bias_age, file = here::here("output", region, paste0(save, "_bias_age_wc_egoa.csv")), delim = ",")
-  vroom::vroom_write(.bias_length, file = here::here("output", region, paste0(save, "_bias_length_wc_egoa.csv")), delim = ",")
-  # mean length-at-age and sd (if using gap fcns)
-  if(isTRUE(use_gapindex)){
-    vroom::vroom_write(.mean_length, file = here::here("output", region, paste0(save, "_mean_length_wc_egoa.csv")), delim = ",")
+  
+  # if desired, write out additional statistics
+  if(isTRUE(save_stats)){
+    # base age & length pop'n
+    vroom::vroom_write(oga, file = here::here("output", region, paste0(save, "_base_age_wc_egoa.csv")), delim = ",")
+    vroom::vroom_write(ogl, file = here::here("output", region, paste0(save, "_base_length_wc_egoa.csv")), delim = ",")
+    # bias in age & length pop'n
+    vroom::vroom_write(.bias_age, file = here::here("output", region, paste0(save, "_bias_age_wc_egoa.csv")), delim = ",")
+    vroom::vroom_write(.bias_length, file = here::here("output", region, paste0(save, "_bias_length_wc_egoa.csv")), delim = ",")
+    # mean length-at-age and sd (if using gap fcns)
+    if(isTRUE(use_gapindex)){
+      vroom::vroom_write(.mean_length, file = here::here("output", region, paste0(save, "_mean_length_wc_egoa.csv")), delim = ",")
+    }
   }
   
   # if desired, write out bootstrapped age & length pop'n and realized sample sizes
@@ -1211,7 +1243,7 @@ srvy_iss_goa_wc_e <- function(iters = 1,
     vroom::vroom_write(.rss_length, here::here("output", region, paste0(save, "_iter_rss_ln._wc_egoacsv")), delim = ",")
     vroom::vroom_write(.rss_age, here::here("output", region, paste0(save, "_iter_rss_ag_wc_egoa.csv")), delim = ",")
   }
-
+  
 }
 
 #' replicate survey input sample size function for goa west of 140
@@ -1235,6 +1267,7 @@ srvy_iss_goa_wc_e <- function(iters = 1,
 #' @param global fills in missing length bins with global alk in gap fcns (default = FALSE)
 #' @param region region will create a folder and place results in said folder
 #' @param save_interm save the intermediate results: original comps, resampled comps (default = FALSE)
+#' @param save_stats save other statistics: base age/length comps, mean length at age, bootstrap bias (default = FALSE)
 #' @param save name to save output
 #'
 #' @return
@@ -1261,6 +1294,7 @@ srvy_iss_w140 <- function(iters = 1,
                           global = FALSE,
                           region = NULL, 
                           save_interm = FALSE, 
+                          save_stats = FALSE, 
                           save){
   
   # create storage location
@@ -1391,15 +1425,19 @@ srvy_iss_w140 <- function(iters = 1,
   # input sample size
   vroom::vroom_write(.iss_length, here::here("output", region, paste0(save, "_iss_ln_w140.csv")), delim = ",")    
   vroom::vroom_write(.iss_age, here::here("output", region, paste0(save, "_iss_ag_w140.csv")), delim = ",")
-  # base age & length pop'n
-  vroom::vroom_write(oga, file = here::here("output", region, paste0(save, "_base_age_w140.csv")), delim = ",")
-  vroom::vroom_write(ogl, file = here::here("output", region, paste0(save, "_base_length_w140.csv")), delim = ",")
-  # bias in age & length pop'n
-  vroom::vroom_write(.bias_age, file = here::here("output", region, paste0(save, "_bias_age_w140.csv")), delim = ",")
-  vroom::vroom_write(.bias_length, file = here::here("output", region, paste0(save, "_bias_length_w140.csv")), delim = ",")
-  # mean length-at-age and sd (if using gap fcns)
-  if(isTRUE(use_gapindex)){
-    vroom::vroom_write(.mean_length, file = here::here("output", region, paste0(save, "_mean_length_w140.csv")), delim = ",")
+  
+  # if desired, write out additional statistics
+  if(isTRUE(save_stats)){
+    # base age & length pop'n
+    vroom::vroom_write(oga, file = here::here("output", region, paste0(save, "_base_age_w140.csv")), delim = ",")
+    vroom::vroom_write(ogl, file = here::here("output", region, paste0(save, "_base_length_w140.csv")), delim = ",")
+    # bias in age & length pop'n
+    vroom::vroom_write(.bias_age, file = here::here("output", region, paste0(save, "_bias_age_w140.csv")), delim = ",")
+    vroom::vroom_write(.bias_length, file = here::here("output", region, paste0(save, "_bias_length_w140.csv")), delim = ",")
+    # mean length-at-age and sd (if using gap fcns)
+    if(isTRUE(use_gapindex)){
+      vroom::vroom_write(.mean_length, file = here::here("output", region, paste0(save, "_mean_length_w140.csv")), delim = ",")
+    }
   }
   
   # if desired, write out bootstrapped age & length pop'n and realized sample sizes
@@ -1438,6 +1476,7 @@ srvy_iss_w140 <- function(iters = 1,
 #' @param global fills in missing length bins with global alk in gap fcns (default = FALSE)
 #' @param region region will create a folder and place results in said folder
 #' @param save_interm save the intermediate results: original comps, resampled comps (default = FALSE)
+#' @param save_stats save other statistics: base age/length comps, mean length at age, bootstrap bias (default = FALSE)
 #' @param save name to save output
 #'
 #' @return
@@ -1465,6 +1504,7 @@ srvy_iss_ai_subreg <- function(iters = 1,
                                global = FALSE,
                                region = NULL, 
                                save_interm = FALSE, 
+                               save_stats = FALSE, 
                                save){
   
   # create storage location
@@ -1834,15 +1874,19 @@ srvy_iss_ai_subreg <- function(iters = 1,
   # input sample size
   vroom::vroom_write(.iss_length, here::here("output", region, paste0(save, "_iss_ln_ai_subreg.csv")), delim = ",")    
   vroom::vroom_write(.iss_age, here::here("output", region, paste0(save, "_iss_ag_ai_subreg.csv")), delim = ",")
-  # base age & length pop'n
-  vroom::vroom_write(oga, file = here::here("output", region, paste0(save, "_base_age_ai_subreg.csv")), delim = ",")
-  vroom::vroom_write(ogl, file = here::here("output", region, paste0(save, "_base_length_ai_subreg.csv")), delim = ",")
-  # bias in age & length pop'n
-  vroom::vroom_write(.bias_age, file = here::here("output", region, paste0(save, "_bias_age_ai_subreg.csv")), delim = ",")
-  vroom::vroom_write(.bias_length, file = here::here("output", region, paste0(save, "_bias_length_ai_subreg.csv")), delim = ",")
-  # mean length-at-age and sd (if using gap fcns)
-  if(isTRUE(use_gapindex)){
-    vroom::vroom_write(.mean_length, file = here::here("output", region, paste0(save, "_mean_length_ai_subreg.csv")), delim = ",")
+  
+  # if desired, write out additional statistics
+  if(isTRUE(save_stats)){
+    # base age & length pop'n
+    vroom::vroom_write(oga, file = here::here("output", region, paste0(save, "_base_age_ai_subreg.csv")), delim = ",")
+    vroom::vroom_write(ogl, file = here::here("output", region, paste0(save, "_base_length_ai_subreg.csv")), delim = ",")
+    # bias in age & length pop'n
+    vroom::vroom_write(.bias_age, file = here::here("output", region, paste0(save, "_bias_age_ai_subreg.csv")), delim = ",")
+    vroom::vroom_write(.bias_length, file = here::here("output", region, paste0(save, "_bias_length_ai_subreg.csv")), delim = ",")
+    # mean length-at-age and sd (if using gap fcns)
+    if(isTRUE(use_gapindex)){
+      vroom::vroom_write(.mean_length, file = here::here("output", region, paste0(save, "_mean_length_ai_subreg.csv")), delim = ",")
+    }
   }
   
   # if desired, write out bootstrapped age & length pop'n and realized sample sizes
@@ -1856,7 +1900,7 @@ srvy_iss_ai_subreg <- function(iters = 1,
     vroom::vroom_write(.rss_length, here::here("output", region, paste0(save, "_iter_rss_ln._ai_subregcsv")), delim = ",")
     vroom::vroom_write(.rss_age, here::here("output", region, paste0(save, "_iter_rss_ag_ai_subreg.csv")), delim = ",")
   }
-
+  
 }
 
 #' replicate survey input sample size function for production run for conditional age-at-length data
@@ -1874,6 +1918,7 @@ srvy_iss_ai_subreg <- function(iters = 1,
 #' @param age_err include ageing error (default = FALSE)
 #' @param region region will create a folder and place results in said folder
 #' @param save_interm save the intermediate results: original comps, resampled comps (default = FALSE)
+#' @param save_stats save other statistics: base age/length comps, mean length at age, bootstrap bias (default = FALSE)
 #' @param save name to save output
 #'
 #' @return
@@ -1893,7 +1938,8 @@ srvy_iss_caal <- function(iters = 1,
                           al_var_ann = FALSE, 
                           age_err = FALSE,
                           region = NULL, 
-                          save_interm = FALSE,
+                          save_interm = FALSE, 
+                          save_stats = FALSE,
                           save){
   
   # create storage location
@@ -1901,11 +1947,11 @@ srvy_iss_caal <- function(iters = 1,
   if(!dir.exists(here::here('output', region))){
     dir.create(here::here('output', region), recursive = TRUE)
   }
-
+  
   # restructure data
   specimen_data <- tidytable::as_tidytable(specimen_data) 
   cpue_data <- tidytable::as_tidytable(cpue_data) 
- 
+  
   # get original caal values ----
   og <- srvy_comps_caal(specimen_data = specimen_data, 
                         cpue_data = cpue_data, 
@@ -1932,7 +1978,7 @@ srvy_iss_caal <- function(iters = 1,
                                               age_err = age_err))
   
   r_caal <- do.call(mapply, c(list, rr, SIMPLIFY = FALSE))$caal
-
+  
   # compute statistics ----
   # compute realized sample size of bootstrapped age/length
   r_caal %>%
@@ -1941,7 +1987,7 @@ srvy_iss_caal <- function(iters = 1,
     tidytable::mutate(sex_desc = case_when(sex == 0 ~ 'total',
                                            sex == 1 ~ 'male',
                                            sex == 2 ~ 'female')) -> .rss_caal
-
+  
   # compute harmonic mean of iterated realized sample size, which is the input sample size (iss)
   .rss_caal %>% 
     tidytable::summarise(iss = psych::harmonic.mean(rss, na.rm = TRUE, zero = FALSE),
@@ -1972,12 +2018,17 @@ srvy_iss_caal <- function(iters = 1,
                                                   tidytable::filter(sex != 3) %>% 
                                                   tidytable::summarise(nss = .N, .by = c(year, species_code, length)) %>% 
                                                   tidytable::mutate(sex = 12))) -> iss_caal
-
+  
   # write results ----
   # input sample size   
   vroom::vroom_write(iss_caal, here::here("output", region, paste0(save, "_iss_caal.csv")), delim = ",")
-  # base conditional age-at-length
-  vroom::vroom_write(ogcaal, file = here::here("output", region, "base_caal.csv"), delim = ",")
+  
+  # if desired, write out additional statistics
+  if(isTRUE(save_stats)){
+    # base conditional age-at-length
+    vroom::vroom_write(ogcaal, file = here::here("output", region, "base_caal.csv"), delim = ",")
+  }
+  
   # if desired, write out bootstrapped conditional age-at-length and realized sample sizes
   if(isTRUE(save_interm)) {
     r_caal %>%
