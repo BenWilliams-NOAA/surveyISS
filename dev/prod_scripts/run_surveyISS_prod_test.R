@@ -4,7 +4,7 @@
 #devtools::install_github("afsc-assessments/surveyISS", force = TRUE)
 #library(surveyISS)
 
-# load/source libraries/functions for testing
+# load/source libraries/functions for testing ----
 library(purrr)
 library(tidyverse)
 library(tidytable)
@@ -17,7 +17,7 @@ map(here::here("R", source_files), source)
 
 # set number of desired bootstrap iterations (suggested here: 10 for testing, 500 for running)
 # iters = 500
-iters = 10
+iters = 2
 
 # for testing run time
 if(iters < 100){
@@ -41,7 +41,7 @@ read_test <- vroom::vroom(here::here('data', 'reader_tester.csv')) %>%
   tidytable::rename(age = 'read_age') %>% 
   tidytable::filter(species_code %in% species)
 
-# run for all species (and subsetting out special cases so we don't have two places with those results)
+## run for all species (and subsetting out special cases so we don't have two places with those results) ----
 cpue %>% 
   tidytable::filter(!(species_code %in% c(30050, 30051, 30052, 30150, 30152, 10261, 10262, 10200, 21740))) -> .cpue
 lfreq %>% 
@@ -81,13 +81,13 @@ srvy_iss(iters = iters,
          al_var_ann = TRUE, 
          age_err = TRUE,
          use_gapindex = TRUE,
-         by_strata = TRUE,
+         by_strata = FALSE,
          global = FALSE,
          region = region, 
          save_interm = FALSE, 
          save = 'prodtest')
 
-# run for goa pollock (west of 140)
+## run for goa pollock (west of 140) ----
 cpue %>% 
   tidytable::filter(species_code %in% c(21740)) -> .cpue_poll
 lfreq %>% 
@@ -112,13 +112,13 @@ srvy_iss_w140(iters = iters,
               al_var_ann = TRUE, 
               age_err = TRUE,
               use_gapindex = TRUE,
-              by_strata = TRUE,
+              by_strata = FALSE,
               global = FALSE,
               region = region, 
               save_interm = FALSE, 
               save = 'prodtest')
 
-# run for goa rougheye-blackspotted stock complex
+## run for goa rougheye-blackspotted stock complex ----
 cpue %>% 
   tidytable::filter(species_code %in% c(30050, 30051, 30052)) -> .cpue_rebs
 lfreq %>% 
@@ -144,14 +144,14 @@ srvy_iss_goa_cmplx(iters = iters,
                    age_err = TRUE,
                    cmplx_code = 3005012,
                    use_gapindex = TRUE,
-                   by_strata = TRUE,
+                   by_strata = FALSE,
                    global = FALSE,
                    cmplx = 'rebs',
                    region = region, 
                    save_interm = FALSE, 
                    save = 'prodtest')
 
-# run for goa dusky stock (has different historical species codes)
+## run for goa dusky stock (has different historical species codes) ----
 cpue %>% 
   tidytable::filter(species_code %in% c(30150, 30152)) -> .cpue_dr
 lfreq %>% 
@@ -177,14 +177,14 @@ srvy_iss_goa_cmplx(iters = iters,
                    age_err = TRUE,
                    cmplx_code = 301502,
                    use_gapindex = TRUE,
-                   by_strata = TRUE,
+                   by_strata = FALSE,
                    global = FALSE,
                    cmplx = 'dr',
                    region = region, 
                    save_interm = FALSE, 
                    save = 'prodtest')
 
-# run for goa northern/southern rock sole
+## run for goa northern/southern rock sole ----
 cpue %>% 
   tidytable::filter(species_code %in% c(10261, 10262)) -> .cpue_nsrs
 lfreq %>% 
@@ -209,13 +209,13 @@ srvy_iss_goa_w_c_e(iters = iters,
                    al_var_ann = TRUE,
                    age_err = TRUE,
                    use_gapindex = TRUE,
-                   by_strata = TRUE,
+                   by_strata = FALSE,
                    global = FALSE,
                    region = region,
                    save_interm = FALSE,
                    save = 'prodtest')
 
-# run for goa rex sole
+## run for goa rex sole ----
 cpue %>% 
   tidytable::filter(species_code %in% c(10200)) -> .cpue_rex
 lfreq %>% 
@@ -240,7 +240,7 @@ srvy_iss_goa_wc_e(iters = iters,
                   al_var_ann = TRUE,
                   age_err = TRUE,
                   use_gapindex = TRUE,
-                  by_strata = TRUE,
+                  by_strata = FALSE,
                   global = FALSE,
                   region = region,
                   save_interm = FALSE,
@@ -262,7 +262,7 @@ read_test <- vroom::vroom(here::here('data', 'reader_tester.csv')) %>%
   tidytable::rename(age = 'read_age') %>% 
   tidytable::filter(species_code %in% species)
 
-# run for all species (and subsetting out species cases so we don't have two places with those results)
+## run for all species (and subsetting out species cases so we don't have two places with those results) ----
 cpue %>% 
   tidytable::filter(!(species_code %in% c(30050, 30051, 30052, 30420))) -> .cpue
 lfreq %>% 
@@ -286,11 +286,14 @@ srvy_iss(iters = iters,
          al_var = TRUE, 
          al_var_ann = TRUE, 
          age_err = TRUE,
+         use_gapindex = TRUE,
+         by_strata = FALSE,
+         global = FALSE,
          region = region, 
          save_interm = FALSE, 
          save = 'prodtest')
 
-# Run for ai blackspotted-rougheye stock complex
+## Run for ai blackspotted-rougheye stock complex ----
 cpue %>% 
   tidytable::filter(species_code %in% c(30050, 30051, 30052)) -> .cpue_bsre
 lfreq %>% 
@@ -315,12 +318,15 @@ srvy_iss_ai_cmplx(iters = iters,
                   al_var_ann = TRUE, 
                   age_err = TRUE,
                   cmplx_code = 3005012,
+                  use_gapindex = TRUE,
+                  by_strata = FALSE,
+                  global = FALSE,
                   cmplx = 'bsre',
                   region = region, 
                   save_interm = FALSE, 
                   save = 'prodtest')
 
-# Run for ai northern rockfish (subregion expansion)
+## Run for ai northern rockfish (subregion expansion) ----
 cpue %>% 
   tidytable::filter(species_code %in% c(30420)) -> .cpue_nr
 lfreq %>% 
@@ -344,6 +350,9 @@ srvy_iss_ai_subreg(iters = iters,
                    al_var = TRUE, 
                    al_var_ann = TRUE, 
                    age_err = TRUE,
+                   use_gapindex = TRUE,
+                   by_strata = FALSE,
+                   global = FALSE,
                    region = region, 
                    save_interm = FALSE, 
                    save = 'prodtest')
@@ -379,6 +388,9 @@ srvy_iss(iters = iters,
          al_var = TRUE, 
          al_var_ann = TRUE, 
          age_err = TRUE,
+         use_gapindex = TRUE,
+         by_strata = FALSE,
+         global = FALSE,
          region = region, 
          save_interm = FALSE, 
          save = 'prodtest')
@@ -414,6 +426,9 @@ srvy_iss(iters = iters,
          al_var = TRUE, 
          al_var_ann = TRUE, 
          age_err = TRUE,
+         use_gapindex = TRUE,
+         by_strata = FALSE,
+         global = FALSE,
          region = region, 
          save_interm = FALSE, 
          save = 'prodtest')
@@ -448,6 +463,9 @@ srvy_iss(iters = iters,
          al_var = TRUE, 
          al_var_ann = TRUE, 
          age_err = TRUE,
+         use_gapindex = TRUE,
+         by_strata = FALSE,
+         global = FALSE,
          region = region, 
          save_interm = FALSE, 
          save = 'prodtest')

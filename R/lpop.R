@@ -74,7 +74,7 @@ lpop_gap <- function(lfreq_un,
                      by_strata = FALSE) {
   
   # remove ebs strata 82 & 90 (to match results of gapindex)
-  if(unique(cpue$survey) == 98){
+  if(length(unique(cpue$survey)) == 1 && unique(cpue$survey) %in% c(98)){
     cpue <- cpue %>% 
       tidytable::filter(!(stratum %in% c(82, 90) & year <= 1985))
   }
@@ -136,7 +136,7 @@ lpop_gap <- function(lfreq_un,
   # positive counts but missing size data is imputted by averaging the
   # size composition from the hauls in that same stratum and year.
   
-  if(unique(cpue$survey) %in% c(47, 52)){
+  if(length(unique(cpue$survey)) == 1 && unique(cpue$survey) %in% c(47, 52)){
     # male/female/unsexed
     size <- size %>% 
       tidytable::select(year, stratum, hauljoin, species_code, length, sex, numcpue, S_ijklm) %>% 

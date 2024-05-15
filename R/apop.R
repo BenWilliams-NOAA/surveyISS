@@ -212,7 +212,7 @@ apop_gap <- function(lpop,
                                                   .by = c(year, species_code, stratum, sex, age)) %>% 
                              tidytable::filter(agepop > 0 & age > 0)) -> agecomp_st
     # remove strata 82 and 90 from ebs data
-    if(length(unique(agedat$survey)) == 1 & unique(agedat$survey) == 98){
+    if(length(unique(agedat$survey)) == 1 && unique(agedat$survey) %in% 98){
       agecomp_st %>% 
         tidytable::filter(!(stratum %in% c(82, 90))) -> agecomp_st
     }

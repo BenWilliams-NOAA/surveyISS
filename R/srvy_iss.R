@@ -299,7 +299,7 @@ srvy_iss_ai_cmplx <- function(iters = 1,
   
   # age comps: 
   # compute harmonic mean of iterated realized sample size, which is the input sample size (iss)
-  .iss_age <- iss_age(.rss_age, specimen_data)
+  .iss_age <- iss_age_cmplx(.rss_age, specimen_data)
   
   # compute average relative bias in pop'n estimates (avg relative bias across age)
   .bias_age <- bias_age(r_age, oga)
@@ -311,15 +311,15 @@ srvy_iss_ai_cmplx <- function(iters = 1,
   
   # length comps: 
   # compute harmonic mean of iterated realized sample size, which is the input sample size (iss)
-  .iss_length <- iss_length(.rss_length, lfreq_data)
+  .iss_length <- iss_length_cmplx(.rss_length, lfreq_data)
   
   # compute average relative bias in pop'n estimates (avg relative bias across length)
   .bias_length <- bias_length(r_length, ogl)
   
   # write results ----
   # input sample size
-  vroom::vroom_write(iss_length, here::here("output", region, paste0(save, "_iss_ln_", cmplx, ".csv")), delim = ",")    
-  vroom::vroom_write(iss_age, here::here("output", region, paste0(save, "_iss_ag_", cmplx, ".csv")), delim = ",")
+  vroom::vroom_write(.iss_length, here::here("output", region, paste0(save, "_iss_ln_", cmplx, ".csv")), delim = ",")    
+  vroom::vroom_write(.iss_age, here::here("output", region, paste0(save, "_iss_ag_", cmplx, ".csv")), delim = ",")
   # base age & length pop'n
   vroom::vroom_write(oga, file = here::here("output", region, paste0(save, "_base_age_", cmplx, ".csv")), delim = ",")
   vroom::vroom_write(ogl, file = here::here("output", region, paste0(save, "_base_length_", cmplx, ".csv")), delim = ",")
@@ -429,7 +429,10 @@ srvy_iss_goa_cmplx <- function(iters = 1,
                    global = global)
   
   og$age %>% 
-    tidytable::summarize(agepop = sum(agepop), .by = c(year, sex, age)) %>% 
+    tidytable::summarize(agepop = sum(agepop),
+                         mean_length = agepop * mean_length / sum(agepop),
+                         sd_length = agepop * sd_length / sum(agepop),
+                         .by = c(year, sex, age)) %>% 
     tidytable::mutate(species_code = cmplx_code) -> oga
   og$length %>% 
     tidytable::summarize(abund = sum(abund), .by = c(year, sex, length)) %>% 
@@ -455,7 +458,10 @@ srvy_iss_goa_cmplx <- function(iters = 1,
   
   r_age <- do.call(mapply, c(list, rr, SIMPLIFY = FALSE))$age %>% 
     tidytable::map_df(., ~as.data.frame(.x), .id = "sim") %>% 
-    tidytable::summarize(agepop = sum(agepop), .by = c(sim, year, sex, age)) %>% 
+    tidytable::summarize(agepop = sum(agepop), 
+                         mean_length = agepop * mean_length / sum(agepop),
+                         sd_length = agepop * sd_length / sum(agepop),
+                         .by = c(sim, year, sex, age)) %>% 
     tidytable::mutate(species_code = cmplx_code) %>% 
     split(., .[,'sim'])
   
@@ -487,27 +493,27 @@ srvy_iss_goa_cmplx <- function(iters = 1,
   
   # age comps: 
   # compute harmonic mean of iterated realized sample size, which is the input sample size (iss)
-  .iss_age <- iss_age(.rss_age, specimen_data)
+  .iss_age <- iss_age_cmplx(.rss_age, specimen_data)
   
   # compute average relative bias in pop'n estimates (avg relative bias across age)
-  .bias_age <- bias_age(r_age, oga)
+  .bias_age <- bias_age_cmplx(r_age, oga)
   
   # compute mean length-at-age and sd (if using gap fcns)
   if(isTRUE(use_gapindex)){
-    .mean_length <- grwth_stats(r_age, oga)
+    .mean_length <- grwth_stats_cmplx(r_age, oga)
   }
   
   # length comps: 
   # compute harmonic mean of iterated realized sample size, which is the input sample size (iss)
-  .iss_length <- iss_length(.rss_length, lfreq_data)
+  .iss_length <- iss_length_cmplx(.rss_length, lfreq_data)
   
   # compute average relative bias in pop'n estimates (avg relative bias across length)
-  .bias_length <- bias_length(r_length, ogl)
+  .bias_length <- bias_length_cmplx(r_length, ogl)
   
   # write results ----
   # input sample size
-  vroom::vroom_write(iss_length, here::here("output", region, paste0(save, "_iss_ln_", cmplx, ".csv")), delim = ",")    
-  vroom::vroom_write(iss_age, here::here("output", region, paste0(save, "_iss_ag_", cmplx, ".csv")), delim = ",")
+  vroom::vroom_write(.iss_length, here::here("output", region, paste0(save, "_iss_ln_", cmplx, ".csv")), delim = ",")    
+  vroom::vroom_write(.iss_age, here::here("output", region, paste0(save, "_iss_ag_", cmplx, ".csv")), delim = ",")
   # base age & length pop'n
   vroom::vroom_write(oga, file = here::here("output", region, paste0(save, "_base_age_", cmplx, ".csv")), delim = ",")
   vroom::vroom_write(ogl, file = here::here("output", region, paste0(save, "_base_length_", cmplx, ".csv")), delim = ",")
@@ -859,7 +865,7 @@ srvy_iss_goa_w_c_e <- function(iters = 1,
   
   # age comps: 
   # compute harmonic mean of iterated realized sample size, which is the input sample size (iss)
-  .iss_age <- iss_age_reg(.rss_age, specimen_data, region)
+  .iss_age <- iss_age_reg(.rss_age, .specimen_data, region)
   
   # compute average relative bias in pop'n estimates (avg relative bias across age)
   .bias_age <- bias_age_reg(r_age, oga)
@@ -871,7 +877,7 @@ srvy_iss_goa_w_c_e <- function(iters = 1,
   
   # length comps: 
   # compute harmonic mean of iterated realized sample size, which is the input sample size (iss)
-  .iss_length <- iss_length_reg(.rss_length, lfreq_data, region)
+  .iss_length <- iss_length_reg(.rss_length, .lfreq_data, region)
   
   # compute average relative bias in pop'n estimates (avg relative bias across length)
   .bias_length <- bias_length_reg(r_length, ogl)
@@ -1162,7 +1168,7 @@ srvy_iss_goa_wc_e <- function(iters = 1,
   
   # age comps: 
   # compute harmonic mean of iterated realized sample size, which is the input sample size (iss)
-  .iss_age <- iss_age_reg(.rss_age, specimen_data, region)
+  .iss_age <- iss_age_reg(.rss_age, .specimen_data, region)
   
   # compute average relative bias in pop'n estimates (avg relative bias across age)
   .bias_age <- bias_age_reg(r_age, oga)
@@ -1174,7 +1180,7 @@ srvy_iss_goa_wc_e <- function(iters = 1,
   
   # length comps: 
   # compute harmonic mean of iterated realized sample size, which is the input sample size (iss)
-  .iss_length <- iss_length_reg(.rss_length, lfreq_data, region)
+  .iss_length <- iss_length_reg(.rss_length, .lfreq_data, region)
   
   # compute average relative bias in pop'n estimates (avg relative bias across length)
   .bias_length <- bias_length_reg(r_length, ogl)
@@ -1807,7 +1813,7 @@ srvy_iss_ai_subreg <- function(iters = 1,
   
   # age comps: 
   # compute harmonic mean of iterated realized sample size, which is the input sample size (iss)
-  .iss_age <- iss_age_reg(.rss_age, specimen_data, region)
+  .iss_age <- iss_age_reg(.rss_age, .specimen_data, region)
   
   # compute average relative bias in pop'n estimates (avg relative bias across age)
   .bias_age <- bias_age_reg(r_age, oga)
@@ -1819,7 +1825,7 @@ srvy_iss_ai_subreg <- function(iters = 1,
   
   # length comps: 
   # compute harmonic mean of iterated realized sample size, which is the input sample size (iss)
-  .iss_length <- iss_length_reg(.rss_length, lfreq_data, region)
+  .iss_length <- iss_length_reg(.rss_length, .lfreq_data, region)
   
   # compute average relative bias in pop'n estimates (avg relative bias across length)
   .bias_length <- bias_length_reg(r_length, ogl)
