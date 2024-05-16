@@ -18,13 +18,13 @@ query_data <- function(survey,
   # create folder
   if (!dir.exists("data")) {dir.create("data")}
 
+  # year switch
+  if (is.null(yrs)) yrs <- 0
+  
   # connect to database ----
   # get connected to akfin
   db = 'akfin'
   conn = afscdata::connect(db)
-  
-  # year switch
-  if (is.null(yrs)) yrs <- 0
   
   # length frequency data ----
 
@@ -130,7 +130,8 @@ query_data <- function(survey,
                   -latitude_dd_end,
                   -longitude_dd_start, 
                   -longitude_dd_end, 
-                  survey = survey_definition_id) %>% 
+                  survey = survey_definition_id,
+                  numcpue = cpue_nokm2) %>% 
     collect() -> cpue
   
   # get gap_products catch
@@ -207,7 +208,7 @@ query_data <- function(survey,
   # strata within subregions
   dplyr::tbl(conn, dplyr::sql('gap_products.akfin_stratum_groups')) %>% 
     dplyr::rename_all(tolower) %>% 
-    dplyr::filter(survey_definition_id == survey) %>% 
+    dplyr::filter(survey_definition_id %in% survey) %>% 
     dplyr::select(stratum, 
                   area_id) %>% 
     collect() -> st_subreg

@@ -627,21 +627,21 @@ srvy_iss_goa_w_c_e <- function(iters = 1,
     tidytable::mutate(region = case_when(area_id == 803 ~ 'cgoa',
                                          area_id == 804 ~ 'egoa',
                                          area_id == 805 ~ 'wgoa')) %>% 
-    tidytable::select(-design_year, -area, -area_id, -subarea_name, -description) -> .lfreq_data
+    tidytable::select(-design_year, -area, -area_id, -subarea_name) -> .lfreq_data
   
   specimen_data %>% 
     tidytable::left_join(strata_data) %>% 
     tidytable::mutate(region = case_when(area_id == 803 ~ 'cgoa',
                                          area_id == 804 ~ 'egoa',
                                          area_id == 805 ~ 'wgoa')) %>% 
-    tidytable::select(-design_year, -area, -area_id, -subarea_name, -description) -> .specimen_data
+    tidytable::select(-design_year, -area, -area_id, -subarea_name) -> .specimen_data
   
   cpue_data %>%  
     tidytable::left_join(strata_data) %>% 
     tidytable::mutate(region = case_when(area_id == 803 ~ 'cgoa',
                                          area_id == 804 ~ 'egoa',
                                          area_id == 805 ~ 'wgoa')) %>% 
-    tidytable::select(-design_year, -area, -area_id, -subarea_name, -description)  -> .cpue_data
+    tidytable::select(-design_year, -area, -area_id, -subarea_name)  -> .cpue_data
   
   # get original age/length pop'n values ----
   
@@ -1005,19 +1005,19 @@ srvy_iss_goa_wc_e <- function(iters = 1,
     tidytable::left_join(strata_data) %>% 
     tidytable::mutate(region = case_when(area_id %in% c(803, 805) ~ 'wcgoa',
                                          area_id == 804 ~ 'egoa')) %>% 
-    tidytable::select(-design_year, -area, -area_id, -subarea_name, -description) -> .lfreq_data
+    tidytable::select(-design_year, -area, -area_id, -subarea_name) -> .lfreq_data
   
   specimen_data %>% 
     tidytable::left_join(strata_data) %>% 
     tidytable::mutate(region = case_when(area_id %in% c(803, 805) ~ 'wcgoa',
                                          area_id == 804 ~ 'egoa')) %>% 
-    tidytable::select(-design_year, -area, -area_id, -subarea_name, -description) -> .specimen_data
+    tidytable::select(-design_year, -area, -area_id, -subarea_name) -> .specimen_data
   
   cpue_data %>%  
     tidytable::left_join(strata_data) %>% 
     tidytable::mutate(region = case_when(area_id %in% c(803, 805) ~ 'wcgoa',
                                          area_id == 804 ~ 'egoa')) %>% 
-    tidytable::select(-design_year, -area, -area_id, -subarea_name, -description)  -> .cpue_data
+    tidytable::select(-design_year, -area, -area_id, -subarea_name)  -> .cpue_data
   
   # get original age/length pop'n values ----
   
@@ -1530,7 +1530,7 @@ srvy_iss_ai_subreg <- function(iters = 1,
                                            c(511, 512, 513, 521, 522, 523, 594, 611, 612, 613, 614, 621, 622, 623, 624) ~ 'eai',
                                          stratum %in% 
                                            c(711, 712, 721, 722, 793, 794) ~ 'sbs')) %>% 
-    tidytable::select(-design_year, -area, -area_id, -subarea_name, -description) -> .lfreq_data
+    tidytable::select(-design_year, -area, -area_id, -subarea_name) -> .lfreq_data
   
   specimen_data %>% 
     tidytable::left_join(strata_data) %>% 
@@ -1542,7 +1542,7 @@ srvy_iss_ai_subreg <- function(iters = 1,
                                            c(511, 512, 513, 521, 522, 523, 594, 611, 612, 613, 614, 621, 622, 623, 624) ~ 'eai',
                                          stratum %in% 
                                            c(711, 712, 721, 722, 793, 794) ~ 'sbs')) %>% 
-    tidytable::select(-design_year, -area, -area_id, -subarea_name, -description) -> .specimen_data
+    tidytable::select(-design_year, -area, -area_id, -subarea_name) -> .specimen_data
   
   cpue_data %>%  
     tidytable::left_join(strata_data) %>% 
@@ -1554,7 +1554,7 @@ srvy_iss_ai_subreg <- function(iters = 1,
                                            c(511, 512, 513, 521, 522, 523, 594, 611, 612, 613, 614, 621, 622, 623, 624) ~ 'eai',
                                          stratum %in% 
                                            c(711, 712, 721, 722, 793, 794) ~ 'sbs')) %>% 
-    tidytable::select(-design_year, -area, -area_id, -subarea_name, -description)  -> .cpue_data
+    tidytable::select(-design_year, -area, -area_id, -subarea_name)  -> .cpue_data
   
   # get original age/length pop'n values ----
   
