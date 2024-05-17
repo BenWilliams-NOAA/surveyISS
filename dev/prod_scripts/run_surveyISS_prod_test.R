@@ -65,6 +65,7 @@ read_test %>%
 # age_err = TRUE
 # use_gapindex = TRUE
 # by_strata = TRUE
+# global = FALSE
 
 srvy_iss(iters = iters, 
          lfreq_data = .lfreq,

@@ -99,52 +99,18 @@ srvy_iss <- function(iters = 1,
                                          by_strata = by_strata,
                                          global = global))
   
-  r_age <- do.call(mapply, c(list, rr, SIMPLIFY = FALSE))$age
-  r_length <- do.call(mapply, c(list, rr, SIMPLIFY = FALSE))$length
+  r_age <- do.call(mapply, c(list, rr, SIMPLIFY = FALSE))$age %>% 
+    tidytable::map_df(., ~as.data.frame(.x), .id = "sim")
+  r_length <- do.call(mapply, c(list, rr, SIMPLIFY = FALSE))$length %>% 
+    tidytable::map_df(., ~as.data.frame(.x), .id = "sim")
   
   # compute statistics ----
-  # compute realized sample size of bootstrapped age/length
-  r_age %>%
-    tidytable::map(., ~rss_age(sim_data = .x, og_data = oga)) %>%
-    tidytable::map_df(., ~as.data.frame(.x), .id = "sim") %>% 
-    tidytable::mutate(sex_desc = case_when(sex == 0 ~ 'total_pre',
-                                           sex == 1 ~ 'male',
-                                           sex == 2 ~ 'female',
-                                           sex == 12 ~ 'female_male',
-                                           sex == 4 ~ 'total_post')) -> .rss_age
-  
-  r_length %>%
-    tidytable::map(., ~rss_length(sim_data = .x, og_data = ogl)) %>%
-    tidytable::map_df(., ~as.data.frame(.x), .id = "sim") %>% 
-    tidytable::mutate(sex_desc = case_when(sex == 0 ~ 'total_pre',
-                                           sex == 1 ~ 'male',
-                                           sex == 2 ~ 'female',
-                                           sex == 12 ~ 'female_male',
-                                           sex == 4 ~ 'total_post')) -> .rss_length
-  
-  # age comps: 
-  # compute harmonic mean of iterated realized sample size, which is the input sample size (iss)
-  .iss_age <- iss_age(.rss_age, specimen_data)
-  
-  # compute average relative bias in pop'n estimates (avg relative bias across age)
-  .bias_age <- bias_age(r_age, oga)
-  
-  # compute mean length-at-age and sd (if using gap fcns)
-  if(isTRUE(use_gapindex)){
-    .mean_length <- grwth_stats(r_age, oga)
-  }
-  
-  # length comps: 
-  # compute harmonic mean of iterated realized sample size, which is the input sample size (iss)
-  .iss_length <- iss_length(.rss_length, lfreq_data)
-  
-  # compute average relative bias in pop'n estimates (avg relative bias across length)
-  .bias_length <- bias_length(r_length, ogl)
+  out_stats <- comp_stats(r_age, oga, r_length, ogl, specimen_data, lfreq_data)
   
   # write results ----
   # input sample size
-  vroom::vroom_write(.iss_length, here::here("output", region, paste0(save, "_iss_ln.csv")), delim = ",")    
-  vroom::vroom_write(.iss_age, here::here("output", region, paste0(save, "_iss_ag.csv")), delim = ",")
+  vroom::vroom_write(out_stats$iss_length, here::here("output", region, paste0(save, "_iss_ln.csv")), delim = ",")    
+  vroom::vroom_write(out_stats$iss_age, here::here("output", region, paste0(save, "_iss_ag.csv")), delim = ",")
   
   # if desired, write out additional statistics
   if(isTRUE(save_stats)){
@@ -152,24 +118,20 @@ srvy_iss <- function(iters = 1,
     vroom::vroom_write(oga, file = here::here("output", region, paste0(save, "_base_age.csv")), delim = ",")
     vroom::vroom_write(ogl, file = here::here("output", region, paste0(save, "_base_length.csv")), delim = ",")
     # bias in age & length pop'n
-    vroom::vroom_write(.bias_age, file = here::here("output", region, paste0(save, "_bias_age.csv")), delim = ",")
-    vroom::vroom_write(.bias_length, file = here::here("output", region, paste0(save, "_bias_length.csv")), delim = ",")
+    vroom::vroom_write(out_stats$bias_age, file = here::here("output", region, paste0(save, "_bias_age.csv")), delim = ",")
+    vroom::vroom_write(out_stats$bias_length, file = here::here("output", region, paste0(save, "_bias_length.csv")), delim = ",")
     # mean length-at-age and sd (if using gap fcns)
-    if(isTRUE(use_gapindex)){
-      vroom::vroom_write(.mean_length, file = here::here("output", region, paste0(save, "_mean_length.csv")), delim = ",")
+    if("mean_length" %in% names(r_age)){
+      vroom::vroom_write(out_stats$mean_length, file = here::here("output", region, paste0(save, "_mean_length.csv")), delim = ",")
     }
   }
   
   # if desired, write out bootstrapped age & length pop'n and realized sample sizes
   if(isTRUE(save_interm)) {
-    r_length %>%
-      tidytable::map_df(., ~as.data.frame(.x), .id = "sim") %>% 
-      vroom::vroom_write(here::here("output", region, paste0(save, "_resampled_length.csv")), delim = ",")
-    r_age %>%
-      tidytable::map_df(., ~as.data.frame(.x), .id = "sim") %>% 
-      vroom::vroom_write(here::here("output", region, paste0(save, "_resampled_age.csv")), delim = ",")
-    vroom::vroom_write(.rss_length, here::here("output", region, paste0(save, "_iter_rss_ln.csv")), delim = ",")
-    vroom::vroom_write(.rss_age, here::here("output", region, paste0(save, "_iter_rss_ag.csv")), delim = ",")
+    vroom::vroom_write(r_length, here::here("output", region, paste0(save, "_resampled_length.csv")), delim = ",")
+    vroom::vroom_write(r_age, here::here("output", region, paste0(save, "_resampled_age.csv")), delim = ",")
+    vroom::vroom_write(out_stats$rss_length, here::here("output", region, paste0(save, "_iter_rss_ln.csv")), delim = ",")
+    vroom::vroom_write(out_stats$rss_age, here::here("output", region, paste0(save, "_iter_rss_ag.csv")), delim = ",")
   }
   
 }
@@ -282,52 +244,22 @@ srvy_iss_ai_cmplx <- function(iters = 1,
                                                   by_strata = by_strata,
                                                   global = global))
   
-  r_age <- do.call(mapply, c(list, rr, SIMPLIFY = FALSE))$age
-  r_length <- do.call(mapply, c(list, rr, SIMPLIFY = FALSE))$length
+  r_age <- do.call(mapply, c(list, rr, SIMPLIFY = FALSE))$age %>%
+    tidytable::map_df(., ~as.data.frame(.x), .id = "sim")
+  r_length <- do.call(mapply, c(list, rr, SIMPLIFY = FALSE))$length %>%
+    tidytable::map_df(., ~as.data.frame(.x), .id = "sim")
   
   # compute statistics ----
-  # compute realized sample size of bootstrapped age/length
-  r_age %>%
-    tidytable::map(., ~rss_age(sim_data = .x, og_data = oga)) %>%
-    tidytable::map_df(., ~as.data.frame(.x), .id = "sim") %>% 
-    tidytable::mutate(sex_desc = case_when(sex == 0 ~ 'total_pre',
-                                           sex == 1 ~ 'male',
-                                           sex == 2 ~ 'female',
-                                           sex == 12 ~ 'female_male',
-                                           sex == 4 ~ 'total_post')) -> .rss_age
-  
-  r_length %>%
-    tidytable::map(., ~rss_length(sim_data = .x, og_data = ogl)) %>%
-    tidytable::map_df(., ~as.data.frame(.x), .id = "sim") %>% 
-    tidytable::mutate(sex_desc = case_when(sex == 0 ~ 'total_pre',
-                                           sex == 1 ~ 'male',
-                                           sex == 2 ~ 'female',
-                                           sex == 12 ~ 'female_male',
-                                           sex == 4 ~ 'total_post')) -> .rss_length
-  
-  # age comps: 
-  # compute harmonic mean of iterated realized sample size, which is the input sample size (iss)
-  .iss_age <- iss_age_cmplx(.rss_age, specimen_data)
-  
-  # compute average relative bias in pop'n estimates (avg relative bias across age)
-  .bias_age <- bias_age(r_age, oga)
-  
-  # compute mean length-at-age and sd (if using gap fcns)
-  if(isTRUE(use_gapindex)){
-    .mean_length <- grwth_stats(r_age, oga)
-  }
-  
-  # length comps: 
-  # compute harmonic mean of iterated realized sample size, which is the input sample size (iss)
-  .iss_length <- iss_length_cmplx(.rss_length, lfreq_data)
-  
-  # compute average relative bias in pop'n estimates (avg relative bias across length)
-  .bias_length <- bias_length(r_length, ogl)
+  out_stats <- comp_stats(r_age, oga, r_length, ogl, 
+                          specimen_data %>% 
+                            tidytable::mutate(species_code = cmplx_code), 
+                          lfreq_data %>% 
+                            tidytable::mutate(species_code = cmplx_code))
   
   # write results ----
   # input sample size
-  vroom::vroom_write(.iss_length, here::here("output", region, paste0(save, "_iss_ln_", cmplx, ".csv")), delim = ",")    
-  vroom::vroom_write(.iss_age, here::here("output", region, paste0(save, "_iss_ag_", cmplx, ".csv")), delim = ",")
+  vroom::vroom_write(out_stats$iss_length, here::here("output", region, paste0(save, "_iss_ln_", cmplx, ".csv")), delim = ",")    
+  vroom::vroom_write(out_stats$iss_age, here::here("output", region, paste0(save, "_iss_ag_", cmplx, ".csv")), delim = ",")
   
   # if desired, write out additional statistics
   if(isTRUE(save_stats)){
@@ -335,24 +267,20 @@ srvy_iss_ai_cmplx <- function(iters = 1,
     vroom::vroom_write(oga, file = here::here("output", region, paste0(save, "_base_age_", cmplx, ".csv")), delim = ",")
     vroom::vroom_write(ogl, file = here::here("output", region, paste0(save, "_base_length_", cmplx, ".csv")), delim = ",")
     # bias in age & length pop'n
-    vroom::vroom_write(.bias_age, file = here::here("output", region, paste0(save, "_bias_age_", cmplx, ".csv")), delim = ",")
-    vroom::vroom_write(.bias_length, file = here::here("output", region, paste0(save, "_bias_length_", cmplx, ".csv")), delim = ",")
+    vroom::vroom_write(out_stats$bias_age, file = here::here("output", region, paste0(save, "_bias_age_", cmplx, ".csv")), delim = ",")
+    vroom::vroom_write(out_stats$bias_length, file = here::here("output", region, paste0(save, "_bias_length_", cmplx, ".csv")), delim = ",")
     # mean length-at-age and sd (if using gap fcns)
-    if(isTRUE(use_gapindex)){
-      vroom::vroom_write(.mean_length, file = here::here("output", region, paste0(save, "_mean_length_", cmplx, ".csv")), delim = ",")
+    if("mean_length" %in% names(r_age)){
+      vroom::vroom_write(out_stats$mean_length, file = here::here("output", region, paste0(save, "_mean_length_", cmplx, ".csv")), delim = ",")
     }
   }
   
   # if desired, write out bootstrapped age & length pop'n and realized sample sizes
   if(isTRUE(save_interm)) {
-    r_length %>%
-      tidytable::map_df(., ~as.data.frame(.x), .id = "sim") %>% 
-      vroom::vroom_write(here::here("output", region, paste0(save, "_resampled_length_", cmplx, ".csv")), delim = ",")
-    r_age %>%
-      tidytable::map_df(., ~as.data.frame(.x), .id = "sim") %>% 
-      vroom::vroom_write(here::here("output", region, paste0(save, "_resampled_age_", cmplx, ".csv")), delim = ",")
-    vroom::vroom_write(.rss_length, here::here("output", region, paste0(save, "_iter_rss_ln_", cmplx, ".csv")), delim = ",")
-    vroom::vroom_write(.rss_age, here::here("output", region, paste0(save, "_iter_rss_ag_", cmplx, ".csv")), delim = ",")
+    vroom::vroom_write(r_length, here::here("output", region, paste0(save, "_resampled_length_", cmplx, ".csv")), delim = ",")
+    vroom::vroom_write(r_age, here::here("output", region, paste0(save, "_resampled_age_", cmplx, ".csv")), delim = ",")
+    vroom::vroom_write(out_stats$rss_length, here::here("output", region, paste0(save, "_iter_rss_ln_", cmplx, ".csv")), delim = ",")
+    vroom::vroom_write(out_stats$rss_age, here::here("output", region, paste0(save, "_iter_rss_ag_", cmplx, ".csv")), delim = ",")
   }
   
 }
@@ -477,58 +405,24 @@ srvy_iss_goa_cmplx <- function(iters = 1,
                          mean_length = agepop * mean_length / sum(agepop),
                          sd_length = agepop * sd_length / sum(agepop),
                          .by = c(sim, year, sex, age)) %>% 
-    tidytable::mutate(species_code = cmplx_code) %>% 
-    split(., .[,'sim'])
+    tidytable::mutate(species_code = cmplx_code)
   
   r_length <- do.call(mapply, c(list, rr, SIMPLIFY = FALSE))$length %>% 
     tidytable::map_df(., ~as.data.frame(.x), .id = "sim") %>% 
     tidytable::summarize(abund = sum(abund), .by = c(sim, year, sex, length)) %>% 
-    tidytable::mutate(species_code = cmplx_code) %>% 
-    split(., .[,'sim'])
+    tidytable::mutate(species_code = cmplx_code)
   
   # compute statistics ----
-  # compute realized sample size of bootstrapped age/length
-  r_age %>%
-    tidytable::map(., ~rss_age(sim_data = .x, og_data = oga)) %>%
-    tidytable::map_df(., ~as.data.frame(.x), .id = "sim") %>% 
-    tidytable::mutate(sex_desc = case_when(sex == 0 ~ 'total_pre',
-                                           sex == 1 ~ 'male',
-                                           sex == 2 ~ 'female',
-                                           sex == 12 ~ 'female_male',
-                                           sex == 4 ~ 'total_post')) -> .rss_age
-  
-  r_length %>%
-    tidytable::map(., ~rss_length(sim_data = .x, og_data = ogl)) %>%
-    tidytable::map_df(., ~as.data.frame(.x), .id = "sim") %>% 
-    tidytable::mutate(sex_desc = case_when(sex == 0 ~ 'total_pre',
-                                           sex == 1 ~ 'male',
-                                           sex == 2 ~ 'female',
-                                           sex == 12 ~ 'female_male',
-                                           sex == 4 ~ 'total_post')) -> .rss_length
-  
-  # age comps: 
-  # compute harmonic mean of iterated realized sample size, which is the input sample size (iss)
-  .iss_age <- iss_age_cmplx(.rss_age, specimen_data)
-  
-  # compute average relative bias in pop'n estimates (avg relative bias across age)
-  .bias_age <- bias_age_cmplx(r_age, oga)
-  
-  # compute mean length-at-age and sd (if using gap fcns)
-  if(isTRUE(use_gapindex)){
-    .mean_length <- grwth_stats_cmplx(r_age, oga)
-  }
-  
-  # length comps: 
-  # compute harmonic mean of iterated realized sample size, which is the input sample size (iss)
-  .iss_length <- iss_length_cmplx(.rss_length, lfreq_data)
-  
-  # compute average relative bias in pop'n estimates (avg relative bias across length)
-  .bias_length <- bias_length_cmplx(r_length, ogl)
+  out_stats <- comp_stats(r_age, oga, r_length, ogl, 
+                          specimen_data %>% 
+                            tidytable::mutate(species_code = cmplx_code), 
+                          lfreq_data %>% 
+                            tidytable::mutate(species_code = cmplx_code))
   
   # write results ----
   # input sample size
-  vroom::vroom_write(.iss_length, here::here("output", region, paste0(save, "_iss_ln_", cmplx, ".csv")), delim = ",")    
-  vroom::vroom_write(.iss_age, here::here("output", region, paste0(save, "_iss_ag_", cmplx, ".csv")), delim = ",")
+  vroom::vroom_write(out_stats$iss_length, here::here("output", region, paste0(save, "_iss_ln_", cmplx, ".csv")), delim = ",")    
+  vroom::vroom_write(out_stats$iss_age, here::here("output", region, paste0(save, "_iss_ag_", cmplx, ".csv")), delim = ",")
   
   # if desired, write out additional statistics
   if(isTRUE(save_stats)){
@@ -536,24 +430,20 @@ srvy_iss_goa_cmplx <- function(iters = 1,
     vroom::vroom_write(oga, file = here::here("output", region, paste0(save, "_base_age_", cmplx, ".csv")), delim = ",")
     vroom::vroom_write(ogl, file = here::here("output", region, paste0(save, "_base_length_", cmplx, ".csv")), delim = ",")
     # bias in age & length pop'n
-    vroom::vroom_write(.bias_age, file = here::here("output", region, paste0(save, "_bias_age_", cmplx, ".csv")), delim = ",")
-    vroom::vroom_write(.bias_length, file = here::here("output", region, paste0(save, "_bias_length_", cmplx, ".csv")), delim = ",")
+    vroom::vroom_write(out_stats$bias_age, file = here::here("output", region, paste0(save, "_bias_age_", cmplx, ".csv")), delim = ",")
+    vroom::vroom_write(out_stats$bias_length, file = here::here("output", region, paste0(save, "_bias_length_", cmplx, ".csv")), delim = ",")
     # mean length-at-age and sd (if using gap fcns)
-    if(isTRUE(use_gapindex)){
-      vroom::vroom_write(.mean_length, file = here::here("output", region, paste0(save, "_mean_length_", cmplx, ".csv")), delim = ",")
+    if("mean_length" %in% names(r_age)){
+      vroom::vroom_write(out_stats$mean_length, file = here::here("output", region, paste0(save, "_mean_length_", cmplx, ".csv")), delim = ",")
     }
   }
   
   # if desired, write out bootstrapped age & length pop'n and realized sample sizes
   if(isTRUE(save_interm)) {
-    r_length %>%
-      tidytable::map_df(., ~as.data.frame(.x), .id = "sim") %>% 
-      vroom::vroom_write(here::here("output", region, paste0(save, "_resampled_length_", cmplx, ".csv")), delim = ",")
-    r_age %>%
-      tidytable::map_df(., ~as.data.frame(.x), .id = "sim") %>% 
-      vroom::vroom_write(here::here("output", region, paste0(save, "_resampled_age_", cmplx, ".csv")), delim = ",")
-    vroom::vroom_write(.rss_length, here::here("output", region, paste0(save, "_iter_rss_ln_", cmplx, ".csv")), delim = ",")
-    vroom::vroom_write(.rss_age, here::here("output", region, paste0(save, "_iter_rss_ag_", cmplx, ".csv")), delim = ",")
+    vroom::vroom_write(r_length, here::here("output", region, paste0(save, "_resampled_length_", cmplx, ".csv")), delim = ",")
+    vroom::vroom_write(r_age, here::here("output", region, paste0(save, "_resampled_age_", cmplx, ".csv")), delim = ",")
+    vroom::vroom_write(out_stats$rss_length, here::here("output", region, paste0(save, "_iter_rss_ln_", cmplx, ".csv")), delim = ",")
+    vroom::vroom_write(out_stats$rss_age, here::here("output", region, paste0(save, "_iter_rss_ag_", cmplx, ".csv")), delim = ",")
   }
 }
 
@@ -644,270 +534,110 @@ srvy_iss_goa_w_c_e <- function(iters = 1,
     tidytable::select(-design_year, -area, -area_id, -subarea_name)  -> .cpue_data
   
   # get original age/length pop'n values ----
+  subregion = c('wgoa', 'cgoa', 'egoa')
+  og <- purrr::map(1:length(subregion), ~ srvy_comps(lfreq_data = subset(.lfreq_data, .lfreq_data$region == subregion[.]), 
+                                                     specimen_data = subset(.specimen_data, .specimen_data$region == subregion[.]), 
+                                                     cpue_data = subset(.cpue_data, .cpue_data$region == subregion[.]), 
+                                                     strata_data = strata_data,
+                                                     r_t = r_t,
+                                                     yrs = yrs, 
+                                                     bin = bin,
+                                                     boot_hauls = FALSE, 
+                                                     boot_lengths = FALSE, 
+                                                     boot_ages = FALSE,
+                                                     al_var = FALSE,
+                                                     al_var_ann = FALSE,
+                                                     age_err = FALSE,
+                                                     use_gapindex = use_gapindex,
+                                                     by_strata = by_strata,
+                                                     global = global))
   
-  # western goa
-  og_w <- srvy_comps(lfreq_data = subset(.lfreq_data, .lfreq_data$region == "wgoa"), 
-                     specimen_data = subset(.specimen_data, .specimen_data$region == "wgoa"), 
-                     cpue_data = subset(.cpue_data, .cpue_data$region == "wgoa"), 
-                     strata_data = strata_data,
-                     r_t = r_t,
-                     yrs = yrs, 
-                     bin = bin,
-                     boot_hauls = FALSE, 
-                     boot_lengths = FALSE, 
-                     boot_ages = FALSE,
-                     al_var = FALSE,
-                     al_var_ann = FALSE,
-                     age_err = FALSE,
-                     use_gapindex = use_gapindex,
-                     by_strata = by_strata,
-                     global = global)
+  oga <- do.call(mapply, c(list, og, SIMPLIFY = FALSE))$age %>% 
+    tidytable::map_df(., ~as.data.frame(.x), .id = "region") %>% 
+    tidytable::mutate(region = case_when(region == 1 ~ subregion[1],
+                                         region == 2 ~ subregion[2],
+                                         region == 3 ~ subregion[3])) %>% 
+    tidytable::bind_rows(do.call(mapply, c(list, og, SIMPLIFY = FALSE))$age %>% 
+                           tidytable::map_df(., ~as.data.frame(.x), .id = "region") %>% 
+                           tidytable::summarize(agepop = sum(agepop),
+                                                mean_length = mean_length * agepop / sum(agepop),
+                                                sd_length = sd_length * agepop / sum(agepop),
+                                                .by = c(year, species_code, sex, age)) %>% 
+                           tidytable::mutate(region = 'goa'))
   
-  oga_w <- og_w$age
-  ogl_w <- og_w$length
-  
-  # central goa
-  og_c <- srvy_comps(lfreq_data = subset(.lfreq_data, .lfreq_data$region == "cgoa"), 
-                     specimen_data = subset(.specimen_data, .specimen_data$region == "cgoa"), 
-                     cpue_data = subset(.cpue_data, .cpue_data$region == "cgoa"), 
-                     strata_data = strata_data,
-                     r_t = r_t,
-                     yrs = yrs, 
-                     bin = bin,
-                     boot_hauls = FALSE, 
-                     boot_lengths = FALSE, 
-                     boot_ages = FALSE,
-                     al_var = FALSE,
-                     al_var_ann = FALSE,
-                     age_err = FALSE,
-                     use_gapindex = use_gapindex,
-                     by_strata = by_strata,
-                     global = global)
-  
-  oga_c <- og_c$age
-  ogl_c <- og_c$length
-  
-  # eastern goa
-  og_e <- srvy_comps(lfreq_data = subset(.lfreq_data, .lfreq_data$region == "egoa"), 
-                     specimen_data = subset(.specimen_data, .specimen_data$region == "egoa"), 
-                     cpue_data = subset(.cpue_data, .cpue_data$region == "egoa"), 
-                     strata_data = strata_data,
-                     r_t = r_t,
-                     yrs = yrs, 
-                     bin = bin,
-                     boot_hauls = FALSE, 
-                     boot_lengths = FALSE, 
-                     boot_ages = FALSE,
-                     al_var = FALSE,
-                     al_var_ann = FALSE,
-                     age_err = FALSE,
-                     use_gapindex = use_gapindex,
-                     by_strata = by_strata,
-                     global = global)
-  
-  oga_e <- og_e$age
-  ogl_e <- og_e$length
-  
-  # compile og results 
-  oga <- oga_w %>% 
-    tidytable::mutate(region = "wgoa") %>% 
-    tidytable::bind_rows(oga_c %>% 
-                           tidytable::mutate(region = "cgoa")) %>% 
-    tidytable::bind_rows(oga_e %>% 
-                           tidytable::mutate(region = "egoa")) %>% 
-    tidytable::bind_rows(oga_w %>% 
-                           tidytable::rename(agepop_w = agepop) %>% 
-                           tidytable::full_join(oga_c %>% 
-                                                  tidytable::rename(agepop_c = agepop)) %>% 
-                           tidytable::full_join(oga_e %>% 
-                                                  tidytable::rename(agepop_e = agepop)) %>% 
-                           tidytable::replace_na(list(agepop_w = 0)) %>% 
-                           tidytable::replace_na(list(agepop_c = 0)) %>% 
-                           tidytable::replace_na(list(agepop_e = 0)) %>% 
-                           tidytable::mutate(agepop = agepop_w + agepop_c + agepop_e,
-                                             region = 'goa') %>% 
-                           tidytable::select(year, species_code, sex, age, agepop, region))
-  
-  ogl <- ogl_w %>% 
-    tidytable::mutate(region = "wgoa") %>% 
-    tidytable::bind_rows(ogl_c %>% 
-                           tidytable::mutate(region = "cgoa")) %>% 
-    tidytable::bind_rows(ogl_e %>% 
-                           tidytable::mutate(region = "egoa")) %>% 
-    tidytable::bind_rows(ogl_w %>% 
-                           tidytable::rename(abund_w = abund) %>% 
-                           tidytable::full_join(ogl_c %>% 
-                                                  tidytable::rename(abund_c = abund)) %>% 
-                           tidytable::full_join(ogl_e %>% 
-                                                  tidytable::rename(abund_e = abund)) %>% 
-                           tidytable::replace_na(list(abund_w = 0)) %>% 
-                           tidytable::replace_na(list(abund_c = 0)) %>% 
-                           tidytable::replace_na(list(abund_e = 0)) %>% 
-                           tidytable::mutate(abund = abund_w + abund_c + abund_e,
-                                             region = 'goa') %>% 
-                           tidytable::select(year, species_code, sex, length, abund, region))
+  ogl <- do.call(mapply, c(list, og, SIMPLIFY = FALSE))$length %>% 
+    tidytable::map_df(., ~as.data.frame(.x), .id = "region") %>% 
+    tidytable::mutate(region = case_when(region == 1 ~ subregion[1],
+                                         region == 2 ~ subregion[2],
+                                         region == 3 ~ subregion[3])) %>% 
+    tidytable::bind_rows(do.call(mapply, c(list, og, SIMPLIFY = FALSE))$length %>% 
+                           tidytable::map_df(., ~as.data.frame(.x), .id = "region") %>% 
+                           tidytable::summarize(abund = sum(abund),
+                                                .by = c(year, species_code, sex, length)) %>% 
+                           tidytable::mutate(region = 'goa'))
   
   # run resampling iterations ----
-  # western goa
-  rr <- purrr::map(1:iters, ~ srvy_comps(lfreq_data = subset(.lfreq_data, .lfreq_data$region == "wgoa"), 
-                                         specimen_data = subset(.specimen_data, .specimen_data$region == "wgoa"), 
-                                         cpue_data = subset(.cpue_data, .cpue_data$region == "wgoa"), 
-                                         strata_data = strata_data,
-                                         r_t = r_t,
-                                         yrs = yrs, 
-                                         bin = bin,
-                                         boot_hauls = boot_hauls, 
-                                         boot_lengths = boot_lengths, 
-                                         boot_ages = boot_ages,
-                                         al_var = al_var,
-                                         al_var_ann = al_var_ann,
-                                         age_err = age_err,
-                                         use_gapindex = use_gapindex,
-                                         by_strata = by_strata,
-                                         global = global))
+  rr <- purrr::map(1:iters, ~ purrr::map(1:length(subregion), ~ srvy_comps(lfreq_data = subset(.lfreq_data, .lfreq_data$region == subregion[.]), 
+                                                                           specimen_data = subset(.specimen_data, .specimen_data$region == subregion[.]), 
+                                                                           cpue_data = subset(.cpue_data, .cpue_data$region == subregion[.]), 
+                                                                           strata_data = strata_data,
+                                                                           r_t = r_t,
+                                                                           yrs = yrs, 
+                                                                           bin = bin,
+                                                                           boot_hauls = boot_hauls, 
+                                                                           boot_lengths = boot_lengths, 
+                                                                           boot_ages = boot_ages,
+                                                                           al_var = al_var,
+                                                                           al_var_ann = al_var_ann,
+                                                                           age_err = age_err,
+                                                                           use_gapindex = use_gapindex,
+                                                                           by_strata = by_strata,
+                                                                           global = global)))
   
-  r_age_w <- do.call(mapply, c(list, rr, SIMPLIFY = FALSE))$age
-  r_length_w <- do.call(mapply, c(list, rr, SIMPLIFY = FALSE))$length
-  
-  # central goa
-  rr <- purrr::map(1:iters, ~ srvy_comps(lfreq_data = subset(.lfreq_data, .lfreq_data$region == "cgoa"), 
-                                         specimen_data = subset(.specimen_data, .specimen_data$region == "cgoa"), 
-                                         cpue_data = subset(.cpue_data, .cpue_data$region == "cgoa"), 
-                                         strata_data = strata_data,
-                                         r_t = r_t,
-                                         yrs = yrs, 
-                                         bin = bin,
-                                         boot_hauls = boot_hauls, 
-                                         boot_lengths = boot_lengths, 
-                                         boot_ages = boot_ages,
-                                         al_var = al_var,
-                                         al_var_ann = al_var_ann,
-                                         age_err = age_err,
-                                         use_gapindex = use_gapindex,
-                                         by_strata = by_strata,
-                                         global = global))
-  
-  r_age_c <- do.call(mapply, c(list, rr, SIMPLIFY = FALSE))$age
-  r_length_c <- do.call(mapply, c(list, rr, SIMPLIFY = FALSE))$length
-  
-  # eastern goa
-  rr <- purrr::map(1:iters, ~ srvy_comps(lfreq_data = subset(.lfreq_data, .lfreq_data$region == "egoa"), 
-                                         specimen_data = subset(.specimen_data, .specimen_data$region == "egoa"), 
-                                         cpue_data = subset(.cpue_data, .cpue_data$region == "egoa"), 
-                                         strata_data = strata_data,
-                                         r_t = r_t,
-                                         yrs = yrs, 
-                                         bin = bin,
-                                         boot_hauls = boot_hauls, 
-                                         boot_lengths = boot_lengths, 
-                                         boot_ages = boot_ages,
-                                         al_var = al_var,
-                                         al_var_ann = al_var_ann,
-                                         age_err = age_err,
-                                         use_gapindex = use_gapindex,
-                                         by_strata = by_strata,
-                                         global = global))
-  
-  r_age_e <- do.call(mapply, c(list, rr, SIMPLIFY = FALSE))$age
-  r_length_e <- do.call(mapply, c(list, rr, SIMPLIFY = FALSE))$length
-  
-  # combine subregions with goa-wide
-  # age comp
-  r_age <- r_age_w %>% 
+  # get resampled age pop'n
+  r_age <- purrr::map(1:iters, ~(do.call(mapply, c(list, rr[[.]], SIMPLIFY = FALSE))$age %>% 
+                                   tidytable::map_df(., ~as.data.frame(.x), .id = "region") %>% 
+                                   tidytable::mutate(region = case_when(region == 1 ~ subregion[1],
+                                                                        region == 2 ~ subregion[2],
+                                                                        region == 3 ~ subregion[3])))) %>% 
     tidytable::map_df(., ~as.data.frame(.x), .id = "sim") %>% 
-    tidytable::mutate(region = 'wgoa') %>% 
-    tidytable::bind_rows(r_age_c %>% 
+    # sum across subregions to get region age pop'n
+    tidytable::bind_rows(purrr::map(1:iters, ~(do.call(mapply, c(list, rr[[.]], SIMPLIFY = FALSE))$age %>% 
+                                                 tidytable::map_df(., ~as.data.frame(.x), .id = "region") %>% 
+                                                 tidytable::mutate(region = case_when(region == 1 ~ subregion[1],
+                                                                                      region == 2 ~ subregion[2],
+                                                                                      region == 3 ~ subregion[3])))) %>% 
                            tidytable::map_df(., ~as.data.frame(.x), .id = "sim") %>% 
-                           tidytable::mutate(region = 'cgoa')) %>% 
-    tidytable::bind_rows(r_age_e %>% 
-                           tidytable::map_df(., ~as.data.frame(.x), .id = "sim") %>% 
-                           tidytable::mutate(region = 'egoa')) %>% 
-    tidytable::bind_rows(r_age_w %>% 
-                           tidytable::map_df(., ~as.data.frame(.x), .id = "sim") %>% 
-                           tidytable::rename(agepop_w = agepop) %>% 
-                           tidytable::full_join(r_age_c %>% 
-                                                  tidytable::map_df(., ~as.data.frame(.x), .id = "sim") %>% 
-                                                  tidytable::rename(agepop_c = agepop)) %>% 
-                           tidytable::full_join(r_age_e %>% 
-                                                  tidytable::map_df(., ~as.data.frame(.x), .id = "sim") %>% 
-                                                  tidytable::rename(agepop_e = agepop)) %>% 
-                           tidytable::replace_na(list(agepop_w = 0)) %>% 
-                           tidytable::replace_na(list(agepop_c = 0)) %>% 
-                           tidytable::replace_na(list(agepop_e = 0)) %>% 
-                           tidytable::mutate(agepop = agepop_w + agepop_c + agepop_e,
-                                             region = 'goa') %>% 
-                           tidytable::select(sim, year, species_code, sex, age, agepop, region)) %>% 
-    split(., .[,'sim'])
-  # length comp
-  r_length <- r_length_w %>% 
+                           tidytable::summarise(agepop = sum(agepop),
+                                                mean_length = sum(mean_length * agepop) / sum(agepop),
+                                                sd_length = sum(sd_length * agepop) / sum(agepop),
+                                                .by = c(sim, year, species_code, sex, age)) %>% 
+                           tidytable::mutate(region = 'goa'))
+  # get resampled length pop'n
+  r_length <- purrr::map(1:iters, ~(do.call(mapply, c(list, rr[[.]], SIMPLIFY = FALSE))$length %>% 
+                                      tidytable::map_df(., ~as.data.frame(.x), .id = "region") %>% 
+                                      tidytable::mutate(region = case_when(region == 1 ~ subregion[1],
+                                                                           region == 2 ~ subregion[2],
+                                                                           region == 3 ~ subregion[3])))) %>% 
     tidytable::map_df(., ~as.data.frame(.x), .id = "sim") %>% 
-    tidytable::mutate(region = 'wgoa') %>% 
-    tidytable::bind_rows(r_length_c %>% 
+    # sum across subregions to get region length pop'n
+    tidytable::bind_rows(purrr::map(1:iters, ~(do.call(mapply, c(list, rr[[.]], SIMPLIFY = FALSE))$length %>% 
+                                                 tidytable::map_df(., ~as.data.frame(.x), .id = "region") %>% 
+                                                 tidytable::mutate(region = case_when(region == 1 ~ subregion[1],
+                                                                                      region == 2 ~ subregion[2],
+                                                                                      region == 3 ~ subregion[3])))) %>% 
                            tidytable::map_df(., ~as.data.frame(.x), .id = "sim") %>% 
-                           tidytable::mutate(region = 'cgoa')) %>% 
-    tidytable::bind_rows(r_length_e %>% 
-                           tidytable::map_df(., ~as.data.frame(.x), .id = "sim") %>% 
-                           tidytable::mutate(region = 'egoa')) %>% 
-    tidytable::bind_rows(r_length_w %>% 
-                           tidytable::map_df(., ~as.data.frame(.x), .id = "sim") %>% 
-                           tidytable::rename(abund_w = abund) %>% 
-                           tidytable::full_join(r_length_c %>% 
-                                                  tidytable::map_df(., ~as.data.frame(.x), .id = "sim") %>% 
-                                                  tidytable::rename(abund_c = abund)) %>% 
-                           tidytable::full_join(r_length_e %>% 
-                                                  tidytable::map_df(., ~as.data.frame(.x), .id = "sim") %>% 
-                                                  tidytable::rename(abund_e = abund)) %>% 
-                           tidytable::replace_na(list(abund_w = 0)) %>% 
-                           tidytable::replace_na(list(abund_c = 0)) %>% 
-                           tidytable::replace_na(list(abund_e = 0)) %>% 
-                           tidytable::mutate(abund = abund_w + abund_c + abund_e,
-                                             region = 'goa') %>% 
-                           tidytable::select(sim, year, species_code, sex, length, abund, region)) %>% 
-    split(., .[,'sim'])
+                           tidytable::summarise(abund = sum(abund),
+                                                .by = c(sim, year, species_code, sex, length)) %>% 
+                           tidytable::mutate(region = 'goa')) 
   
   # compute statistics ----
-  # compute realized sample size of bootstrapped age/length
-  r_age %>%
-    tidytable::map(., ~rss_age_reg(sim_data = .x, og_data = oga)) %>%
-    tidytable::map_df(., ~as.data.frame(.x), .id = "sim") %>% 
-    tidytable::mutate(sex_desc = case_when(sex == 0 ~ 'total_pre',
-                                           sex == 1 ~ 'male',
-                                           sex == 2 ~ 'female',
-                                           sex == 12 ~ 'female_male',
-                                           sex == 4 ~ 'total_post')) -> .rss_age
-  
-  r_length %>%
-    tidytable::map(., ~rss_length_reg(sim_data = .x, og_data = ogl)) %>%
-    tidytable::map_df(., ~as.data.frame(.x), .id = "sim") %>% 
-    tidytable::mutate(sex_desc = case_when(sex == 0 ~ 'total_pre',
-                                           sex == 1 ~ 'male',
-                                           sex == 2 ~ 'female',
-                                           sex == 12 ~ 'female_male',
-                                           sex == 4 ~ 'total_post')) -> .rss_length
-  
-  # age comps: 
-  # compute harmonic mean of iterated realized sample size, which is the input sample size (iss)
-  .iss_age <- iss_age_reg(.rss_age, .specimen_data, region)
-  
-  # compute average relative bias in pop'n estimates (avg relative bias across age)
-  .bias_age <- bias_age_reg(r_age, oga)
-  
-  # compute mean length-at-age and sd (if using gap fcns)
-  if(isTRUE(use_gapindex)){
-    .mean_length <- grwth_stats_reg(r_age, oga)
-  }
-  
-  # length comps: 
-  # compute harmonic mean of iterated realized sample size, which is the input sample size (iss)
-  .iss_length <- iss_length_reg(.rss_length, .lfreq_data, region)
-  
-  # compute average relative bias in pop'n estimates (avg relative bias across length)
-  .bias_length <- bias_length_reg(r_length, ogl)
+  out_stats <- comp_stats(r_age, oga, r_length, ogl, .specimen_data, .lfreq_data, region)
   
   # write results ----
   # input sample size
-  vroom::vroom_write(.iss_length, here::here("output", region, paste0(save, "_iss_ln_w_c_egoa.csv")), delim = ",")    
-  vroom::vroom_write(.iss_age, here::here("output", region, paste0(save, "_iss_ag_w_c_egoa.csv")), delim = ",")
+  vroom::vroom_write(out_stats$iss_length, here::here("output", region, paste0(save, "_iss_ln_w_c_egoa.csv")), delim = ",")    
+  vroom::vroom_write(out_stats$iss_age, here::here("output", region, paste0(save, "_iss_ag_w_c_egoa.csv")), delim = ",")
   
   # if desired, write out additional statistics
   if(isTRUE(save_stats)){
@@ -915,24 +645,20 @@ srvy_iss_goa_w_c_e <- function(iters = 1,
     vroom::vroom_write(oga, file = here::here("output", region, paste0(save, "_base_age_w_c_egoa.csv")), delim = ",")
     vroom::vroom_write(ogl, file = here::here("output", region, paste0(save, "_base_length_w_c_egoa.csv")), delim = ",")
     # bias in age & length pop'n
-    vroom::vroom_write(.bias_age, file = here::here("output", region, paste0(save, "_bias_age_w_c_egoa.csv")), delim = ",")
-    vroom::vroom_write(.bias_length, file = here::here("output", region, paste0(save, "_bias_length_w_c_egoa.csv")), delim = ",")
+    vroom::vroom_write(out_stats$bias_age, file = here::here("output", region, paste0(save, "_bias_age_w_c_egoa.csv")), delim = ",")
+    vroom::vroom_write(out_stats$bias_length, file = here::here("output", region, paste0(save, "_bias_length_w_c_egoa.csv")), delim = ",")
     # mean length-at-age and sd (if using gap fcns)
-    if(isTRUE(use_gapindex)){
-      vroom::vroom_write(.mean_length, file = here::here("output", region, paste0(save, "_mean_length_w_c_egoa.csv")), delim = ",")
+    if("mean_length" %in% names(r_age)){
+      vroom::vroom_write(out_stats$mean_length, file = here::here("output", region, paste0(save, "_mean_length_w_c_egoa.csv")), delim = ",")
     }
   }
   
   # if desired, write out bootstrapped age & length pop'n and realized sample sizes
   if(isTRUE(save_interm)) {
-    r_length %>%
-      tidytable::map_df(., ~as.data.frame(.x), .id = "sim") %>% 
-      vroom::vroom_write(here::here("output", region, paste0(save, "_resampled_length_w_c_egoa.csv")), delim = ",")
-    r_age %>%
-      tidytable::map_df(., ~as.data.frame(.x), .id = "sim") %>% 
-      vroom::vroom_write(here::here("output", region, paste0(save, "_resampled_age_w_c_egoa.csv")), delim = ",")
-    vroom::vroom_write(.rss_length, here::here("output", region, paste0(save, "_iter_rss_ln._w_c_egoacsv")), delim = ",")
-    vroom::vroom_write(.rss_age, here::here("output", region, paste0(save, "_iter_rss_ag_w_c_egoa.csv")), delim = ",")
+    vroom::vroom_write(r_length, here::here("output", region, paste0(save, "_resampled_length_w_c_egoa.csv")), delim = ",")
+    vroom::vroom_write(r_age, here::here("output", region, paste0(save, "_resampled_age_w_c_egoa.csv")), delim = ",")
+    vroom::vroom_write(out_stats$rss_length, here::here("output", region, paste0(save, "_iter_rss_ln._w_c_egoacsv")), delim = ",")
+    vroom::vroom_write(out_stats$rss_age, here::here("output", region, paste0(save, "_iter_rss_ag_w_c_egoa.csv")), delim = ",")
   }
   
 }
@@ -1020,203 +746,108 @@ srvy_iss_goa_wc_e <- function(iters = 1,
     tidytable::select(-design_year, -area, -area_id, -subarea_name)  -> .cpue_data
   
   # get original age/length pop'n values ----
+  subregion = c('wcgoa', 'egoa')
+  og <- purrr::map(1:length(subregion), ~ srvy_comps(lfreq_data = subset(.lfreq_data, .lfreq_data$region == subregion[.]), 
+                                                     specimen_data = subset(.specimen_data, .specimen_data$region == subregion[.]), 
+                                                     cpue_data = subset(.cpue_data, .cpue_data$region == subregion[.]), 
+                                                     strata_data = strata_data,
+                                                     r_t = r_t,
+                                                     yrs = yrs, 
+                                                     bin = bin,
+                                                     boot_hauls = FALSE, 
+                                                     boot_lengths = FALSE, 
+                                                     boot_ages = FALSE,
+                                                     al_var = FALSE,
+                                                     al_var_ann = FALSE,
+                                                     age_err = FALSE,
+                                                     use_gapindex = use_gapindex,
+                                                     by_strata = by_strata,
+                                                     global = global))
   
-  # western & central goa
-  og_c <- srvy_comps(lfreq_data = subset(.lfreq_data, .lfreq_data$region == "wcgoa"), 
-                     specimen_data = subset(.specimen_data, .specimen_data$region == "wcgoa"), 
-                     cpue_data = subset(.cpue_data, .cpue_data$region == "wcgoa"), 
-                     strata_data = strata_data,
-                     r_t = r_t,
-                     yrs = yrs, 
-                     bin = bin,
-                     boot_hauls = FALSE, 
-                     boot_lengths = FALSE, 
-                     boot_ages = FALSE,
-                     al_var = FALSE,
-                     al_var_ann = FALSE,
-                     age_err = FALSE,
-                     use_gapindex = use_gapindex,
-                     by_strata = by_strata,
-                     global = global)
+  oga <- do.call(mapply, c(list, og, SIMPLIFY = FALSE))$age %>% 
+    tidytable::map_df(., ~as.data.frame(.x), .id = "region") %>% 
+    tidytable::mutate(region = case_when(region == 1 ~ subregion[1],
+                                         region == 2 ~ subregion[2])) %>% 
+    tidytable::bind_rows(do.call(mapply, c(list, og, SIMPLIFY = FALSE))$age %>% 
+                           tidytable::map_df(., ~as.data.frame(.x), .id = "region") %>% 
+                           tidytable::summarize(agepop = sum(agepop),
+                                                mean_length = mean_length * agepop / sum(agepop),
+                                                sd_length = sd_length * agepop / sum(agepop),
+                                                .by = c(year, species_code, sex, age)) %>% 
+                           tidytable::mutate(region = 'goa'))
   
-  oga_wc <- og_c$age
-  ogl_wc <- og_c$length
-  
-  # eastern goa
-  og_e <- srvy_comps(lfreq_data = subset(.lfreq_data, .lfreq_data$region == "egoa"), 
-                     specimen_data = subset(.specimen_data, .specimen_data$region == "egoa"), 
-                     cpue_data = subset(.cpue_data, .cpue_data$region == "egoa"), 
-                     strata_data = strata_data,
-                     r_t = r_t,
-                     yrs = yrs, 
-                     bin = bin,
-                     boot_hauls = FALSE, 
-                     boot_lengths = FALSE, 
-                     boot_ages = FALSE,
-                     al_var = FALSE,
-                     al_var_ann = FALSE,
-                     age_err = FALSE,
-                     use_gapindex = use_gapindex,
-                     by_strata = by_strata,
-                     global = global)
-  
-  oga_e <- og_e$age
-  ogl_e <- og_e$length
-  
-  # compile og results 
-  oga <- oga_wc %>% 
-    tidytable::mutate(region = "wcgoa") %>% 
-    tidytable::bind_rows(oga_e %>% 
-                           tidytable::mutate(region = "egoa")) %>% 
-    tidytable::bind_rows(oga_wc %>% 
-                           tidytable::rename(agepop_wc = agepop) %>% 
-                           tidytable::full_join(oga_e %>% 
-                                                  tidytable::rename(agepop_e = agepop)) %>% 
-                           tidytable::replace_na(list(agepop_wc = 0)) %>% 
-                           tidytable::replace_na(list(agepop_e = 0)) %>% 
-                           tidytable::mutate(agepop = agepop_wc + agepop_e,
-                                             region = 'goa') %>% 
-                           tidytable::select(year, species_code, sex, age, agepop, region))
-  
-  ogl <- ogl_wc %>% 
-    tidytable::mutate(region = "wcgoa") %>% 
-    tidytable::bind_rows(ogl_e %>% 
-                           tidytable::mutate(region = "egoa")) %>% 
-    tidytable::bind_rows(ogl_wc %>% 
-                           tidytable::rename(abund_wc = abund) %>% 
-                           tidytable::full_join(ogl_e %>% 
-                                                  tidytable::rename(abund_e = abund)) %>% 
-                           tidytable::replace_na(list(abund_wc = 0)) %>% 
-                           tidytable::replace_na(list(abund_e = 0)) %>% 
-                           tidytable::mutate(abund = abund_wc + abund_e,
-                                             region = 'goa') %>% 
-                           tidytable::select(year, species_code, sex, length, abund, region))
+  ogl <- do.call(mapply, c(list, og, SIMPLIFY = FALSE))$length %>% 
+    tidytable::map_df(., ~as.data.frame(.x), .id = "region") %>% 
+    tidytable::mutate(region = case_when(region == 1 ~ subregion[1],
+                                         region == 2 ~ subregion[2])) %>% 
+    tidytable::bind_rows(do.call(mapply, c(list, og, SIMPLIFY = FALSE))$length %>% 
+                           tidytable::map_df(., ~as.data.frame(.x), .id = "region") %>% 
+                           tidytable::summarize(abund = sum(abund),
+                                                .by = c(year, species_code, sex, length)) %>% 
+                           tidytable::mutate(region = 'goa'))
   
   # run resampling iterations ----
-  # western & central goa
-  rr <- purrr::map(1:iters, ~ srvy_comps(lfreq_data = subset(.lfreq_data, .lfreq_data$region == "wcgoa"), 
-                                         specimen_data = subset(.specimen_data, .specimen_data$region == "wcgoa"), 
-                                         cpue_data = subset(.cpue_data, .cpue_data$region == "wcgoa"), 
-                                         strata_data = strata_data,
-                                         r_t = r_t,
-                                         yrs = yrs, 
-                                         bin = bin,
-                                         boot_hauls = boot_hauls, 
-                                         boot_lengths = boot_lengths, 
-                                         boot_ages = boot_ages,
-                                         al_var = al_var,
-                                         al_var_ann = al_var_ann,
-                                         age_err = age_err,
-                                         use_gapindex = use_gapindex,
-                                         by_strata = by_strata,
-                                         global = global))
+  rr <- purrr::map(1:iters, ~ purrr::map(1:length(subregion), ~ srvy_comps(lfreq_data = subset(.lfreq_data, .lfreq_data$region == subregion[.]), 
+                                                                           specimen_data = subset(.specimen_data, .specimen_data$region == subregion[.]), 
+                                                                           cpue_data = subset(.cpue_data, .cpue_data$region == subregion[.]), 
+                                                                           strata_data = strata_data,
+                                                                           r_t = r_t,
+                                                                           yrs = yrs, 
+                                                                           bin = bin,
+                                                                           boot_hauls = boot_hauls, 
+                                                                           boot_lengths = boot_lengths, 
+                                                                           boot_ages = boot_ages,
+                                                                           al_var = al_var,
+                                                                           al_var_ann = al_var_ann,
+                                                                           age_err = age_err,
+                                                                           use_gapindex = use_gapindex,
+                                                                           by_strata = by_strata,
+                                                                           global = global)))
   
-  r_age_wc <- do.call(mapply, c(list, rr, SIMPLIFY = FALSE))$age
-  r_length_wc <- do.call(mapply, c(list, rr, SIMPLIFY = FALSE))$length
-  
-  # eastern goa
-  rr <- purrr::map(1:iters, ~ srvy_comps(lfreq_data = subset(.lfreq_data, .lfreq_data$region == "egoa"), 
-                                         specimen_data = subset(.specimen_data, .specimen_data$region == "egoa"), 
-                                         cpue_data = subset(.cpue_data, .cpue_data$region == "egoa"), 
-                                         strata_data = strata_data,
-                                         r_t = r_t,
-                                         yrs = yrs, 
-                                         bin = bin,
-                                         boot_hauls = boot_hauls, 
-                                         boot_lengths = boot_lengths, 
-                                         boot_ages = boot_ages,
-                                         al_var = al_var,
-                                         al_var_ann = al_var_ann,
-                                         age_err = age_err,
-                                         use_gapindex = use_gapindex,
-                                         by_strata = by_strata,
-                                         global = global))
-  
-  r_age_e <- do.call(mapply, c(list, rr, SIMPLIFY = FALSE))$age
-  r_length_e <- do.call(mapply, c(list, rr, SIMPLIFY = FALSE))$length
-  
-  # combine subregions with goa-wide
-  r_age <- r_age_wc %>% 
+  # get resampled age pop'n
+  r_age <- purrr::map(1:iters, ~(do.call(mapply, c(list, rr[[.]], SIMPLIFY = FALSE))$age %>% 
+                                   tidytable::map_df(., ~as.data.frame(.x), .id = "region") %>% 
+                                   tidytable::mutate(region = case_when(region == 1 ~ subregion[1],
+                                                                        region == 2 ~ subregion[2],
+                                                                        region == 3 ~ subregion[3])))) %>% 
     tidytable::map_df(., ~as.data.frame(.x), .id = "sim") %>% 
-    tidytable::mutate(region = 'wcgoa') %>% 
-    tidytable::bind_rows(r_age_e %>% 
+    # sum across subregions to get region age pop'n
+    tidytable::bind_rows(purrr::map(1:iters, ~(do.call(mapply, c(list, rr[[.]], SIMPLIFY = FALSE))$age %>% 
+                                                 tidytable::map_df(., ~as.data.frame(.x), .id = "region") %>% 
+                                                 tidytable::mutate(region = case_when(region == 1 ~ subregion[1],
+                                                                                      region == 2 ~ subregion[2],
+                                                                                      region == 3 ~ subregion[3])))) %>% 
                            tidytable::map_df(., ~as.data.frame(.x), .id = "sim") %>% 
-                           tidytable::mutate(region = 'egoa')) %>% 
-    tidytable::bind_rows(r_age_wc %>% 
-                           tidytable::map_df(., ~as.data.frame(.x), .id = "sim") %>% 
-                           tidytable::rename(agepop_wc = agepop) %>% 
-                           tidytable::full_join(r_age_e %>% 
-                                                  tidytable::map_df(., ~as.data.frame(.x), .id = "sim") %>% 
-                                                  tidytable::rename(agepop_e = agepop)) %>% 
-                           tidytable::replace_na(list(agepop_wc = 0)) %>% 
-                           tidytable::replace_na(list(agepop_e = 0)) %>% 
-                           tidytable::mutate(agepop = agepop_wc + agepop_e,
-                                             region = 'goa') %>% 
-                           tidytable::select(sim, year, species_code, sex, age, agepop, region)) %>% 
-    split(., .[,'sim'])
-  
-  r_length <- r_length_wc %>% 
+                           tidytable::summarise(agepop = sum(agepop),
+                                                mean_length = sum(mean_length * agepop) / sum(agepop),
+                                                sd_length = sum(sd_length * agepop) / sum(agepop),
+                                                .by = c(sim, year, species_code, sex, age)) %>% 
+                           tidytable::mutate(region = 'goa'))
+  # get resampled length pop'n
+  r_length <- purrr::map(1:iters, ~(do.call(mapply, c(list, rr[[.]], SIMPLIFY = FALSE))$length %>% 
+                                      tidytable::map_df(., ~as.data.frame(.x), .id = "region") %>% 
+                                      tidytable::mutate(region = case_when(region == 1 ~ subregion[1],
+                                                                           region == 2 ~ subregion[2],
+                                                                           region == 3 ~ subregion[3])))) %>% 
     tidytable::map_df(., ~as.data.frame(.x), .id = "sim") %>% 
-    tidytable::mutate(region = 'wcgoa') %>% 
-    tidytable::bind_rows(r_length_e %>% 
+    # sum across subregions to get region length pop'n
+    tidytable::bind_rows(purrr::map(1:iters, ~(do.call(mapply, c(list, rr[[.]], SIMPLIFY = FALSE))$length %>% 
+                                                 tidytable::map_df(., ~as.data.frame(.x), .id = "region") %>% 
+                                                 tidytable::mutate(region = case_when(region == 1 ~ subregion[1],
+                                                                                      region == 2 ~ subregion[2],
+                                                                                      region == 3 ~ subregion[3])))) %>% 
                            tidytable::map_df(., ~as.data.frame(.x), .id = "sim") %>% 
-                           tidytable::mutate(region = 'egoa')) %>% 
-    tidytable::bind_rows(r_length_wc %>% 
-                           tidytable::map_df(., ~as.data.frame(.x), .id = "sim") %>% 
-                           tidytable::rename(abund_wc = abund) %>% 
-                           tidytable::full_join(r_length_e %>% 
-                                                  tidytable::map_df(., ~as.data.frame(.x), .id = "sim") %>% 
-                                                  tidytable::rename(abund_e = abund)) %>% 
-                           tidytable::replace_na(list(abund_wc = 0)) %>% 
-                           tidytable::replace_na(list(abund_e = 0)) %>% 
-                           tidytable::mutate(abund = abund_wc + abund_e,
-                                             region = 'goa') %>% 
-                           tidytable::select(sim, year, species_code, sex, length, abund, region)) %>% 
-    split(., .[,'sim'])
+                           tidytable::summarise(abund = sum(abund),
+                                                .by = c(sim, year, species_code, sex, length)) %>% 
+                           tidytable::mutate(region = 'goa')) 
   
   # compute statistics ----
-  # compute realized sample size of bootstrapped age/length
-  r_age %>%
-    tidytable::map(., ~rss_age_reg(sim_data = .x, og_data = oga)) %>%
-    tidytable::map_df(., ~as.data.frame(.x), .id = "sim") %>% 
-    tidytable::mutate(sex_desc = case_when(sex == 0 ~ 'total_pre',
-                                           sex == 1 ~ 'male',
-                                           sex == 2 ~ 'female',
-                                           sex == 12 ~ 'female_male',
-                                           sex == 4 ~ 'total_post')) -> .rss_age
-  
-  r_length %>%
-    tidytable::map(., ~rss_length_reg(sim_data = .x, og_data = ogl)) %>%
-    tidytable::map_df(., ~as.data.frame(.x), .id = "sim") %>% 
-    tidytable::mutate(sex_desc = case_when(sex == 0 ~ 'total_pre',
-                                           sex == 1 ~ 'male',
-                                           sex == 2 ~ 'female',
-                                           sex == 12 ~ 'female_male',
-                                           sex == 4 ~ 'total_post')) -> .rss_length
-  
-  # age comps: 
-  # compute harmonic mean of iterated realized sample size, which is the input sample size (iss)
-  .iss_age <- iss_age_reg(.rss_age, .specimen_data, region)
-  
-  # compute average relative bias in pop'n estimates (avg relative bias across age)
-  .bias_age <- bias_age_reg(r_age, oga)
-  
-  # compute mean length-at-age and sd (if using gap fcns)
-  if(isTRUE(use_gapindex)){
-    .mean_length <- grwth_stats_reg(r_age, oga)
-  }
-  
-  # length comps: 
-  # compute harmonic mean of iterated realized sample size, which is the input sample size (iss)
-  .iss_length <- iss_length_reg(.rss_length, .lfreq_data, region)
-  
-  # compute average relative bias in pop'n estimates (avg relative bias across length)
-  .bias_length <- bias_length_reg(r_length, ogl)
+  out_stats <- comp_stats(r_age, oga, r_length, ogl, .specimen_data, .lfreq_data, region)
   
   # write results ----
   # input sample size
-  vroom::vroom_write(.iss_length, here::here("output", region, paste0(save, "_iss_ln_wc_egoa.csv")), delim = ",")    
-  vroom::vroom_write(.iss_age, here::here("output", region, paste0(save, "_iss_ag_wc_egoa.csv")), delim = ",")
+  vroom::vroom_write(out_stats$iss_length, here::here("output", region, paste0(save, "_iss_ln_wc_egoa.csv")), delim = ",")    
+  vroom::vroom_write(out_stats$iss_age, here::here("output", region, paste0(save, "_iss_ag_wc_egoa.csv")), delim = ",")
   
   # if desired, write out additional statistics
   if(isTRUE(save_stats)){
@@ -1224,24 +855,20 @@ srvy_iss_goa_wc_e <- function(iters = 1,
     vroom::vroom_write(oga, file = here::here("output", region, paste0(save, "_base_age_wc_egoa.csv")), delim = ",")
     vroom::vroom_write(ogl, file = here::here("output", region, paste0(save, "_base_length_wc_egoa.csv")), delim = ",")
     # bias in age & length pop'n
-    vroom::vroom_write(.bias_age, file = here::here("output", region, paste0(save, "_bias_age_wc_egoa.csv")), delim = ",")
-    vroom::vroom_write(.bias_length, file = here::here("output", region, paste0(save, "_bias_length_wc_egoa.csv")), delim = ",")
+    vroom::vroom_write(out_stats$bias_age, file = here::here("output", region, paste0(save, "_bias_age_wc_egoa.csv")), delim = ",")
+    vroom::vroom_write(out_stats$bias_length, file = here::here("output", region, paste0(save, "_bias_length_wc_egoa.csv")), delim = ",")
     # mean length-at-age and sd (if using gap fcns)
-    if(isTRUE(use_gapindex)){
-      vroom::vroom_write(.mean_length, file = here::here("output", region, paste0(save, "_mean_length_wc_egoa.csv")), delim = ",")
+    if("mean_length" %in% names(r_age)){
+      vroom::vroom_write(out_stats$mean_length, file = here::here("output", region, paste0(save, "_mean_length_wc_egoa.csv")), delim = ",")
     }
   }
   
   # if desired, write out bootstrapped age & length pop'n and realized sample sizes
   if(isTRUE(save_interm)) {
-    r_length %>%
-      tidytable::map_df(., ~as.data.frame(.x), .id = "sim") %>% 
-      vroom::vroom_write(here::here("output", region, paste0(save, "_resampled_length_wc_egoa.csv")), delim = ",")
-    r_age %>%
-      tidytable::map_df(., ~as.data.frame(.x), .id = "sim") %>% 
-      vroom::vroom_write(here::here("output", region, paste0(save, "_resampled_age_wc_egoa.csv")), delim = ",")
-    vroom::vroom_write(.rss_length, here::here("output", region, paste0(save, "_iter_rss_ln._wc_egoacsv")), delim = ",")
-    vroom::vroom_write(.rss_age, here::here("output", region, paste0(save, "_iter_rss_ag_wc_egoa.csv")), delim = ",")
+    vroom::vroom_write(r_length, here::here("output", region, paste0(save, "_resampled_length_wc_egoa.csv")), delim = ",")
+    vroom::vroom_write(r_age, here::here("output", region, paste0(save, "_resampled_age_wc_egoa.csv")), delim = ",")
+    vroom::vroom_write(out_stats$rss_length, here::here("output", region, paste0(save, "_iter_rss_ln._wc_egoacsv")), delim = ",")
+    vroom::vroom_write(out_stats$rss_age, here::here("output", region, paste0(save, "_iter_rss_ag_wc_egoa.csv")), delim = ",")
   }
   
 }
@@ -1379,52 +1006,18 @@ srvy_iss_w140 <- function(iters = 1,
                                          by_strata = by_strata,
                                          global = global))
   
-  r_age <- do.call(mapply, c(list, rr, SIMPLIFY = FALSE))$age
-  r_length <- do.call(mapply, c(list, rr, SIMPLIFY = FALSE))$length
+  r_age <- do.call(mapply, c(list, rr, SIMPLIFY = FALSE))$age %>% 
+    tidytable::map_df(., ~as.data.frame(.x), .id = "sim")
+  r_length <- do.call(mapply, c(list, rr, SIMPLIFY = FALSE))$length %>% 
+    tidytable::map_df(., ~as.data.frame(.x), .id = "sim")
   
   # compute statistics ----
-  # compute realized sample size of bootstrapped age/length
-  r_age %>%
-    tidytable::map(., ~rss_age(sim_data = .x, og_data = oga)) %>%
-    tidytable::map_df(., ~as.data.frame(.x), .id = "sim") %>% 
-    tidytable::mutate(sex_desc = case_when(sex == 0 ~ 'total_pre',
-                                           sex == 1 ~ 'male',
-                                           sex == 2 ~ 'female',
-                                           sex == 12 ~ 'female_male',
-                                           sex == 4 ~ 'total_post')) -> .rss_age
-  
-  r_length %>%
-    tidytable::map(., ~rss_length(sim_data = .x, og_data = ogl)) %>%
-    tidytable::map_df(., ~as.data.frame(.x), .id = "sim") %>% 
-    tidytable::mutate(sex_desc = case_when(sex == 0 ~ 'total_pre',
-                                           sex == 1 ~ 'male',
-                                           sex == 2 ~ 'female',
-                                           sex == 12 ~ 'female_male',
-                                           sex == 4 ~ 'total_post')) -> .rss_length
-  
-  # age comps: 
-  # compute harmonic mean of iterated realized sample size, which is the input sample size (iss)
-  .iss_age <- iss_age(.rss_age, specimen_data)
-  
-  # compute average relative bias in pop'n estimates (avg relative bias across age)
-  .bias_age <- bias_age(r_age, oga)
-  
-  # compute mean length-at-age and sd (if using gap fcns)
-  if(isTRUE(use_gapindex)){
-    .mean_length <- grwth_stats(r_age, oga)
-  }
-  
-  # length comps: 
-  # compute harmonic mean of iterated realized sample size, which is the input sample size (iss)
-  .iss_length <- iss_length(.rss_length, lfreq_data)
-  
-  # compute average relative bias in pop'n estimates (avg relative bias across length)
-  .bias_length <- bias_length(r_length, ogl)
+  out_stats <- comp_stats(r_age, oga, r_length, ogl, specimen_data, lfreq_data)
   
   # write results ----
   # input sample size
-  vroom::vroom_write(.iss_length, here::here("output", region, paste0(save, "_iss_ln_w140.csv")), delim = ",")    
-  vroom::vroom_write(.iss_age, here::here("output", region, paste0(save, "_iss_ag_w140.csv")), delim = ",")
+  vroom::vroom_write(out_stats$iss_length, here::here("output", region, paste0(save, "_iss_ln_w140.csv")), delim = ",")    
+  vroom::vroom_write(out_stats$iss_age, here::here("output", region, paste0(save, "_iss_ag_w140.csv")), delim = ",")
   
   # if desired, write out additional statistics
   if(isTRUE(save_stats)){
@@ -1432,24 +1025,20 @@ srvy_iss_w140 <- function(iters = 1,
     vroom::vroom_write(oga, file = here::here("output", region, paste0(save, "_base_age_w140.csv")), delim = ",")
     vroom::vroom_write(ogl, file = here::here("output", region, paste0(save, "_base_length_w140.csv")), delim = ",")
     # bias in age & length pop'n
-    vroom::vroom_write(.bias_age, file = here::here("output", region, paste0(save, "_bias_age_w140.csv")), delim = ",")
-    vroom::vroom_write(.bias_length, file = here::here("output", region, paste0(save, "_bias_length_w140.csv")), delim = ",")
+    vroom::vroom_write(out_stats$bias_age, file = here::here("output", region, paste0(save, "_bias_age_w140.csv")), delim = ",")
+    vroom::vroom_write(out_stats$bias_length, file = here::here("output", region, paste0(save, "_bias_length_w140.csv")), delim = ",")
     # mean length-at-age and sd (if using gap fcns)
-    if(isTRUE(use_gapindex)){
+    if("mean_length" %in% names(r_age)){
       vroom::vroom_write(.mean_length, file = here::here("output", region, paste0(save, "_mean_length_w140.csv")), delim = ",")
     }
   }
   
   # if desired, write out bootstrapped age & length pop'n and realized sample sizes
   if(isTRUE(save_interm)) {
-    r_length %>%
-      tidytable::map_df(., ~as.data.frame(.x), .id = "sim") %>% 
-      vroom::vroom_write(here::here("output", region, paste0(save, "_resampled_length_w140.csv")), delim = ",")
-    r_age %>%
-      tidytable::map_df(., ~as.data.frame(.x), .id = "sim") %>% 
-      vroom::vroom_write(here::here("output", region, paste0(save, "_resampled_age_w140.csv")), delim = ",")
-    vroom::vroom_write(.rss_length, here::here("output", region, paste0(save, "_iter_rss_ln_w140.csv")), delim = ",")
-    vroom::vroom_write(.rss_age, here::here("output", region, paste0(save, "_iter_rss_ag_w140.csv")), delim = ",")
+    vroom::vroom_write(r_length, here::here("output", region, paste0(save, "_resampled_length_w140.csv")), delim = ",")
+    vroom::vroom_write(r_age, here::here("output", region, paste0(save, "_resampled_age_w140.csv")), delim = ",")
+    vroom::vroom_write(out_stats$rss_length, here::here("output", region, paste0(save, "_iter_rss_ln_w140.csv")), delim = ",")
+    vroom::vroom_write(out_stats$rss_age, here::here("output", region, paste0(save, "_iter_rss_ag_w140.csv")), delim = ",")
   }
   
 }
@@ -1557,323 +1146,116 @@ srvy_iss_ai_subreg <- function(iters = 1,
     tidytable::select(-design_year, -area, -area_id, -subarea_name)  -> .cpue_data
   
   # get original age/length pop'n values ----
+  subregion = c('wai', 'cai', 'eai', 'sbs')
+  og <- purrr::map(1:length(subregion), ~ srvy_comps(lfreq_data = subset(.lfreq_data, .lfreq_data$region == subregion[.]), 
+                                                     specimen_data = subset(.specimen_data, .specimen_data$region == subregion[.]), 
+                                                     cpue_data = subset(.cpue_data, .cpue_data$region == subregion[.]), 
+                                                     strata_data = strata_data,
+                                                     r_t = r_t,
+                                                     yrs = yrs, 
+                                                     bin = bin,
+                                                     boot_hauls = FALSE, 
+                                                     boot_lengths = FALSE, 
+                                                     boot_ages = FALSE,
+                                                     al_var = FALSE,
+                                                     al_var_ann = FALSE,
+                                                     age_err = FALSE,
+                                                     use_gapindex = use_gapindex,
+                                                     by_strata = by_strata,
+                                                     global = global))
   
-  # western ai
-  og_w <- srvy_comps(lfreq_data = subset(.lfreq_data, .lfreq_data$region == "wai"), 
-                     specimen_data = subset(.specimen_data, .specimen_data$region == "wai"), 
-                     cpue_data = subset(.cpue_data, .cpue_data$region == "wai"), 
-                     strata_data = strata_data,
-                     r_t = r_t,
-                     yrs = yrs, 
-                     bin = bin,
-                     boot_hauls = FALSE, 
-                     boot_lengths = FALSE, 
-                     boot_ages = FALSE,
-                     al_var = FALSE,
-                     al_var_ann = FALSE,
-                     age_err = FALSE,
-                     use_gapindex = use_gapindex,
-                     by_strata = by_strata,
-                     global = global)
+  oga <- do.call(mapply, c(list, og, SIMPLIFY = FALSE))$age %>% 
+    tidytable::map_df(., ~as.data.frame(.x), .id = "region") %>% 
+    tidytable::mutate(region = case_when(region == 1 ~ subregion[1],
+                                         region == 2 ~ subregion[2],
+                                         region == 3 ~ subregion[3],
+                                         region == 4 ~ subregion[4])) %>% 
+    tidytable::bind_rows(do.call(mapply, c(list, og, SIMPLIFY = FALSE))$age %>% 
+                           tidytable::map_df(., ~as.data.frame(.x), .id = "region") %>% 
+                           tidytable::summarize(agepop = sum(agepop),
+                                                mean_length = mean_length * agepop / sum(agepop),
+                                                sd_length = sd_length * agepop / sum(agepop),
+                                                .by = c(year, species_code, sex, age)) %>% 
+                           tidytable::mutate(region = 'ai'))
   
-  oga_w <- og_w$age
-  ogl_w <- og_w$length
-  
-  # central ai
-  og_c <- srvy_comps(lfreq_data = subset(.lfreq_data, .lfreq_data$region == "cai"), 
-                     specimen_data = subset(.specimen_data, .specimen_data$region == "cai"), 
-                     cpue_data = subset(.cpue_data, .cpue_data$region == "cai"), 
-                     strata_data = strata_data,
-                     r_t = r_t,
-                     yrs = yrs, 
-                     bin = bin,
-                     boot_hauls = FALSE, 
-                     boot_lengths = FALSE, 
-                     boot_ages = FALSE,
-                     al_var = FALSE,
-                     al_var_ann = FALSE,
-                     age_err = FALSE,
-                     use_gapindex = use_gapindex,
-                     by_strata = by_strata,
-                     global = global)
-  
-  oga_c <- og_c$age
-  ogl_c <- og_c$length
-  
-  # eastern ai
-  og_e <- srvy_comps(lfreq_data = subset(.lfreq_data, .lfreq_data$region == "eai"), 
-                     specimen_data = subset(.specimen_data, .specimen_data$region == "eai"), 
-                     cpue_data = subset(.cpue_data, .cpue_data$region == "eai"), 
-                     strata_data = strata_data,
-                     r_t = r_t,
-                     yrs = yrs, 
-                     bin = bin,
-                     boot_hauls = FALSE, 
-                     boot_lengths = FALSE, 
-                     boot_ages = FALSE,
-                     al_var = FALSE,
-                     al_var_ann = FALSE,
-                     age_err = FALSE,
-                     use_gapindex = use_gapindex,
-                     by_strata = by_strata,
-                     global = global)
-  
-  oga_e <- og_e$age
-  ogl_e <- og_e$length
-  
-  # southern bering sea
-  og_s <- srvy_comps(lfreq_data = subset(.lfreq_data, .lfreq_data$region == "sbs"), 
-                     specimen_data = subset(.specimen_data, .specimen_data$region == "sbs"), 
-                     cpue_data = subset(.cpue_data, .cpue_data$region == "sbs"), 
-                     strata_data = strata_data,
-                     r_t = r_t,
-                     yrs = yrs, 
-                     bin = bin,
-                     boot_hauls = FALSE, 
-                     boot_lengths = FALSE, 
-                     boot_ages = FALSE,
-                     al_var = FALSE,
-                     al_var_ann = FALSE,
-                     age_err = FALSE,
-                     use_gapindex = use_gapindex,
-                     by_strata = by_strata,
-                     global = global)
-  
-  oga_s <- og_s$age
-  ogl_s <- og_s$length
-  
-  # compile og results 
-  oga <- oga_w %>% 
-    tidytable::mutate(region = "wai") %>% 
-    tidytable::bind_rows(oga_c %>% 
-                           tidytable::mutate(region = "cai")) %>% 
-    tidytable::bind_rows(oga_e %>% 
-                           tidytable::mutate(region = "eai")) %>% 
-    tidytable::bind_rows(oga_s %>% 
-                           tidytable::mutate(region = "sbs")) %>% 
-    tidytable::bind_rows(oga_w %>% 
-                           tidytable::rename(agepop_w = agepop) %>% 
-                           tidytable::full_join(oga_c %>% 
-                                                  tidytable::rename(agepop_c = agepop)) %>% 
-                           tidytable::full_join(oga_e %>% 
-                                                  tidytable::rename(agepop_e = agepop)) %>% 
-                           tidytable::full_join(oga_s %>% 
-                                                  tidytable::rename(agepop_s = agepop)) %>% 
-                           tidytable::replace_na(list(agepop_w = 0)) %>% 
-                           tidytable::replace_na(list(agepop_c = 0)) %>% 
-                           tidytable::replace_na(list(agepop_e = 0)) %>% 
-                           tidytable::replace_na(list(agepop_s = 0)) %>%
-                           tidytable::mutate(agepop = agepop_w + agepop_c + agepop_e + agepop_s,
-                                             region = 'ai') %>% 
-                           tidytable::select(year, species_code, sex, age, agepop, region))
-  
-  ogl <- ogl_w %>% 
-    tidytable::mutate(region = "wai") %>% 
-    tidytable::bind_rows(ogl_c %>% 
-                           tidytable::mutate(region = "cai")) %>% 
-    tidytable::bind_rows(ogl_e %>% 
-                           tidytable::mutate(region = "eai")) %>% 
-    tidytable::bind_rows(ogl_s %>% 
-                           tidytable::mutate(region = "sbs")) %>% 
-    tidytable::bind_rows(ogl_w %>% 
-                           tidytable::rename(abund_w = abund) %>% 
-                           tidytable::full_join(ogl_c %>% 
-                                                  tidytable::rename(abund_c = abund)) %>% 
-                           tidytable::full_join(ogl_e %>% 
-                                                  tidytable::rename(abund_e = abund)) %>% 
-                           tidytable::full_join(ogl_s %>% 
-                                                  tidytable::rename(abund_s = abund)) %>% 
-                           tidytable::replace_na(list(abund_w = 0)) %>% 
-                           tidytable::replace_na(list(abund_c = 0)) %>% 
-                           tidytable::replace_na(list(abund_e = 0)) %>% 
-                           tidytable::replace_na(list(abund_s = 0)) %>% 
-                           tidytable::mutate(abund = abund_w + abund_c + abund_e + abund_s,
-                                             region = 'ai') %>% 
-                           tidytable::select(year, species_code, sex, length, abund, region))
+  ogl <- do.call(mapply, c(list, og, SIMPLIFY = FALSE))$length %>% 
+    tidytable::map_df(., ~as.data.frame(.x), .id = "region") %>% 
+    tidytable::mutate(region = case_when(region == 1 ~ subregion[1],
+                                         region == 2 ~ subregion[2],
+                                         region == 3 ~ subregion[3],
+                                         region == 4 ~ subregion[4])) %>% 
+    tidytable::bind_rows(do.call(mapply, c(list, og, SIMPLIFY = FALSE))$length %>% 
+                           tidytable::map_df(., ~as.data.frame(.x), .id = "region") %>% 
+                           tidytable::summarize(abund = sum(abund),
+                                                .by = c(year, species_code, sex, length)) %>% 
+                           tidytable::mutate(region = 'ai'))
   
   # run resampling iterations ----
-  # western ai
-  rr <- purrr::map(1:iters, ~ srvy_comps(lfreq_data = subset(.lfreq_data, .lfreq_data$region == "wai"), 
-                                         specimen_data = subset(.specimen_data, .specimen_data$region == "wai"), 
-                                         cpue_data = subset(.cpue_data, .cpue_data$region == "wai"), 
-                                         strata_data = strata_data,
-                                         r_t = r_t,
-                                         yrs = yrs, 
-                                         bin = bin,
-                                         boot_hauls = boot_hauls, 
-                                         boot_lengths = boot_lengths, 
-                                         boot_ages = boot_ages,
-                                         al_var = al_var,
-                                         al_var_ann = al_var_ann,
-                                         age_err = age_err))
+  rr <- purrr::map(1:iters, ~ purrr::map(1:length(subregion), ~ srvy_comps(lfreq_data = subset(.lfreq_data, .lfreq_data$region == subregion[.]), 
+                                                                           specimen_data = subset(.specimen_data, .specimen_data$region == subregion[.]), 
+                                                                           cpue_data = subset(.cpue_data, .cpue_data$region == subregion[.]), 
+                                                                           strata_data = strata_data,
+                                                                           r_t = r_t,
+                                                                           yrs = yrs, 
+                                                                           bin = bin,
+                                                                           boot_hauls = boot_hauls, 
+                                                                           boot_lengths = boot_lengths, 
+                                                                           boot_ages = boot_ages,
+                                                                           al_var = al_var,
+                                                                           al_var_ann = al_var_ann,
+                                                                           age_err = age_err,
+                                                                           use_gapindex = use_gapindex,
+                                                                           by_strata = by_strata,
+                                                                           global = global)))
   
-  r_age_w <- do.call(mapply, c(list, rr, SIMPLIFY = FALSE))$age
-  r_length_w <- do.call(mapply, c(list, rr, SIMPLIFY = FALSE))$length
-  
-  # central ai
-  rr <- purrr::map(1:iters, ~ srvy_comps(lfreq_data = subset(.lfreq_data, .lfreq_data$region == "cai"), 
-                                         specimen_data = subset(.specimen_data, .specimen_data$region == "cai"), 
-                                         cpue_data = subset(.cpue_data, .cpue_data$region == "cai"), 
-                                         strata_data = strata_data,
-                                         r_t = r_t,
-                                         yrs = yrs, 
-                                         bin = bin,
-                                         boot_hauls = boot_hauls, 
-                                         boot_lengths = boot_lengths, 
-                                         boot_ages = boot_ages,
-                                         al_var = al_var,
-                                         al_var_ann = al_var_ann,
-                                         age_err = age_err))
-  
-  r_age_c <- do.call(mapply, c(list, rr, SIMPLIFY = FALSE))$age
-  r_length_c <- do.call(mapply, c(list, rr, SIMPLIFY = FALSE))$length
-  
-  # eastern ai
-  rr <- purrr::map(1:iters, ~ srvy_comps(lfreq_data = subset(.lfreq_data, .lfreq_data$region == "eai"), 
-                                         specimen_data = subset(.specimen_data, .specimen_data$region == "eai"), 
-                                         cpue_data = subset(.cpue_data, .cpue_data$region == "eai"), 
-                                         strata_data = strata_data,
-                                         r_t = r_t,
-                                         yrs = yrs, 
-                                         bin = bin,
-                                         boot_hauls = boot_hauls, 
-                                         boot_lengths = boot_lengths, 
-                                         boot_ages = boot_ages,
-                                         al_var = al_var,
-                                         al_var_ann = al_var_ann,
-                                         age_err = age_err))
-  
-  r_age_e <- do.call(mapply, c(list, rr, SIMPLIFY = FALSE))$age
-  r_length_e <- do.call(mapply, c(list, rr, SIMPLIFY = FALSE))$length
-  
-  # southern bering sea
-  rr <- purrr::map(1:iters, ~ srvy_comps(lfreq_data = subset(.lfreq_data, .lfreq_data$region == "sbs"), 
-                                         specimen_data = subset(.specimen_data, .specimen_data$region == "sbs"), 
-                                         cpue_data = subset(.cpue_data, .cpue_data$region == "sbs"), 
-                                         strata_data = strata_data,
-                                         r_t = r_t,
-                                         yrs = yrs, 
-                                         bin = bin,
-                                         boot_hauls = boot_hauls, 
-                                         boot_lengths = boot_lengths, 
-                                         boot_ages = boot_ages,
-                                         al_var = al_var,
-                                         al_var_ann = al_var_ann,
-                                         age_err = age_err))
-  
-  r_age_s <- do.call(mapply, c(list, rr, SIMPLIFY = FALSE))$age
-  r_length_s <- do.call(mapply, c(list, rr, SIMPLIFY = FALSE))$length
-  
-  # combine subregions with ai-wide
-  r_age <- r_age_w %>% 
+  # get resampled age pop'n
+  r_age <- purrr::map(1:iters, ~(do.call(mapply, c(list, rr[[.]], SIMPLIFY = FALSE))$age %>% 
+                                   tidytable::map_df(., ~as.data.frame(.x), .id = "region") %>% 
+                                   tidytable::mutate(region = case_when(region == 1 ~ subregion[1],
+                                                                        region == 2 ~ subregion[2],
+                                                                        region == 3 ~ subregion[3],
+                                                                        region == 4 ~ subregion[4])))) %>% 
     tidytable::map_df(., ~as.data.frame(.x), .id = "sim") %>% 
-    tidytable::mutate(region = 'wai') %>% 
-    tidytable::bind_rows(r_age_c %>% 
+    # sum across subregions to get region age pop'n
+    tidytable::bind_rows(purrr::map(1:iters, ~(do.call(mapply, c(list, rr[[.]], SIMPLIFY = FALSE))$age %>% 
+                                                 tidytable::map_df(., ~as.data.frame(.x), .id = "region") %>% 
+                                                 tidytable::mutate(region = case_when(region == 1 ~ subregion[1],
+                                                                                      region == 2 ~ subregion[2],
+                                                                                      region == 3 ~ subregion[3],
+                                                                                      region == 4 ~ subregion[4])))) %>% 
                            tidytable::map_df(., ~as.data.frame(.x), .id = "sim") %>% 
-                           tidytable::mutate(region = 'cai')) %>% 
-    tidytable::bind_rows(r_age_e %>% 
-                           tidytable::map_df(., ~as.data.frame(.x), .id = "sim") %>% 
-                           tidytable::mutate(region = 'eai')) %>% 
-    tidytable::bind_rows(r_age_s %>% 
-                           tidytable::map_df(., ~as.data.frame(.x), .id = "sim") %>% 
-                           tidytable::mutate(region = 'sbs')) %>% 
-    tidytable::bind_rows(r_age_w %>% 
-                           tidytable::map_df(., ~as.data.frame(.x), .id = "sim") %>% 
-                           tidytable::rename(agepop_w = agepop) %>% 
-                           tidytable::full_join(r_age_c %>% 
-                                                  tidytable::map_df(., ~as.data.frame(.x), .id = "sim") %>% 
-                                                  tidytable::rename(agepop_c = agepop)) %>% 
-                           tidytable::full_join(r_age_e %>% 
-                                                  tidytable::map_df(., ~as.data.frame(.x), .id = "sim") %>% 
-                                                  tidytable::rename(agepop_e = agepop)) %>% 
-                           tidytable::full_join(r_age_s %>% 
-                                                  tidytable::map_df(., ~as.data.frame(.x), .id = "sim") %>% 
-                                                  tidytable::rename(agepop_s = agepop)) %>% 
-                           tidytable::replace_na(list(agepop_w = 0)) %>% 
-                           tidytable::replace_na(list(agepop_c = 0)) %>% 
-                           tidytable::replace_na(list(agepop_e = 0)) %>% 
-                           tidytable::replace_na(list(agepop_s = 0)) %>% 
-                           tidytable::mutate(agepop = agepop_w + agepop_c + agepop_e + agepop_s,
-                                             region = 'ai') %>% 
-                           tidytable::select(sim, year, species_code, sex, age, agepop, region)) %>% 
-    split(., .[,'sim'])
-  
-  r_length <- r_length_w %>% 
+                           tidytable::summarise(agepop = sum(agepop),
+                                                mean_length = sum(mean_length * agepop) / sum(agepop),
+                                                sd_length = sum(sd_length * agepop) / sum(agepop),
+                                                .by = c(sim, year, species_code, sex, age)) %>% 
+                           tidytable::mutate(region = 'ai'))
+  # get resampled length pop'n
+  r_length <- purrr::map(1:iters, ~(do.call(mapply, c(list, rr[[.]], SIMPLIFY = FALSE))$length %>% 
+                                      tidytable::map_df(., ~as.data.frame(.x), .id = "region") %>% 
+                                      tidytable::mutate(region = case_when(region == 1 ~ subregion[1],
+                                                                           region == 2 ~ subregion[2],
+                                                                           region == 3 ~ subregion[3],
+                                                                           region == 4 ~ subregion[4])))) %>% 
     tidytable::map_df(., ~as.data.frame(.x), .id = "sim") %>% 
-    tidytable::mutate(region = 'wai') %>% 
-    tidytable::bind_rows(r_length_c %>% 
+    # sum across subregions to get region length pop'n
+    tidytable::bind_rows(purrr::map(1:iters, ~(do.call(mapply, c(list, rr[[.]], SIMPLIFY = FALSE))$length %>% 
+                                                 tidytable::map_df(., ~as.data.frame(.x), .id = "region") %>% 
+                                                 tidytable::mutate(region = case_when(region == 1 ~ subregion[1],
+                                                                                      region == 2 ~ subregion[2],
+                                                                                      region == 3 ~ subregion[3],
+                                                                                      region == 4 ~ subregion[4])))) %>% 
                            tidytable::map_df(., ~as.data.frame(.x), .id = "sim") %>% 
-                           tidytable::mutate(region = 'cai')) %>% 
-    tidytable::bind_rows(r_length_e %>% 
-                           tidytable::map_df(., ~as.data.frame(.x), .id = "sim") %>% 
-                           tidytable::mutate(region = 'eai')) %>% 
-    tidytable::bind_rows(r_length_s %>% 
-                           tidytable::map_df(., ~as.data.frame(.x), .id = "sim") %>% 
-                           tidytable::mutate(region = 'sbs')) %>% 
-    tidytable::bind_rows(r_length_w %>% 
-                           tidytable::map_df(., ~as.data.frame(.x), .id = "sim") %>% 
-                           tidytable::rename(abund_w = abund) %>% 
-                           tidytable::full_join(r_length_c %>% 
-                                                  tidytable::map_df(., ~as.data.frame(.x), .id = "sim") %>% 
-                                                  tidytable::rename(abund_c = abund)) %>% 
-                           tidytable::full_join(r_length_e %>% 
-                                                  tidytable::map_df(., ~as.data.frame(.x), .id = "sim") %>% 
-                                                  tidytable::rename(abund_e = abund)) %>% 
-                           tidytable::full_join(r_length_s %>% 
-                                                  tidytable::map_df(., ~as.data.frame(.x), .id = "sim") %>% 
-                                                  tidytable::rename(abund_s = abund)) %>% 
-                           tidytable::replace_na(list(abund_w = 0)) %>% 
-                           tidytable::replace_na(list(abund_c = 0)) %>% 
-                           tidytable::replace_na(list(abund_e = 0)) %>% 
-                           tidytable::replace_na(list(abund_s = 0)) %>% 
-                           tidytable::mutate(abund = abund_w + abund_c + abund_e + abund_s,
-                                             region = 'ai') %>% 
-                           tidytable::select(sim, year, species_code, sex, length, abund, region)) %>% 
-    split(., .[,'sim'])
+                           tidytable::summarise(abund = sum(abund),
+                                                .by = c(sim, year, species_code, sex, length)) %>% 
+                           tidytable::mutate(region = 'ai')) 
   
   # compute statistics ----
-  # compute realized sample size of bootstrapped age/length
-  r_age %>%
-    tidytable::map(., ~rss_age_reg(sim_data = .x, og_data = oga)) %>%
-    tidytable::map_df(., ~as.data.frame(.x), .id = "sim") %>% 
-    tidytable::mutate(sex_desc = case_when(sex == 0 ~ 'total_pre',
-                                           sex == 1 ~ 'male',
-                                           sex == 2 ~ 'female',
-                                           sex == 12 ~ 'female_male',
-                                           sex == 4 ~ 'total_post')) -> .rss_age
-  
-  r_length %>%
-    tidytable::map(., ~rss_length_reg(sim_data = .x, og_data = ogl)) %>%
-    tidytable::map_df(., ~as.data.frame(.x), .id = "sim") %>% 
-    tidytable::mutate(sex_desc = case_when(sex == 0 ~ 'total_pre',
-                                           sex == 1 ~ 'male',
-                                           sex == 2 ~ 'female',
-                                           sex == 12 ~ 'female_male',
-                                           sex == 4 ~ 'total_post')) -> .rss_length
-  
-  # age comps: 
-  # compute harmonic mean of iterated realized sample size, which is the input sample size (iss)
-  .iss_age <- iss_age_reg(.rss_age, .specimen_data, region)
-  
-  # compute average relative bias in pop'n estimates (avg relative bias across age)
-  .bias_age <- bias_age_reg(r_age, oga)
-  
-  # compute mean length-at-age and sd (if using gap fcns)
-  if(isTRUE(use_gapindex)){
-    .mean_length <- grwth_stats_reg(r_age, oga)
-  }
-  
-  # length comps: 
-  # compute harmonic mean of iterated realized sample size, which is the input sample size (iss)
-  .iss_length <- iss_length_reg(.rss_length, .lfreq_data, region)
-  
-  # compute average relative bias in pop'n estimates (avg relative bias across length)
-  .bias_length <- bias_length_reg(r_length, ogl)
+  out_stats <- comp_stats(r_age, oga, r_length, ogl, .specimen_data, .lfreq_data, region)
   
   # write results ----
   # input sample size
-  vroom::vroom_write(.iss_length, here::here("output", region, paste0(save, "_iss_ln_ai_subreg.csv")), delim = ",")    
-  vroom::vroom_write(.iss_age, here::here("output", region, paste0(save, "_iss_ag_ai_subreg.csv")), delim = ",")
+  vroom::vroom_write(out_stats$iss_length, here::here("output", region, paste0(save, "_iss_ln_ai_subreg.csv")), delim = ",")    
+  vroom::vroom_write(out_stats$iss_age, here::here("output", region, paste0(save, "_iss_ag_ai_subreg.csv")), delim = ",")
   
   # if desired, write out additional statistics
   if(isTRUE(save_stats)){
@@ -1884,21 +1266,17 @@ srvy_iss_ai_subreg <- function(iters = 1,
     vroom::vroom_write(.bias_age, file = here::here("output", region, paste0(save, "_bias_age_ai_subreg.csv")), delim = ",")
     vroom::vroom_write(.bias_length, file = here::here("output", region, paste0(save, "_bias_length_ai_subreg.csv")), delim = ",")
     # mean length-at-age and sd (if using gap fcns)
-    if(isTRUE(use_gapindex)){
-      vroom::vroom_write(.mean_length, file = here::here("output", region, paste0(save, "_mean_length_ai_subreg.csv")), delim = ",")
+    if("mean_length" %in% names(r_age)){
+      vroom::vroom_write(out_stats$mean_length, file = here::here("output", region, paste0(save, "_mean_length_ai_subreg.csv")), delim = ",")
     }
   }
   
   # if desired, write out bootstrapped age & length pop'n and realized sample sizes
   if(isTRUE(save_interm)) {
-    r_length %>%
-      tidytable::map_df(., ~as.data.frame(.x), .id = "sim") %>% 
-      vroom::vroom_write(here::here("output", region, paste0(save, "_resampled_length_ai_subreg.csv")), delim = ",")
-    r_age %>%
-      tidytable::map_df(., ~as.data.frame(.x), .id = "sim") %>% 
-      vroom::vroom_write(here::here("output", region, paste0(save, "_resampled_age_ai_subreg.csv")), delim = ",")
-    vroom::vroom_write(.rss_length, here::here("output", region, paste0(save, "_iter_rss_ln._ai_subregcsv")), delim = ",")
-    vroom::vroom_write(.rss_age, here::here("output", region, paste0(save, "_iter_rss_ag_ai_subreg.csv")), delim = ",")
+    vroom::vroom_write(r_length, here::here("output", region, paste0(save, "_resampled_length_ai_subreg.csv")), delim = ",")
+    vroom::vroom_write(r_age, here::here("output", region, paste0(save, "_resampled_age_ai_subreg.csv")), delim = ",")
+    vroom::vroom_write(out_stats$rss_length, here::here("output", region, paste0(save, "_iter_rss_ln._ai_subregcsv")), delim = ",")
+    vroom::vroom_write(out_stats$rss_age, here::here("output", region, paste0(save, "_iter_rss_ag_ai_subreg.csv")), delim = ",")
   }
   
 }
@@ -1977,64 +1355,28 @@ srvy_iss_caal <- function(iters = 1,
                                               al_var_ann = al_var_ann,
                                               age_err = age_err))
   
-  r_caal <- do.call(mapply, c(list, rr, SIMPLIFY = FALSE))$caal
+  r_caal <- do.call(mapply, c(list, rr, SIMPLIFY = FALSE))$caal %>%
+    tidytable::map_df(., ~as.data.frame(.x), .id = "sim")
   
   # compute statistics ----
-  # compute realized sample size of bootstrapped age/length
-  r_caal %>%
-    tidytable::map(., ~rss_caal(sim_data = .x, og_data = ogcaal)) %>%
-    tidytable::map_df(., ~as.data.frame(.x), .id = "sim") %>% 
-    tidytable::mutate(sex_desc = case_when(sex == 0 ~ 'total',
-                                           sex == 1 ~ 'male',
-                                           sex == 2 ~ 'female')) -> .rss_caal
-  
-  # compute harmonic mean of iterated realized sample size, which is the input sample size (iss)
-  .rss_caal %>% 
-    tidytable::summarise(iss = psych::harmonic.mean(rss, na.rm = TRUE, zero = FALSE),
-                         .by = c(year, species_code, sex, sex_desc, length)) %>% 
-    # compute average relative bias in pop'n estimates (avg relative bias across age or length)
-    tidytable::left_join(r_caal %>%
-                           tidytable::map_df(., ~as.data.frame(.x), .id = "sim") %>% 
-                           tidytable::left_join(ogcaal %>% 
-                                                  tidytable::rename(og_caal = caal)) %>% 
-                           tidytable::mutate(bias = (caal - og_caal)) %>% 
-                           tidytable::drop_na() %>%
-                           tidytable::summarise(bias = mean(bias, na.rm = TRUE), .by = c(year, species_code, sex, length))) %>% 
-    # add nominal sample size (nss)
-    tidytable::left_join(specimen_data %>% 
-                           tidytable::drop_na(age) %>% 
-                           tidytable::filter(sex != 3) %>% 
-                           tidytable::summarise(nss = .N, .by = c(year, species_code, sex, length)) %>% 
-                           tidytable::bind_rows(specimen_data %>% 
-                                                  tidytable::drop_na(age) %>% 
-                                                  tidytable::summarise(nss = .N, .by = c(year, species_code, length)) %>% 
-                                                  tidytable::mutate(sex = 0)) %>% 
-                           tidytable::bind_rows(specimen_data %>% 
-                                                  tidytable::drop_na(age) %>% 
-                                                  tidytable::summarise(nss = .N, .by = c(year, species_code, length)) %>% 
-                                                  tidytable::mutate(sex = 4)) %>% 
-                           tidytable::bind_rows(specimen_data %>% 
-                                                  tidytable::drop_na(age) %>% 
-                                                  tidytable::filter(sex != 3) %>% 
-                                                  tidytable::summarise(nss = .N, .by = c(year, species_code, length)) %>% 
-                                                  tidytable::mutate(sex = 12))) -> iss_caal
+  out_stats <- comp_stats_caal(r_caal, ogcaal, specimen_data)
   
   # write results ----
   # input sample size   
-  vroom::vroom_write(iss_caal, here::here("output", region, paste0(save, "_iss_caal.csv")), delim = ",")
+  vroom::vroom_write(out_stats$iss_caal, here::here("output", region, paste0(save, "_iss_caal.csv")), delim = ",")
   
   # if desired, write out additional statistics
   if(isTRUE(save_stats)){
     # base conditional age-at-length
     vroom::vroom_write(ogcaal, file = here::here("output", region, "base_caal.csv"), delim = ",")
+    # bootstrap bias in conditional age-at-length
+    vroom::vroom_write(out_stats$bias_caal, file = here::here("output", region, "base_caal.csv"), delim = ",")
   }
   
   # if desired, write out bootstrapped conditional age-at-length and realized sample sizes
   if(isTRUE(save_interm)) {
-    r_caal %>%
-      tidytable::map_df(., ~as.data.frame(.x), .id = "sim") %>% 
-      vroom::vroom_write(here::here("output", region, "resampled_caal.csv"), delim = ",")
-    vroom::vroom_write(.rss_caal, here::here("output", region, paste0(save, "_iter_rss_caal.csv")), delim = ",")
+    vroom::vroom_write(r_caal, here::here("output", region, "resampled_caal.csv"), delim = ",")
+    vroom::vroom_write(out_stats$rss_caal, here::here("output", region, paste0(save, "_iter_rss_caal.csv")), delim = ",")
   }
 }
 
