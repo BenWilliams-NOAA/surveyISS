@@ -4,10 +4,8 @@
 #' @param cpue cpue data
 #' @param lngs complete lengths by year
 #'
-#' @return
 #' @export lpop
 #'
-#' @examples
 lpop <- function(lcomp, 
                  cpue, 
                  lngs) {
@@ -58,17 +56,16 @@ lpop <- function(lcomp,
   
 }
 
-
-#' population at length following gapindex package
+#' Function to compute population at length aligned with gapindex package.
 #'
-#' @param lfreq_un uncounted length frequency data
-#' @param cpue cpue data
-#' @param by_strata are the results to be given by strata, or summed to region level (default = FALSE)
+#' @param lfreq_un expanded length frequency data (one row per sample) input dataframe
+#' @param cpue_data catch-per-unit effort input dataframe
+#' @param by_strata Boolean. Are the results to be given at strata level, or summed to region level (default = FALSE)
 #'
-#' @return
+#' @return dataframe of population at length
+#' 
 #' @export lpop_gap
 #'
-#' @examples
 lpop_gap <- function(lfreq_un, 
                      cpue,
                      by_strata = FALSE) {
