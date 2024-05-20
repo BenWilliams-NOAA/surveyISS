@@ -1,28 +1,26 @@
-#' primary survey expansion for age/length pop'n numbers function
+#' Primary function to resample data and compute length and age expansion
 #'
-#' @param lfreq_data length frequency data
-#' @param specimen_data age-length specimen data
-#' @param cpue_data abundance by length data 
-#' @param strata_data strata and associated area 
-#' @param r_t reader/tester ageing data 
-#' @param yrs age filter returns years >= (default = NULL)
-#' @param bin length bin size (default = 1 cm)
-#' @param boot_hauls switch for resampling hauls (default = FALSE)
-#' @param boot_lengths switch for resampling lengths (default = FALSE)
-#' @param boot_ages switch for resampling ages (default = FALSE)
-#' @param al_var switch for including age-length variability (default = FALSE)
-#' @param al_var_ann resample age-length annually or pooled across years (default = FALSE)
-#' @param age_err switch for including ageing error (default = FALSE)
-#' @param use_gapindex use functions derived from gapindex package (default = TRUE)
-#' @param by_strata should length/age pop'n values be computed at stratum level in gap fcns (default = FALSE)
-#' @param global fills in missing length bins with global alk in gap fcns (default = FALSE)
+#' @param lfreq_data  length frequency input dataframe
+#' @param specimen_data age-length specimen input dataframe
+#' @param cpue_data catch-per-unit effort input dataframe
+#' @param strata_data strata id and area size input dataframe
+#' @param r_t age reader-tester input dataframe
+#' @param yrs any year filter >= (default = NULL)
+#' @param bin bin size (default = 1 cm)
+#' @param boot_hauls Boolean. Resample hauls w/replacement? (default = FALSE)
+#' @param boot_lengths Boolean. Resample length frequency w/replacement? (default = FALSE)
+#' @param boot_ages Boolean. Resample ages w/replacement? (default = FALSE)
+#' @param al_var Boolean. Include age-length variability in resampled age data? (default = FALSE)
+#' @param al_var_ann Boolean. Resample age-length variability annually or pooled across years? (default = FALSE)
+#' @param age_err Boolean. Include ageing error in resampled age data? (default = FALSE)
+#' @param use_gapindex Boolean. Use functions derived from gapindex package? (default = TRUE)
+#' @param by_strata Boolean. Should length/age pop'n values be computed at stratum level in gap fcns? (default = FALSE)
+#' @param global Boolean. Fill in missing length bins with global age-lenth key in gap fcns? (default = FALSE)
 #' 
-#' @return
+#' @return List with dataframes of population numbers at length (.lpop) and age (.apop).
+#' 
 #' @export srvy_comps
 #'
-#' @examples
-#' 
-
 srvy_comps <- function(lfreq_data, 
                        specimen_data, 
                        cpue_data, 
@@ -172,35 +170,33 @@ srvy_comps <- function(lfreq_data,
 
 }
 
-#' primary survey expansion for age/length pop'n numbers function
-#'  customized for ai complexes (e.g., blackspotted-rougheye rockfish)
-#'   where length pop'n are estimated at species level, 
-#'   but age pop'n are estimated at complex level
+#' #' Primary function to resample data and compute length and age expansion. Customized for ai complexes 
+#' (i.e., blackspotted-rougheye rockfish) where pop'n at length are estimated at species level, but age specimen
+#' data are combined and pop'n at age are estimated at complex level
 #'
-#' @param lfreq_data length frequency data
-#' @param specimen_data age-length specimen data
-#' @param cpue_data abundance by length data 
-#' @param strata_data strata and associated area 
-#' @param r_t reader/tester ageing data 
-#' @param yrs age filter returns years >= (default = NULL)
-#' @param bin length bin size (default = 1 cm)
-#' @param boot_hauls switch for resampling hauls (default = FALSE)
-#' @param boot_lengths switch for resampling lengths (default = FALSE)
-#' @param boot_ages switch for resampling ages (default = FALSE)
-#' @param al_var switch for including age-length variability (default = FALSE)
-#' @param al_var_ann resample age-length annually or pooled across years
-#' @param age_err switch for including ageing error (default = FALSE)
-#' @param cmplx_code numeric value to replace the individual species codes with a complex code (default = NULL)
-#' @param use_gapindex use functions derived from gapindex package (default = TRUE)
-#' @param by_strata should length/age pop'n values be computed at stratum level in gap fcns (default = FALSE)
-#' @param global fills in missing length bins with global alk in gap fcns (default = FALSE)
-#'
-#' @return
+#' @param lfreq_data  length frequency input dataframe
+#' @param specimen_data age-length specimen input dataframe
+#' @param cpue_data catch-per-unit effort input dataframe
+#' @param strata_data strata id and area size input dataframe
+#' @param r_t age reader-tester input dataframe
+#' @param yrs any year filter >= (default = NULL)
+#' @param bin bin size (default = 1 cm)
+#' @param boot_hauls Boolean. Resample hauls w/replacement? (default = FALSE)
+#' @param boot_lengths Boolean. Resample length frequency w/replacement? (default = FALSE)
+#' @param boot_ages Boolean. Resample ages w/replacement? (default = FALSE)
+#' @param al_var Boolean. Include age-length variability in resampled age data? (default = FALSE)
+#' @param al_var_ann Boolean. Resample age-length variability annually or pooled across years? (default = FALSE)
+#' @param age_err Boolean. Include ageing error in resampled age data? (default = FALSE)
+#' @param cmplx_code Numeric value to replace the individual species codes with a complex code shared across species. (default = 3005012)
+#' @param use_gapindex Boolean. Use functions derived from gapindex package? (default = TRUE)
+#' @param by_strata Boolean. Should length/age pop'n values be computed at stratum level in gap fcns? (default = FALSE)
+#' @param global Boolean. Fill in missing length bins with global age-lenth key in gap fcns? (default = FALSE)
+#' @param cmplx Complex name for saving results. (default = 'bsre')
+#' 
+#' @return List with dataframes of population numbers at length (.lpop) and age (.apop).
+#' 
 #' @export srvy_comps_ai_cmplx
 #'
-#' @examples
-#' 
-
 srvy_comps_ai_cmplx <- function(lfreq_data, 
                                 specimen_data, 
                                 cpue_data, 
@@ -346,25 +342,24 @@ srvy_comps_ai_cmplx <- function(lfreq_data,
   
 }
 
-#' primary survey condition age-at-length function
+#' Primary function to resample data and compute conditional age-at-length
 #'
-#' @param specimen_data age-length specimen data
-#' @param cpue_data abundance by length data 
-#' @param r_t reader/tester ageing data 
-#' @param yrs returns years >= (default = NULL)
-#' @param bin bin size for length data
-#' @param boot_hauls switch for resampling hauls (default = FALSE)
-#' @param boot_ages switch for resampling ages (default = FALSE)
-#' @param al_var switch for including age-length variability (default = FALSE)
-#' @param al_var_ann resample age-length annually or pooled across years
-#' @param age_err switch for including ageing error (default = FALSE)
-#'
-#' @return
-#' @export srvy_comps
-#'
-#' @examples
+#' @param specimen_data age-length specimen input dataframe
+#' @param cpue_data catch-per-unit effort input dataframe
+#' @param strata_data strata id and area size input dataframe
+#' @param r_t age reader-tester input dataframe
+#' @param yrs any year filter >= (default = NULL)
+#' @param bin bin size (default = 1 cm)
+#' @param boot_hauls Boolean. Resample hauls w/replacement? (default = FALSE)
+#' @param boot_ages Boolean. Resample ages w/replacement? (default = FALSE)
+#' @param al_var Boolean. Include age-length variability in resampled age data? (default = FALSE)
+#' @param al_var_ann Boolean. Resample age-length variability annually or pooled across years? (default = FALSE)
+#' @param age_err Boolean. Include ageing error in resampled age data? (default = FALSE)
 #' 
-
+#' @return List with dataframe of conditional age-at-length (.caal).
+#' 
+#' @export srvy_comps_caal
+#'
 srvy_comps_caal <- function(specimen_data, 
                             cpue_data,
                             r_t, 
