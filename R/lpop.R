@@ -56,15 +56,18 @@ lpop <- function(lcomp,
   
 }
 
-#' Function to compute population at length aligned with gapindex package.
+#' Compute population at length
+#' 
+#' @description
+#' Function to expand length frequency data to population at length aligned with gapindex package.
 #'
 #' @param lfreq_un expanded length frequency data (one row per sample) input dataframe
 #' @param cpue_data catch-per-unit effort input dataframe
 #' @param by_strata Boolean. Are the results to be given at strata level, or summed to region level (default = FALSE)
 #'
-#' @return dataframe of population at length
+#' @return dataframe of population at length by year and species
 #' 
-#' @export lpop_gap
+#' @export
 #'
 lpop_gap <- function(lfreq_un, 
                      cpue,
