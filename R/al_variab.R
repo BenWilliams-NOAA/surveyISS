@@ -1,12 +1,10 @@
-#' resample age-length data to implement growth variability
+#' Function to resample age-length data to implement growth variability in age-length key.
 #'
-#' @param age_dat age specimen data 
-#' @param annual resample age data annually or pooled across years
-#'
-#' @return
+#' @param age_dat age-length specimen input dataframe 
+#' @param annual resample age-length data by years or pooled across years
+#' 
 #' @export al_variab
 #'
-#' @examples
 al_variab <- function(age_dat, 
                       annual = FALSE) {
 
@@ -21,16 +19,12 @@ al_variab <- function(age_dat,
                              tidytable::mutate(p_l = lengthed / sum(lengthed), 
                                                .by = c(species_code, year, sex, age)) %>% 
                              tidytable::drop_na() %>% 
-                             dplyr::group_by(species_code, year, sex, age) %>% 
-                             dplyr::mutate(samp_length = rmultinom(1, sum(lengthed), p_l)) %>% 
-                             ungroup %>% 
+                             tidytable::mutate(samp_length = rmultinom(1, sum(lengthed), p_l), .by = c(species_code, year, sex, age)) %>% 
                              tidytable::filter(samp_length[,1] != 0) %>% 
                              tidytable::select(species_code, year, sex, age, length, samp_length) %>% 
                              tidytable::uncount(., samp_length) %>% 
                              tidytable::rename(new_length = length)) %>% 
-      group_by(id) %>% 
-      tidytable::slice_sample(n = 1) %>% 
-      ungroup %>% 
+      tidytable::slice_sample(n = 1, .by = c(id)) %>% 
       tidytable::select(-length, length = new_length) %>% 
       tidytable::select(-id)
   } else{
@@ -44,16 +38,12 @@ al_variab <- function(age_dat,
                              tidytable::mutate(p_l = lengthed / sum(lengthed), 
                                                .by = c(species_code, sex, age)) %>% 
                              tidytable::drop_na() %>% 
-                             dplyr::group_by(species_code, sex, age) %>% 
-                             dplyr::mutate(samp_length = rmultinom(1, sum(lengthed), p_l)) %>% 
-                             ungroup %>% 
+                             tidytable::mutate(samp_length = rmultinom(1, sum(lengthed), p_l), .by = c(species_code, sex, age)) %>% 
                              tidytable::filter(samp_length[,1] != 0) %>% 
                              tidytable::select(species_code, sex, age, length, samp_length) %>% 
                              tidytable::uncount(., samp_length) %>% 
                              tidytable::rename(new_length = length)) %>% 
-      group_by(id) %>% 
-      tidytable::slice_sample(n = 1) %>% 
-      ungroup %>% 
+      tidytable::slice_sample(n = 1, .by = c(id)) %>% 
       tidytable::select(-length, length = new_length) %>% 
       tidytable::select(-id)
   }
