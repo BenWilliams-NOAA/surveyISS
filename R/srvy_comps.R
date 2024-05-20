@@ -1,5 +1,9 @@
-#' Primary function to resample data and compute length and age expansion
+#' Resample data and compute length and age population expansion
 #'
+#' @description
+#' Following Fig. 1 in Hulson and Williams 2024 this function resamples cpue, length frequency,
+#' and age specimen data, adds ageing error and growth variability, and expands these data to population at length and age.
+#' 
 #' @param lfreq_data  length frequency input dataframe
 #' @param specimen_data age-length specimen input dataframe
 #' @param cpue_data catch-per-unit effort input dataframe
@@ -19,7 +23,7 @@
 #' 
 #' @return List with dataframes of population numbers at length (.lpop) and age (.apop).
 #' 
-#' @export srvy_comps
+#' @export
 #'
 srvy_comps <- function(lfreq_data, 
                        specimen_data, 
@@ -170,9 +174,12 @@ srvy_comps <- function(lfreq_data,
 
 }
 
-#' #' Primary function to resample data and compute length and age expansion. Customized for ai complexes 
-#' (i.e., blackspotted-rougheye rockfish) where pop'n at length are estimated at species level, but age specimen
-#' data are combined and pop'n at age are estimated at complex level
+#' Resample data and compute length and age population expansion
+#'
+#' @description
+#' Function to resample data and compute length and age expansion following Fig. 1 in Hulson and Williams 2024. 
+#' Customized for ai complexes (i.e., blackspotted-rougheye rockfish) where population at length are expanded at species 
+#' level, but age specimen data are combined and population at age are expanded at complex level
 #'
 #' @param lfreq_data  length frequency input dataframe
 #' @param specimen_data age-length specimen input dataframe
@@ -195,7 +202,7 @@ srvy_comps <- function(lfreq_data,
 #' 
 #' @return List with dataframes of population numbers at length (.lpop) and age (.apop).
 #' 
-#' @export srvy_comps_ai_cmplx
+#' @export
 #'
 srvy_comps_ai_cmplx <- function(lfreq_data, 
                                 specimen_data, 
@@ -342,8 +349,12 @@ srvy_comps_ai_cmplx <- function(lfreq_data,
   
 }
 
-#' Primary function to resample data and compute conditional age-at-length
+#' Resample data and compute conditional age-at-length
 #'
+#' @description
+#' This function resamples cpue and age specimen data, adds ageing error and growth variability,
+#' and then computes conditional age-at-length.
+#' 
 #' @param specimen_data age-length specimen input dataframe
 #' @param cpue_data catch-per-unit effort input dataframe
 #' @param strata_data strata id and area size input dataframe
@@ -358,7 +369,7 @@ srvy_comps_ai_cmplx <- function(lfreq_data,
 #' 
 #' @return List with dataframe of conditional age-at-length (.caal).
 #' 
-#' @export srvy_comps_caal
+#' @export
 #'
 srvy_comps_caal <- function(specimen_data, 
                             cpue_data,
