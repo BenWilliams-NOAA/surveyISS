@@ -2,10 +2,8 @@
 #'
 #' @param lfreq_un expanded length frequency data
 #'
-#' @return
-#' @export
+#' @export lcomp
 #'
-#' @examples
 lcomp <- function(lfreq_un) {
   
   # compute haul-specific marginal length comp for sex-specific data
