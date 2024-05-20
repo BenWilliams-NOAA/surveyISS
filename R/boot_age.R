@@ -1,10 +1,10 @@
-#' Function to resample age data w/replacement.
+#' Resample age data w/replacement.
 #'
 #' @param age_dat age-length specimen input dataframe
 #'
 #' @return dataframe of resampled sex-length-age by year, species, and haul
 #' 
-#' @export boot_age
+#' @export
 #'
 boot_age <- function(age_dat) {
 

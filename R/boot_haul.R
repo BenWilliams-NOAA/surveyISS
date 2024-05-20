@@ -1,10 +1,10 @@
-#' Function to resample hauls w/replacement.
+#' Resample hauls w/replacement.
 #'
 #' @param cpue_data catch-per-unit effort input dataframe
 #'
 #' @return dataframe of resampled hauls by year and species
 #' 
-#' @export boot_haul
+#' @export
 #'
 boot_haul <- function(cpue_data) {
   

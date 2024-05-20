@@ -1,10 +1,10 @@
-#' Function to resample length frequency data w/replacement.
+#' Resample length frequency data w/replacement.
 #'
 #' @param lfreq_un expanded length frequency data (one row per sample)
 #' 
 #' @return dataframe of resampled length-sex pairs by year, species, and haul
 #'
-#' @export boot_length
+#' @export
 #'
 boot_length <- function(lfreq_un) {
   
