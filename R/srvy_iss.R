@@ -1,31 +1,41 @@
-#' replicate survey input sample size function for production run
-#'
-#' @param iters number of iterations (500 recommended)
-#' @param lfreq_data  input dataframe
-#' @param specimen_data input dataframe
-#' @param cpue_data input dataframe
-#' @param strata_data input dataframe
-#' @param r_t input dataframe
+#' Survey input sample size function for generic run
+#' 
+#' @description
+#' Bootstrap data sources to replicate bottom trawl survey age and length composition
+#' for computation of input sample size
+#' 
+#' @param iters number of iterations (min of 500 recommended for full run)
+#' @param lfreq_data  length frequency input dataframe
+#' @param specimen_data age-length specimen input dataframe
+#' @param cpue_data catch-per-unit effort input dataframe
+#' @param strata_data strata id and area size input dataframe
+#' @param r_t age reader-tester input dataframe
 #' @param yrs any year filter >= (default = NULL)
 #' @param bin bin size (default = 1 cm)
-#' @param boot_hauls resample hauls w/replacement (default = FALSE)
-#' @param boot_lengths resample lengths w/replacement (default = FALSE)
-#' @param boot_ages resample ages w/replacement (default = FALSE)
-#' @param al_var include age-length variability (default = FALSE)
-#' @param al_var_ann resample age-length annually or pooled across years
-#' @param age_err include ageing error (default = FALSE)
-#' @param use_gapindex use functions derived from gapindex package (default = TRUE)
-#' @param by_strata should length/age pop'n values be computed at stratum level in gap fcns (default = FALSE)
-#' @param global fills in missing length bins with global alk in gap fcns (default = FALSE)
-#' @param region region will create a folder and place results in said folder
-#' @param save_interm save the intermediate results: original comps, resampled comps (default = FALSE)
-#' @param save_stats save other statistics: base age/length comps, mean length at age, bootstrap bias (default = FALSE)
-#' @param save name to save output
-#'
-#' @return
+#' @param boot_hauls Boolean. Resample hauls w/replacement? (default = FALSE)
+#' @param boot_lengths Boolean. Resample length frequency w/replacement? (default = FALSE)
+#' @param boot_ages Boolean. Resample ages w/replacement? (default = FALSE)
+#' @param al_var Boolean. Include age-length variability in resampled age data? (default = FALSE)
+#' @param al_var_ann Boolean. Resample age-length variability annually or pooled across years? (default = FALSE)
+#' @param age_err Boolean. Include ageing error in resampled age data? (default = FALSE)
+#' @param use_gapindex Boolean. Use functions derived from gapindex package? (default = TRUE)
+#' @param by_strata Boolean. Should length/age pop'n values be computed at stratum level in gap fcns? (default = FALSE)
+#' @param global Boolean. Fill in missing length bins with global age-lenth key in gap fcns? (default = FALSE)
+#' @param region Region will create a folder and place results in said folder. (default = NULL)
+#' @param save_interm Boolean. Save the intermediate results: resampled age/length comps and realized sample size per iteration? (default = FALSE)
+#' @param save_stats Boolean. Save other statistics: base age/length comps without resampling, mean length-at-age, bootstrap bias? (default = FALSE)
+#' @param save Name to attach to and identify output files. 
+#' 
+#' @return Dataframe of input sample size by year, species (using RACE species codes), sex (0 - combined sex 
+#' with age/length data combined prior to expansion, 1 - males, 2 - females, 3 - unsexed, 12 - female/male
+#' compositions that sum to one across both sexes combined, 4 - combined sex after summing sex-specific age/length
+#' composition after expansion; all with short description IDs in sex_desc column) for age composition (output saved with
+#' 'iss_age' in file name) and length composition (output saved with 'iss_ln' in file name). For comparison, 
+#' nominal sample size ('nss' - the number of age/length samples actually taken) and the number of 
+#' sampled hauls for age/length ('nhls') are included. Will also produce other dataframes if desired 
+#' (see save_intern and save_stats argument descriptions).
+#' 
 #' @export srvy_iss
-#'
-#' @examples
 #'
 srvy_iss <- function(iters = 1, 
                      lfreq_data,
@@ -136,37 +146,48 @@ srvy_iss <- function(iters = 1,
   
 }
 
-#' replicate survey input sample size function for production run for ai stock complexes (e.g., blackspotted-rougheye)
-#'
-#' @param iters number of iterations (500 recommended)
-#' @param lfreq_data  input dataframe
-#' @param specimen_data input dataframe
-#' @param cpue_data input dataframe
-#' @param strata_data input dataframe
-#' @param r_t input dataframe
+#' Survey input sample size function for ai stock complexes (i.e., blackspotted-rougheye rockfish)
+#' 
+#' @description
+#' Bootstrap data sources to replicate bottom trawl survey age and length composition
+#' for computation of input sample size tailored to ai stock complexes (where length composition
+#' is expanded for each individual species in the complex, but age-length specimen data is combined 
+#' across species in the complex prior to age composition expansion)
+#' 
+#' @param iters number of iterations (min of 500 recommended for full run)
+#' @param lfreq_data  length frequency input dataframe
+#' @param specimen_data age-length specimen input dataframe
+#' @param cpue_data catch-per-unit effort input dataframe
+#' @param strata_data strata id and area size input dataframe
+#' @param r_t age reader-tester input dataframe
 #' @param yrs any year filter >= (default = NULL)
 #' @param bin bin size (default = 1 cm)
-#' @param boot_hauls resample hauls w/replacement (default = FALSE)
-#' @param boot_lengths resample lengths w/replacement (default = FALSE)
-#' @param boot_ages resample ages w/replacement (default = FALSE)
-#' @param al_var include age-length variability (default = FALSE)
-#' @param al_var_ann resample age-length annually or pooled across years
-#' @param age_err include ageing error (default = FALSE)
-#' @param cmplx_code numeric value to replace the individual species codes with a complex code (default = NULL)
-#' @param use_gapindex use functions derived from gapindex package (default = TRUE)
-#' @param by_strata should length/age pop'n values be computed at stratum level in gap fcns (default = FALSE)
-#' @param global fills in missing length bins with global alk in gap fcns (default = FALSE)
-#' @param cmplx complex name for saving results (default = NULL)
-#' @param region region will create a folder and place results in said folder (default = 'ai')
-#' @param save_interm save the intermediate results: original comps, resampled comps (default = FALSE)
-#' @param save_stats save other statistics: base age/length comps, mean length at age, bootstrap bias (default = FALSE)
-#' @param save name to save output
-#'
-#' @return
-#' @export srvy_iss_ai_cmplx
-#'
-#' @examples
+#' @param boot_hauls Boolean. Resample hauls w/replacement? (default = FALSE)
+#' @param boot_lengths Boolean. Resample length frequency w/replacement? (default = FALSE)
+#' @param boot_ages Boolean. Resample ages w/replacement? (default = FALSE)
+#' @param al_var Boolean. Include age-length variability in resampled age data? (default = FALSE)
+#' @param al_var_ann Boolean. Resample age-length variability annually or pooled across years? (default = FALSE)
+#' @param age_err Boolean. Include ageing error in resampled age data? (default = FALSE)
+#' @param cmplx_code Numeric value to replace the individual species codes with a complex code shared across species. (default = 3005012)
+#' @param use_gapindex Boolean. Use functions derived from gapindex package? (default = TRUE)
+#' @param by_strata Boolean. Should length/age pop'n values be computed at stratum level in gap fcns? (default = FALSE)
+#' @param global Boolean. Fill in missing length bins with global age-lenth key in gap fcns? (default = FALSE)
+#' @param cmplx Complex name for saving results. (default = 'bsre')
+#' @param region Region will create a folder and place results in said folder. (default = 'ai')
+#' @param save_interm Boolean. Save the intermediate results: resampled age/length comps and realized sample size per iteration? (default = FALSE)
+#' @param save_stats Boolean. Save other statistics: base age/length comps without resampling, mean length-at-age, bootstrap bias? (default = FALSE)
+#' @param save Name to attach to and identify output files. 
 #' 
+#' @return Dataframe of input sample size by year, complex (designated with cmplx_code), sex (0 - combined sex 
+#' with age/length data combined prior to expansion, 1 - males, 2 - females, 3 - unsexed, 12 - female/male
+#' compositions that sum to one across both sexes combined, 4 - combined sex after summing sex-specific age/length
+#' composition after expansion; all with short description IDs in sex_desc column) for age composition (output saved with
+#' 'iss_age' in file name) and length composition (output saved as 'iss_ln' in file name). For comparison, nominal 
+#' sample size ('nss' - the number of age/length samples actually taken) and the number of sampled hauls for 
+#' age/length ('nhls') are included. AI complex output will be denoted with whatever is defined in cmplx argument
+#'  within the file name. Will also produce other dataframes if desired (see save_intern and save_stats argument descriptions).
+#' 
+#' @export srvy_iss_ai_cmplx
 #'
 srvy_iss_ai_cmplx <- function(iters = 1, 
                               lfreq_data, 
@@ -182,11 +203,11 @@ srvy_iss_ai_cmplx <- function(iters = 1,
                               al_var = FALSE,
                               al_var_ann = FALSE, 
                               age_err = FALSE,
-                              cmplx_code = NULL,
+                              cmplx_code = 3005012,
                               use_gapindex = TRUE,
                               by_strata = FALSE,
                               global = FALSE,
-                              cmplx = NULL,
+                              cmplx = 'bsre',
                               region = 'ai', 
                               save_interm = FALSE, 
                               save_stats = FALSE, 
@@ -285,37 +306,47 @@ srvy_iss_ai_cmplx <- function(iters = 1,
   
 }
 
-#' replicate survey input sample size function for production run for goa stock complexes (e.g., rougheye-blackpostted and dusky rockfish)
-#'
-#' @param iters number of iterations (500 recommended)
-#' @param lfreq_data  input dataframe
-#' @param specimen_data input dataframe
-#' @param cpue_data input dataframe
-#' @param strata_data input dataframe
-#' @param r_t input dataframe
+#' #' Survey input sample size function for goa stock complexes (i.e., rougheye-blackspotted and dusky rockfish)
+#' 
+#' @description
+#' Bootstrap data sources to replicate bottom trawl survey age and length composition
+#' for computation of input sample size tailored to goa stock complexes (where length and age composition
+#' is expanded for each individual species in the complex, and combined post expansion)
+#' 
+#' @param iters number of iterations (min of 500 recommended for full run)
+#' @param lfreq_data  length frequency input dataframe
+#' @param specimen_data age-length specimen input dataframe
+#' @param cpue_data catch-per-unit effort input dataframe
+#' @param strata_data strata id and area size input dataframe
+#' @param r_t age reader-tester input dataframe
 #' @param yrs any year filter >= (default = NULL)
 #' @param bin bin size (default = 1 cm)
-#' @param boot_hauls resample hauls w/replacement (default = FALSE)
-#' @param boot_lengths resample lengths w/replacement (default = FALSE)
-#' @param boot_ages resample ages w/replacement (default = FALSE)
-#' @param al_var include age-length variability (default = FALSE)
-#' @param al_var_ann resample age-length annually or pooled across years
-#' @param age_err include ageing error (default = FALSE)
-#' @param cmplx_code numeric value to replace the individual species codes with a complex code (default = NULL)
-#' @param use_gapindex use functions derived from gapindex package (default = TRUE)
-#' @param by_strata should length/age pop'n values be computed at stratum level in gap fcns (default = FALSE)
-#' @param global fills in missing length bins with global alk in gap fcns (default = FALSE)
-#' @param cmplx complex name for saving results (default = NULL)
-#' @param region region will create a folder and place results in said folder (default = 'goa')
-#' @param save_interm save the intermediate results: original comps, resampled comps (default = FALSE)
-#' @param save_stats save other statistics: base age/length comps, mean length at age, bootstrap bias (default = FALSE)
-#' @param save name to save output
-#'
-#' @return
-#' @export srvy_iss_goa_cmplx
-#'
-#' @examples
+#' @param boot_hauls Boolean. Resample hauls w/replacement? (default = FALSE)
+#' @param boot_lengths Boolean. Resample length frequency w/replacement? (default = FALSE)
+#' @param boot_ages Boolean. Resample ages w/replacement? (default = FALSE)
+#' @param al_var Boolean. Include age-length variability in resampled age data? (default = FALSE)
+#' @param al_var_ann Boolean. Resample age-length variability annually or pooled across years? (default = FALSE)
+#' @param age_err Boolean. Include ageing error in resampled age data? (default = FALSE)
+#' @param cmplx_code Numeric value to replace the individual species codes with a complex code shared across species. (default = 3005012)
+#' @param use_gapindex Boolean. Use functions derived from gapindex package? (default = TRUE)
+#' @param by_strata Boolean. Should length/age pop'n values be computed at stratum level in gap fcns? (default = FALSE)
+#' @param global Boolean. Fill in missing length bins with global age-lenth key in gap fcns? (default = FALSE)
+#' @param cmplx Complex name for saving results. (default = 'rebs')
+#' @param region Region will create a folder and place results in said folder. (default = 'goa')
+#' @param save_interm Boolean. Save the intermediate results: resampled age/length comps and realized sample size per iteration? (default = FALSE)
+#' @param save_stats Boolean. Save other statistics: base age/length comps without resampling, mean length-at-age, bootstrap bias? (default = FALSE)
+#' @param save Name to attach to and identify output files. 
 #' 
+#' @return Dataframe of input sample size by year, complex (designated with cmplx_code), sex (0 - combined sex 
+#' with age/length data combined prior to expansion, 1 - males, 2 - females, 3 - unsexed, 12 - female/male
+#' compositions that sum to one across both sexes combined, 4 - combined sex after summing sex-specific age/length
+#' composition after expansion; all with short description IDs in sex_desc column) for age composition (output saved with
+#' 'iss_age' in file name) and length composition (output saved with 'iss_ln' in file name). For comparison, nominal 
+#' sample size ('nss' - the number of age/length samples actually taken) and the number of sampled hauls for 
+#' age/length ('nhls') are included. GOA complex output will be denoted with whatever is defined in cmplx argument 
+#' within the file name. Will also produce other dataframes if desired (see save_intern and save_stats argument descriptions).
+#' 
+#' @export srvy_iss_goa_cmplx
 #'
 srvy_iss_goa_cmplx <- function(iters = 1, 
                                lfreq_data, 
@@ -331,11 +362,11 @@ srvy_iss_goa_cmplx <- function(iters = 1,
                                al_var = FALSE, 
                                al_var_ann = FALSE, 
                                age_err = FALSE,
-                               cmplx_code = NULL,
+                               cmplx_code = 3005012,
                                use_gapindex = TRUE,
                                by_strata = FALSE,
                                global = FALSE,
-                               cmplx = NULL,
+                               cmplx = 'rebs',
                                region = 'goa', 
                                save_interm = FALSE,  
                                save_stats = FALSE,
@@ -447,35 +478,45 @@ srvy_iss_goa_cmplx <- function(iters = 1,
   }
 }
 
-#' replicate srvy_iss function for spatially-explicit input sample size for western, central and eastern gulf subregions
-#'
-#' @param iters number of iterations (500 recommended)
-#' @param lfreq_data  input dataframe
-#' @param specimen_data input dataframe
-#' @param cpue_data input dataframe
-#' @param strata_data input dataframe
-#' @param r_t input dataframe
+#' Survey input sample size function for spatially-explicit input sample sizes for western, central and eastern GOA subregions
+#' 
+#' @description
+#' Bootstrap data sources to replicate bottom trawl survey age and length composition
+#' for computation of input sample size by GOA subregions
+#' 
+#' @param iters number of iterations (min of 500 recommended for full run)
+#' @param lfreq_data  length frequency input dataframe
+#' @param specimen_data age-length specimen input dataframe
+#' @param cpue_data catch-per-unit effort input dataframe
+#' @param strata_data strata id and area size input dataframe
+#' @param r_t age reader-tester input dataframe
 #' @param yrs any year filter >= (default = NULL)
 #' @param bin bin size (default = 1 cm)
-#' @param boot_hauls resample hauls w/replacement (default = FALSE)
-#' @param boot_lengths resample lengths w/replacement (default = FALSE)
-#' @param boot_ages resample ages w/replacement (default = FALSE)
-#' @param al_var include age-length variability (default = FALSE)
-#' @param al_var_ann resample age-length annually or pooled across years
-#' @param age_err include ageing error (default = FALSE)
-#' @param use_gapindex use functions derived from gapindex package (default = TRUE)
-#' @param by_strata should length/age pop'n values be computed at stratum level in gap fcns (default = FALSE)
-#' @param global fills in missing length bins with global alk in gap fcns (default = FALSE)
-#' @param region region will create a folder and place results in said folder
-#' @param save_interm save the intermediate results: original comps, resampled comps (default = FALSE)
-#' @param save_stats save other statistics: base age/length comps, mean length at age, bootstrap bias (default = FALSE)
-#' @param save name to save output
-#'
-#' @return
-#' @export srvy_iss_goa_w_c_e
-#'
-#' @examples
+#' @param boot_hauls Boolean. Resample hauls w/replacement? (default = FALSE)
+#' @param boot_lengths Boolean. Resample length frequency w/replacement? (default = FALSE)
+#' @param boot_ages Boolean. Resample ages w/replacement? (default = FALSE)
+#' @param al_var Boolean. Include age-length variability in resampled age data? (default = FALSE)
+#' @param al_var_ann Boolean. Resample age-length variability annually or pooled across years? (default = FALSE)
+#' @param age_err Boolean. Include ageing error in resampled age data? (default = FALSE)
+#' @param use_gapindex Boolean. Use functions derived from gapindex package? (default = TRUE)
+#' @param by_strata Boolean. Should length/age pop'n values be computed at stratum level in gap fcns? (default = FALSE)
+#' @param global Boolean. Fill in missing length bins with global age-lenth key in gap fcns? (default = FALSE)
+#' @param region Region will create a folder and place results in said folder. (default = NULL)
+#' @param save_interm Boolean. Save the intermediate results: resampled age/length comps and realized sample size per iteration? (default = FALSE)
+#' @param save_stats Boolean. Save other statistics: base age/length comps without resampling, mean length-at-age, bootstrap bias? (default = FALSE)
+#' @param save Name to attach to and identify output files. 
 #' 
+#' @return Dataframe of input sample size by year, region (western - 'wgoa', central - 'cgoa', eastern - 'egoa',
+#' and combined across subregions after subregion expansion - 'goa'), species (using RACE species codes), sex (0 - combined sex 
+#' with age/length data combined prior to expansion, 1 - males, 2 - females, 3 - unsexed, 12 - female/male
+#' compositions that sum to one across both sexes combined, 4 - combined sex after summing sex-specific age/length
+#' composition after expansion; all with short description IDs in sex_desc column) for age composition (output saved with
+#' 'iss_age' in file name) and length composition (output saved with 'iss_ln' in file name). 
+#' For comparison, nominal sample size ('nss' - the number of age/length samples actually taken) and the number of 
+#' sampled hauls for age/length ('nhls') are included. GOA subregion output will be denoted with w_c_egoa in
+#' output filename. Will also produce other dataframes if desired (see save_intern and save_stats argument descriptions).
+#' 
+#' @export srvy_iss_goa_w_c_e
 #'
 srvy_iss_goa_w_c_e <- function(iters = 1, 
                                lfreq_data, 
@@ -663,35 +704,45 @@ srvy_iss_goa_w_c_e <- function(iters = 1,
   
 }
 
-#' replicate srvy_iss function for spatially-explicit input sample size for western-central and eastern gulf subregions
-#'
-#' @param iters number of iterations (500 recommended)
-#' @param lfreq_data  input dataframe
-#' @param specimen_data input dataframe
-#' @param cpue_data input dataframe
-#' @param strata_data input dataframe
-#' @param r_t input dataframe
+#' Survey input sample size function for spatially-explicit input sample sizes for western-central combined and eastern GOA subregions
+#' 
+#' @description
+#' Bootstrap data sources to replicate bottom trawl survey age and length composition
+#' for computation of input sample size by GOA subregions
+#' 
+#' @param iters number of iterations (min of 500 recommended for full run)
+#' @param lfreq_data  length frequency input dataframe
+#' @param specimen_data age-length specimen input dataframe
+#' @param cpue_data catch-per-unit effort input dataframe
+#' @param strata_data strata id and area size input dataframe
+#' @param r_t age reader-tester input dataframe
 #' @param yrs any year filter >= (default = NULL)
 #' @param bin bin size (default = 1 cm)
-#' @param boot_hauls resample hauls w/replacement (default = FALSE)
-#' @param boot_lengths resample lengths w/replacement (default = FALSE)
-#' @param boot_ages resample ages w/replacement (default = FALSE)
-#' @param al_var include age-length variability (default = FALSE)
-#' @param al_var_ann resample age-length annually or pooled across years
-#' @param age_err include ageing error (default = FALSE)
-#' @param use_gapindex use functions derived from gapindex package (default = TRUE)
-#' @param by_strata should length/age pop'n values be computed at stratum level in gap fcns (default = FALSE)
-#' @param global fills in missing length bins with global alk in gap fcns (default = FALSE)
-#' @param region region will create a folder and place results in said folder
-#' @param save_interm save the intermediate results: original comps, resampled comps (default = FALSE)
-#' @param save_stats save other statistics: base age/length comps, mean length at age, bootstrap bias (default = FALSE)
-#' @param save name to save output
-#'
-#' @return
-#' @export srvy_iss_goa_wc_e
-#'
-#' @examples
+#' @param boot_hauls Boolean. Resample hauls w/replacement? (default = FALSE)
+#' @param boot_lengths Boolean. Resample length frequency w/replacement? (default = FALSE)
+#' @param boot_ages Boolean. Resample ages w/replacement? (default = FALSE)
+#' @param al_var Boolean. Include age-length variability in resampled age data? (default = FALSE)
+#' @param al_var_ann Boolean. Resample age-length variability annually or pooled across years? (default = FALSE)
+#' @param age_err Boolean. Include ageing error in resampled age data? (default = FALSE)
+#' @param use_gapindex Boolean. Use functions derived from gapindex package? (default = TRUE)
+#' @param by_strata Boolean. Should length/age pop'n values be computed at stratum level in gap fcns? (default = FALSE)
+#' @param global Boolean. Fill in missing length bins with global age-lenth key in gap fcns? (default = FALSE)
+#' @param region Region will create a folder and place results in said folder. (default = NULL)
+#' @param save_interm Boolean. Save the intermediate results: resampled age/length comps and realized sample size per iteration? (default = FALSE)
+#' @param save_stats Boolean. Save other statistics: base age/length comps without resampling, mean length-at-age, bootstrap bias? (default = FALSE)
+#' @param save Name to attach to and identify output files. 
 #' 
+#' @return Dataframe of input sample size by year, region (western-central combined - 'wcgoa', eastern - 'egoa',
+#' and combined across subregions after subregion expansion - 'goa'), species (using RACE species codes), sex (0 - combined sex 
+#' with age/length data combined prior to expansion, 1 - males, 2 - females, 3 - unsexed, 12 - female/male
+#' compositions that sum to one across both sexes combined, 4 - combined sex after summing sex-specific age/length
+#' composition after expansion; all with short description IDs in sex_desc column) for age composition (output saved as '
+#' iss_age.csv' at end of file name) and length composition (output saved as 'iss_ln,csv' at end of file name). 
+#' For comparison, nominal sample size ('nss' - the number of age/length samples actually taken) and the number of 
+#' sampled hauls for age/length ('nhls') are included. GOA subregion output will be denoted with wc_egoa in
+#' output filename. Will also produce other dataframes if desired (see save_intern and save_stats argument descriptions).
+#' 
+#' @export srvy_iss_goa_wc_e
 #'
 srvy_iss_goa_wc_e <- function(iters = 1, 
                               lfreq_data, 
@@ -873,34 +924,44 @@ srvy_iss_goa_wc_e <- function(iters = 1,
   
 }
 
-#' replicate survey input sample size function for goa west of 140
-#'
-#' @param iters number of iterations (500 recommended)
-#' @param lfreq_data  input dataframe
-#' @param specimen_data input dataframe
-#' @param cpue_data input dataframe
-#' @param strata_data input dataframe
-#' @param r_t input dataframe
+#' Survey input sample size function for goa west of 140 (i.e., for goa pollock stock)
+#' 
+#' @description
+#' Bootstrap data sources to replicate bottom trawl survey age and length composition
+#' for computation of input sample size
+#' 
+#' @param iters number of iterations (min of 500 recommended for full run)
+#' @param lfreq_data  length frequency input dataframe
+#' @param specimen_data age-length specimen input dataframe
+#' @param cpue_data catch-per-unit effort input dataframe
+#' @param strata_data strata id and area size input dataframe
+#' @param r_t age reader-tester input dataframe
 #' @param yrs any year filter >= (default = NULL)
 #' @param bin bin size (default = 1 cm)
-#' @param boot_hauls resample hauls w/replacement (default = FALSE)
-#' @param boot_lengths resample lengths w/replacement (default = FALSE)
-#' @param boot_ages resample ages w/replacement (default = FALSE)
-#' @param al_var include age-length variability (default = FALSE)
-#' @param al_var_ann resample age-length annually or pooled across years
-#' @param age_err include ageing error (default = FALSE)
-#' @param use_gapindex use functions derived from gapindex package (default = TRUE)
-#' @param by_strata should length/age pop'n values be computed at stratum level in gap fcns (default = FALSE)
-#' @param global fills in missing length bins with global alk in gap fcns (default = FALSE)
-#' @param region region will create a folder and place results in said folder
-#' @param save_interm save the intermediate results: original comps, resampled comps (default = FALSE)
-#' @param save_stats save other statistics: base age/length comps, mean length at age, bootstrap bias (default = FALSE)
-#' @param save name to save output
-#'
-#' @return
+#' @param boot_hauls Boolean. Resample hauls w/replacement? (default = FALSE)
+#' @param boot_lengths Boolean. Resample length frequency w/replacement? (default = FALSE)
+#' @param boot_ages Boolean. Resample ages w/replacement? (default = FALSE)
+#' @param al_var Boolean. Include age-length variability in resampled age data? (default = FALSE)
+#' @param al_var_ann Boolean. Resample age-length variability annually or pooled across years? (default = FALSE)
+#' @param age_err Boolean. Include ageing error in resampled age data? (default = FALSE)
+#' @param use_gapindex Boolean. Use functions derived from gapindex package? (default = TRUE)
+#' @param by_strata Boolean. Should length/age pop'n values be computed at stratum level in gap fcns? (default = FALSE)
+#' @param global Boolean. Fill in missing length bins with global age-lenth key in gap fcns? (default = FALSE)
+#' @param region Region will create a folder and place results in said folder. (default = NULL)
+#' @param save_interm Boolean. Save the intermediate results: resampled age/length comps and realized sample size per iteration? (default = FALSE)
+#' @param save_stats Boolean. Save other statistics: base age/length comps without resampling, mean length-at-age, bootstrap bias? (default = FALSE)
+#' @param save Name to attach to and identify output files. 
+#' 
+#' @return Dataframe of input sample size by year, species (using RACE species codes), sex (0 - combined sex 
+#' with age/length data combined prior to expansion, 1 - males, 2 - females, 3 - unsexed, 12 - female/male
+#' compositions that sum to one across both sexes combined, 4 - combined sex after summing sex-specific age/length
+#' composition after expansion; all with short description IDs in sex_desc column) for age composition (output saved with
+#' 'iss_age' in file name) and length composition (output saved with 'iss_ln' in file name). For comparison, 
+#' nominal sample size ('nss' - the number of age/length samples actually taken) and the number of 
+#' sampled hauls for age/length ('nhls') are included.  Output for west of 140 will be designated with 'w140' in filename.
+#' Will also produce other dataframes if desired (see save_intern and save_stats argument descriptions).
+#' 
 #' @export srvy_iss_w140
-#'
-#' @examples
 #'
 srvy_iss_w140 <- function(iters = 1, 
                           lfreq_data,
@@ -1043,36 +1104,46 @@ srvy_iss_w140 <- function(iters = 1,
   
 }
 
-
-#' replicate srvy_iss function for spatially-explicit input sample size for aleutian islands subregions
-#'
-#' @param iters number of iterations (500 recommended)
-#' @param lfreq_data  input dataframe
-#' @param specimen_data input dataframe
-#' @param cpue_data input dataframe
-#' @param strata_data input dataframe
-#' @param r_t input dataframe
+#' Survey input sample size function for spatially-explicit input sample sizes for AI subregions
+#' 
+#' @description
+#' Bootstrap data sources to replicate bottom trawl survey age and length composition
+#' for computation of input sample size by AI subregions
+#' 
+#' @param iters number of iterations (min of 500 recommended for full run)
+#' @param lfreq_data  length frequency input dataframe
+#' @param specimen_data age-length specimen input dataframe
+#' @param cpue_data catch-per-unit effort input dataframe
+#' @param strata_data strata id and area size input dataframe
+#' @param r_t age reader-tester input dataframe
 #' @param yrs any year filter >= (default = NULL)
 #' @param bin bin size (default = 1 cm)
-#' @param boot_hauls resample hauls w/replacement (default = FALSE)
-#' @param boot_lengths resample lengths w/replacement (default = FALSE)
-#' @param boot_ages resample ages w/replacement (default = FALSE)
-#' @param al_var include age-length variability (default = FALSE)
-#' @param al_var_ann resample age-length annually or pooled across years
-#' @param age_err include ageing error (default = FALSE)
-#' @param use_gapindex use functions derived from gapindex package (default = TRUE)
-#' @param by_strata should length/age pop'n values be computed at stratum level in gap fcns (default = FALSE)
-#' @param global fills in missing length bins with global alk in gap fcns (default = FALSE)
-#' @param region region will create a folder and place results in said folder
-#' @param save_interm save the intermediate results: original comps, resampled comps (default = FALSE)
-#' @param save_stats save other statistics: base age/length comps, mean length at age, bootstrap bias (default = FALSE)
-#' @param save name to save output
-#'
-#' @return
-#' @export srvy_iss_ai_subreg
-#'
-#' @examples
+#' @param boot_hauls Boolean. Resample hauls w/replacement? (default = FALSE)
+#' @param boot_lengths Boolean. Resample length frequency w/replacement? (default = FALSE)
+#' @param boot_ages Boolean. Resample ages w/replacement? (default = FALSE)
+#' @param al_var Boolean. Include age-length variability in resampled age data? (default = FALSE)
+#' @param al_var_ann Boolean. Resample age-length variability annually or pooled across years? (default = FALSE)
+#' @param age_err Boolean. Include ageing error in resampled age data? (default = FALSE)
+#' @param use_gapindex Boolean. Use functions derived from gapindex package? (default = TRUE)
+#' @param by_strata Boolean. Should length/age pop'n values be computed at stratum level in gap fcns? (default = FALSE)
+#' @param global Boolean. Fill in missing length bins with global age-lenth key in gap fcns? (default = FALSE)
+#' @param region Region will create a folder and place results in said folder. (default = NULL)
+#' @param save_interm Boolean. Save the intermediate results: resampled age/length comps and realized sample size per iteration? (default = FALSE)
+#' @param save_stats Boolean. Save other statistics: base age/length comps without resampling, mean length-at-age, bootstrap bias? (default = FALSE)
+#' @param save Name to attach to and identify output files. 
 #' 
+#' @return Dataframe of input sample size by year, region (western - 'wai', central - 'cai', eastern - 'egoa',
+#' southern bering sea - 'sbs', and combined across subregions after subregion expansion - 'ai'), species 
+#' (using RACE species codes), sex (0 - combined sex with age/length data combined prior to expansion, 
+#' 1 - males, 2 - females, 3 - unsexed, 12 - female/male compositions that sum to one across both sexes combined,
+#' 4 - combined sex after summing sex-specific age/length composition after expansion; all with short description 
+#' IDs in sex_desc column) for age composition (output saved with 'iss_age' in file name) and length composition 
+#' (output saved with 'iss_ln' in file name). For comparison, nominal sample size ('nss' - the number of age/length 
+#' samples actually taken) and the number of sampled hauls for age/length ('nhls') are included. AI subregion 
+#' output will be denoted with 'ai_subreg' in output filename. Will also produce other dataframes if desired 
+#' (see save_intern and save_stats argument descriptions).
+#' 
+#' @export srvy_iss_ai_subreg
 #'
 srvy_iss_ai_subreg <- function(iters = 1,
                                lfreq_data, 
@@ -1281,29 +1352,37 @@ srvy_iss_ai_subreg <- function(iters = 1,
   
 }
 
-#' replicate survey input sample size function for production run for conditional age-at-length data
-#'
-#' @param iters number of iterations (500 recommended)
-#' @param specimen_data input dataframe
-#' @param cpue_data input dataframe
-#' @param r_t input dataframe
+#' Survey input sample size function for condition age-at-length
+#' 
+#' @description
+#' Bootstrap data sources to replicate bottom trawl conditional age-at-length
+#' for computation of input sample size
+#' 
+#' @param iters number of iterations (min of 500 recommended for full run)
+#' @param lfreq_data  length frequency input dataframe
+#' @param specimen_data age-length specimen input dataframe
+#' @param cpue_data catch-per-unit effort input dataframe
+#' @param strata_data strata id and area size input dataframe
+#' @param r_t age reader-tester input dataframe
 #' @param yrs any year filter >= (default = NULL)
-#' @param bin bin size for length data
-#' @param boot_hauls resample hauls w/replacement (default = FALSE)
-#' @param boot_ages resample ages w/replacement (default = FALSE)
-#' @param al_var include age-length variability (default = FALSE)
-#' @param al_var_ann resample age-length annually or pooled across years
-#' @param age_err include ageing error (default = FALSE)
-#' @param region region will create a folder and place results in said folder
-#' @param save_interm save the intermediate results: original comps, resampled comps (default = FALSE)
-#' @param save_stats save other statistics: base age/length comps, mean length at age, bootstrap bias (default = FALSE)
-#' @param save name to save output
-#'
-#' @return
+#' @param bin bin size (default = 1 cm)
+#' @param boot_hauls Boolean. Resample hauls w/replacement? (default = FALSE)
+#' @param boot_ages Boolean. Resample ages w/replacement? (default = FALSE)
+#' @param al_var Boolean. Include age-length variability in resampled age data? (default = FALSE)
+#' @param al_var_ann Boolean. Resample age-length variability annually or pooled across years? (default = FALSE)
+#' @param age_err Boolean. Include ageing error in resampled age data? (default = FALSE)
+#' @param region Region will create a folder and place results in said folder. (default = NULL)
+#' @param save_interm Boolean. Save the intermediate results: resampled age/length comps and realized sample size per iteration? (default = FALSE)
+#' @param save_stats Boolean. Save other statistics: base age/length comps without resampling, mean length-at-age, bootstrap bias? (default = FALSE)
+#' @param save Name to attach to and identify output files. 
+#' 
+#' @return Dataframe of input sample size by year, species (using RACE species codes), sex (0 - combined sex,
+#' 1 - males, 2 - females; all with short description IDs in sex_desc column), and length for conditional age-at-length
+#'  (output saved with 'iss_caal' in file name). For comparison, nominal sample size ('nss' - the number of age-length samples
+#'   actually taken) is included. Will also produce other dataframes if desired (see save_intern and save_stats argument descriptions).
+#' 
 #' @export srvy_iss_caal
 #'
-#' @examples
-
 srvy_iss_caal <- function(iters = 1, 
                           specimen_data, 
                           cpue_data, 
