@@ -87,7 +87,10 @@ apop <- function(lpop,
   }
 }
 
-#' Function to compute population at age aligned with gapindex package.
+#' Compute population at age
+#' 
+#' @description
+#' Function to expand age-length specimen data to population at age aligned with gapindex package.
 #'
 #' @param lpop population at length dataframe created from surveyISS::lpop_gap()
 #' @param agedat age-length specimen input dataframe
@@ -95,9 +98,9 @@ apop <- function(lpop,
 #' @param by_strata Boolean. Are the pop'n data structed by strata or summed to region level? (default = FALSE)
 #' @param global Boolean. Fill in missing length bins with global age-length key? (default = FALSE)
 #'
-#' @return dataframe of population at age
+#' @return dataframe of population at age by year and species, also includes mean length-at-age and sd in length-at-age
 #' 
-#' @export apop_gap
+#' @export
 #'
 apop_gap <- function(lpop, 
                      agedat,
@@ -257,13 +260,14 @@ apop_gap <- function(lpop,
 }
 
 
-#' Function to compute conditional age-at-length.
+#' Compute conditional age-at-length.
+#' 
 #'
 #' @param agedat age-length specimen input dataframe
 #' 
 #' @return dataframe of proportions-at-age by length
 #' 
-#' @export apop_caal
+#' @export
 #'
 apop_caal <- function(agedat){
   
