@@ -1,13 +1,11 @@
-#' resample reader/tester data to implement ageing error
+#' Function to resample reader/tester data to implement ageing error.
 #'
-#' @param age_dat age specimen data 
-#' @param r_t reader/tester data 
-#' @param nonpar use either sampling with replacement or multinomial for reader-tester data (default = FALSE)
+#' @param age_dat age-length specimen input dataframe 
+#' @param r_t reader/tester agreement data 
+#' @param nonpar Boolean. Use either sampling w/replacement (nonparameteric) or multinomial (parameteric) for reader-tester data (default = FALSE)
 #'
-#' @return
 #' @export age_error
 #'
-#' @examples
 age_error <- function(age_dat, 
                       r_t, 
                       nonpar = FALSE) {
@@ -16,7 +14,7 @@ age_error <- function(age_dat,
   age_dat %>% 
     tidytable::mutate(id = .I) -> age_dat
 
-  # non-parametric (with replacement)
+  # non-parametric (w/replacement)
   if(isTRUE(nonpar)){
     # sample the age data from reader-tester results
     age_dat %>% 
