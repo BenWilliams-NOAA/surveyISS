@@ -3,10 +3,8 @@
 #' @param lpop length population data
 #' @param agedat age dataframe
 #'
-#' @return
 #' @export apop
 #'
-#' @examples
 apop <- function(lpop, 
                  agedat){
   
@@ -89,18 +87,18 @@ apop <- function(lpop,
   }
 }
 
-#' population at age following computations in gapindex package
+#' Function to compute population at age aligned with gapindex package.
 #'
-#' @param lpop length population data
-#' @param agedat age dataframe
+#' @param lpop population at length dataframe created from surveyISS::lpop_gap()
+#' @param agedat age-length specimen input dataframe
 #' @param lngs all combinations of possible lengths and ages
-#' @param by_strata are the length pop'n by strata or summed to region level (default = FALSE)
-#' @param global fills in missing length bins with global alk (default = FALSE)
+#' @param by_strata Boolean. Are the pop'n data structed by strata or summed to region level? (default = FALSE)
+#' @param global Boolean. Fill in missing length bins with global age-length key? (default = FALSE)
 #'
-#' @return
+#' @return dataframe of population at age
+#' 
 #' @export apop_gap
 #'
-#' @examples
 apop_gap <- function(lpop, 
                      agedat,
                      lngs,
@@ -259,14 +257,14 @@ apop_gap <- function(lpop,
 }
 
 
-#' conditional age-at-length
+#' Function to compute conditional age-at-length.
 #'
-#' @param agedat age dataframe
+#' @param agedat age-length specimen input dataframe
 #' 
-#' @return
+#' @return dataframe of proportions-at-age by length
+#' 
 #' @export apop_caal
 #'
-#' @examples
 apop_caal <- function(agedat){
   
   # compute conditional age-at-length for females & males
@@ -280,6 +278,7 @@ apop_caal <- function(agedat){
     tidytable::select(-age_num) %>% 
     tidytable::bind_rows(agedat %>%
                            tidytable::drop_na() %>%
+                           tidytable::filter(sex == 0) %>%
                            tidytable::summarise(age_num = .N,
                                                 .by = c(year, species_code, sex, length, age)) %>%
                            tidytable::mutate(caal = age_num/sum(age_num), 
