@@ -4,12 +4,14 @@
 \alias{age_error}
 \title{resample reader/tester data to implement ageing error}
 \usage{
-age_error(age_dat, r_t)
+age_error(age_dat, r_t, nonpar = FALSE)
 }
 \arguments{
 \item{age_dat}{age specimen data}
 
 \item{r_t}{reader/tester data}
+
+\item{nonpar}{use either sampling with replacement or multinomial for reader-tester data (default = FALSE)}
 }
 \description{
 resample reader/tester data to implement ageing error

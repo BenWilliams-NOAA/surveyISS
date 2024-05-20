@@ -2,7 +2,7 @@
 % Please edit documentation in R/lcomp.R
 \name{lcomp}
 \alias{lcomp}
-\title{length comp}
+\title{marginal length comp by haul}
 \usage{
 lcomp(lfreq_un)
 }
@@ -10,5 +10,5 @@ lcomp(lfreq_un)
 \item{lfreq_un}{expanded length frequency data}
 }
 \description{
-length comp
+marginal length comp by haul
 }

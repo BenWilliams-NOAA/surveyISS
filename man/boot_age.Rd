@@ -9,6 +9,12 @@ boot_age(age_dat)
 \arguments{
 \item{age_dat}{age specimen data}
 }
+\value{
+data.frame
+}
 \description{
 resample age data w/replacement
+}
+\examples{
+\dontrun{boot_age(age_data)}
 }

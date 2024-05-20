@@ -4,14 +4,12 @@
 \alias{apop}
 \title{population at age}
 \usage{
-apop(lpop, agedat, sex_spec = TRUE)
+apop(lpop, agedat)
 }
 \arguments{
 \item{lpop}{length population data}
 
 \item{agedat}{age dataframe}
-
-\item{sex_spec}{determine whether computing for sex-specific or total comps}
 }
 \description{
 population at age

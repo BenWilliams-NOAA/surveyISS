@@ -16,14 +16,15 @@ srvy_iss(
   boot_hauls = FALSE,
   boot_lengths = FALSE,
   boot_ages = FALSE,
-  sex_spec = TRUE,
   al_var = FALSE,
   al_var_ann = FALSE,
   age_err = FALSE,
+  use_gapindex = TRUE,
+  by_strata = FALSE,
+  global = FALSE,
   region = NULL,
   save_interm = FALSE,
-  match_orig = FALSE,
-  srvy_type = NULL,
+  save_stats = FALSE,
   save
 )
 }
@@ -50,21 +51,23 @@ srvy_iss(
 
 \item{boot_ages}{resample ages w/replacement (default = FALSE)}
 
-\item{sex_spec}{determine whether to do sex specific or total comps (default = TRUE)}
-
 \item{al_var}{include age-length variability (default = FALSE)}
 
 \item{al_var_ann}{resample age-length annually or pooled across years}
 
 \item{age_err}{include ageing error (default = FALSE)}
 
+\item{use_gapindex}{use functions derived from gapindex package (default = TRUE)}
+
+\item{by_strata}{should length/age pop'n values be computed at stratum level in gap fcns (default = FALSE)}
+
+\item{global}{fills in missing length bins with global alk in gap fcns (default = FALSE)}
+
 \item{region}{region will create a folder and place results in said folder}
 
 \item{save_interm}{save the intermediate results: original comps, resampled comps (default = FALSE)}
 
-\item{match_orig}{match the computed values to gap output (default = FALSE)}
-
-\item{srvy_type}{only for bering sea survey, denotes whether it's the shelf or slope survey (default = NULL)}
+\item{save_stats}{save other statistics: base age/length comps, mean length at age, bootstrap bias (default = FALSE)}
 
 \item{save}{name to save output}
 }

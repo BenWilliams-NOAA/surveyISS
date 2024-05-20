@@ -9,6 +9,12 @@ boot_haul(cpue_data)
 \arguments{
 \item{cpue_data}{cpue dataframe}
 }
+\value{
+data.table
+}
 \description{
 resample hauls w/replacement
+}
+\examples{
+\dontrun(boot_haul(cpue_data))
 }

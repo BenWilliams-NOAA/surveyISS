@@ -2,41 +2,19 @@
 % Please edit documentation in R/query_data.R
 \name{query_data}
 \alias{query_data}
-\title{query racebase}
+\title{query data to run surveyISS}
 \usage{
-query_data(
-  region,
-  species,
-  yrs = NULL,
-  afsc_user,
-  afsc_pwd,
-  nbs = FALSE,
-  bs_slope = FALSE
-)
+query_data(survey, region, species, yrs = NULL)
 }
 \arguments{
-\item{region}{specific region for data ('GOA', 'AI')}
+\item{survey}{survey number for gap_products survey_definition_id (ai = 52, goa = 47, ebs = 98, nbs = 143, ebs slope = 78)}
+
+\item{region}{region description for output data file}
 
 \item{species}{species_codes e.g., c(10110, 21740)}
 
 \item{yrs}{minimum year to consider (default: NULL)}
-
-\item{afsc_user}{afsc database username}
-
-\item{afsc_pwd}{afsc database password}
-
-\item{nbs}{switch to include northern Bering Sea data (default: FALSE)}
-
-\item{bs_slope}{switch to query data from bs slope survey (default: FALSE)}
 }
 \description{
-query racebase
-}
-\examples{
-query_date(region = 'AI', 
-           species = c(30060,21740,10110,30420,21921,21720,10130,30020),
-           yrs = 2015,
-           afsc_user = 'your_username',
-           afsc_pwd = 'your_password')
-           
+query data to run surveyISS
 }
