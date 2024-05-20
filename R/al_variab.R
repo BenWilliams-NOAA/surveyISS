@@ -1,9 +1,9 @@
-#' Function to resample age-length data to implement growth variability in age-length key.
+#' Resample age-length data to implement growth variability in age-length key.
 #'
 #' @param age_dat age-length specimen input dataframe 
 #' @param annual resample age-length data by years or pooled across years
 #' 
-#' @export al_variab
+#' @export
 #'
 al_variab <- function(age_dat, 
                       annual = FALSE) {

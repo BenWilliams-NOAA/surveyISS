@@ -1,10 +1,10 @@
-#' Function to resample reader/tester data to implement ageing error.
+#' Resample reader/tester data to implement ageing error.
 #'
 #' @param age_dat age-length specimen input dataframe 
 #' @param r_t reader/tester agreement data 
 #' @param nonpar Boolean. Use either sampling w/replacement (nonparameteric) or multinomial (parameteric) for reader-tester data (default = FALSE)
 #'
-#' @export age_error
+#' @export
 #'
 age_error <- function(age_dat, 
                       r_t, 
