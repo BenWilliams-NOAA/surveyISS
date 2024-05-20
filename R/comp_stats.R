@@ -1,17 +1,25 @@
-#' wrrapper function to compute statistics of bootstrap resampling
+#' Compute surveyISS statistics
+#' 
+#' @description
+#' Wrapper function to compute statistics of bootstrap resampling of age and length composition.
 #'
-#' @param r_age list of abundance by age data
-#' @param oga original abundance by age data (single list)
-#' @param r_length list of abundance by length data
-#' @param ogl original abundance by length data (single list)
-#' @param specimen_data input dataframe
-#' @param lfreq_data input dataframe
-#' @param survey_region overall region, e.g., goa or ai (default = NULL)
+#' @param r_age list of replicated abundance at age
+#' @param oga original abundance at age (computed with data that has not been resampled)
+#' @param r_length list of replicated abundance at length
+#' @param ogl original abundance at length (computed with data that has not been resampled)
+#' @param specimen_data age-length specimen input dataframe
+#' @param lfreq_data length frequency input dataframe
+#' @param survey_region overall region, i.e., goa, ai, ebs, nbs... If defined, will compute 
+#' statistics for spatially-explicit results. (default = NULL)
 #'
-#' @return
-#' @export comp_stats
+#' @return list of dataframes for realized sample size by replicate (.rss_age for age composition, 
+#' .rss_length for length composition), input sample size (.iss_age for age composition, 
+#' .iss_length for length composition), bias in resampled comp data compared to original values
+#' (.bias_age for age composition, .bias_length for length composition), and mean length-at-age
+#' (.mean_length, computed ala gapindex package)
+#' 
+#' @export
 #'
-#' @examples
 comp_stats <- function(r_age, 
                        oga,
                        r_length,
@@ -67,17 +75,20 @@ comp_stats <- function(r_age,
   
 }
 
-#' wrapper function to compute statistics of bootstrap resampling for conditional age-at-length
+#' Compute surveyISS statistics
+#' 
+#' @description
+#' Wrapper function to compute statistics of bootstrap resampling for conditional age-at-length
 #'
-#' @param r_caal list of conditional age-at-lengthdata
-#' @param ogcaal original conditional age-at-length data (single list)
-#' @param specimen_data input dataframe
-#' @param lfreq_data input dataframe
+#' @param r_caal list of replicated conditional age-at-length
+#' @param ogcaal original conditional age-at-length (computed with data that has not been resampled)
+#' @param specimen_data age-length specimen input dataframe
 #'
-#' @return
-#' @export comp_stats_caal
+#' @return list of dataframes for realized sample size by replicate (.rss_caal), input sample size (.iss_caal),
+#' and bias in resampled comp data compared to original values (.bias_caal)
+#' 
+#' @export
 #'
-#' @examples
 comp_stats_caal <- function(r_caal, 
                             ogcaal,
                             specimen_data){
@@ -101,15 +112,17 @@ comp_stats_caal <- function(r_caal,
   
 }
 
-#' calculate realized sample size for age comps
+#' Calculate age composition realized sampled size (rss)
+#' 
+#' @description
+#' Function to calculate rss for resampled age composition following McAllister and Ianelli 1997.
+#' Will compute rss for regional or spatially-explicit cases automatically.
 #'
-#' @param sim_data list of abundance by age data
-#' @param og_data original abundance by age data (single list)
+#' @param sim_data list of replicated abundance by age
+#' @param og_data original abundance by age
 #'
-#' @return
-#' @export rss_age
+#' @export
 #'
-#' @examples
 rss_age <- function(sim_data, 
                     og_data){
   
@@ -197,15 +210,16 @@ rss_age <- function(sim_data,
   }
 }
 
-#' calculate realized sample size for conditional age-at-length
+#' Calculate conditional age-at-length realized sampled size (rss)
+#' 
+#' @description
+#' Function to calculate rss for conditional age-at-length following McAllister and Ianelli 1997.
 #'
-#' @param sim_data list of abundance by age data
-#' @param og_data original abundance by age data (single list)
+#' @param sim_data list of replicated conditional age-at-length
+#' @param og_data original conditional age-at-length
 #'
-#' @return
-#' @export rss_caal
+#' @export
 #'
-#' @examples
 rss_caal <- function(sim_data, 
                      og_data){
   
@@ -221,15 +235,17 @@ rss_caal <- function(sim_data,
   
 }
 
-#' calculate realized sample size for length comps
+#' Calculate length composition realized sampled size (rss)
+#' 
+#' @description
+#' Function to calculate rss for length composition following McAllister and Ianelli 1997.
+#' Will compute rss for regional or spatially-explicit cases automatically.
 #'
-#' @param sim_data list of abundance by length data
-#' @param og_data original abundance by length data (single list)
+#' @param sim_data list of replicated abundance at length
+#' @param og_data original abundance at length
 #'
-#' @return
 #' @export rss_length
 #'
-#' @examples
 rss_length <- function(sim_data,
                        og_data) {
   
@@ -313,16 +329,20 @@ rss_length <- function(sim_data,
   }
 }
 
-#' calculate age comp input sample size and add nominal sample size and number of sampled hauls to output
+#' Calculate age composition input sampled size (iss)
+#' 
+#' @description
+#' Function to calculate age composition iss (harmonic mean of realized sample sizes) and add nominal sample
+#' size (the number of ages actually aged) and the number of sampled hauls to output. Will compute for regional
+#' or spatially-explicit cases (depending on whether survey_region is defined, see arguments below)
 #'
-#' @param rss_age iterated realized sample size
-#' @param specimen_data input dataframe
-#' @param survey_region overall region, e.g., goa or ai (default = NULL)
+#' @param rss_age iterated age composition realized sample size
+#' @param specimen_data age-length specimen input dataframe
+#' @param survey_region overall region, i.e., goa, ai, ebs, nbs... If defined, will compute 
+#' statistics for spatially-explicit results. (default = NULL)
 #'
-#' @return
-#' @export iss_age
+#' @export
 #'
-#' @examples
 iss_age <- function(rss_age,
                     specimen_data,
                     survey_region = NULL) {
@@ -455,15 +475,17 @@ iss_age <- function(rss_age,
   }
 }
 
+#' Calculate conditional age-at-length input sampled size (iss)
+#' 
+#' @description
 #' calculate conditional-age-at-length input sample size and add nominal sample size and number of sampled hauls to output
 #'
-#' @param rss_caal iterated realized sample size
-#' @param specimen_data input dataframe
+#' @param rss_caal iterated conditional age-at-length realized sample size
+#' @param specimen_data age-length specimen input dataframe
 #'
 #' @return
-#' @export iss_caal
+#' @export
 #'
-#' @examples
 iss_caal <- function(rss_caal,
                      specimen_data) {
   
@@ -492,16 +514,20 @@ iss_caal <- function(rss_caal,
   
 }
 
-#' calculate length comp input sample size and add nominal sample size and number of sampled hauls to output
+#' Calculate length composition input sampled size (iss)
+#' 
+#' @description
+#' Function to calculate length composition iss (harmonic mean of realized sample sizes) and add nominal sample
+#' size (the number of lengths actually measured) and the number of sampled hauls to output. Will compute for regional
+#' or spatially-explicit cases (depending on whether survey_region is defined, see arguments below)
 #'
-#' @param rss_length iterated realized sample size
-#' @param lfreq_data input dataframe
-#' @param survey_region overall region, e.g., goa or ai (default = NULL)
+#' @param rss_length iterated length composition realized sample size
+#' @param lfreq_data length frequency input dataframe
+#' @param survey_region overall region, i.e., goa, ai, ebs, nbs... If defined, will compute 
+#' statistics for spatially-explicit results. (default = NULL)
 #'
-#' @return
-#' @export iss_length
+#' @export
 #'
-#' @examples
 iss_length <- function(rss_length,
                        lfreq_data,
                        survey_region = NULL) {
@@ -610,21 +636,23 @@ iss_length <- function(rss_length,
   }
 }
 
-#' calculate bias in bootstrapped age comp
+#' calculate bias in bootstrapped age composition
+#' 
+#' @description
+#' Computes the mean bias in bootstrapped population at age compared to original unsampled
+#' population at age.
+#' 
+#' @param r_age iterated population at age
+#' @param oga original population at age
 #'
-#' @param r_age iterated age pop'n
-#' @param oga original age comps without any sampling
+#' @export
 #'
-#' @return
-#' @export bias_age
-#'
-#' @examples
 bias_age <- function(r_age,
                      oga) {
   
   # at region scale
   if(!("region" %in% names(r_age))){
-    # compute average relative bias in pop'n estimates (avg relative bias across age or length)
+    # compute average bias in pop'n estimates
     r_age %>%
       tidytable::bind_rows(r_age %>% 
                              tidytable::filter(sex != 0) %>% 
@@ -654,7 +682,7 @@ bias_age <- function(r_age,
       tidytable::drop_na() %>% 
       tidytable::summarise(bias = mean(bias), .by = c(year, species_code, sex))
   } else{ # at subregion scale
-    # compute average relative bias in pop'n estimates (avg relative bias across age or length)
+    # compute average bias in pop'n estimates
     r_age %>%
       tidytable::bind_rows(r_age %>% 
                              tidytable::filter(sex != 0) %>% 
@@ -687,14 +715,16 @@ bias_age <- function(r_age,
 }
 
 #' calculate bias in bootstrapped conditional age-at-length
+#' 
+#' @description
+#' Computes the mean bias in bootstrapped conditional age-at-length compared to original unsampled
+#' conditional age-at-length.
 #'
 #' @param r_caal iterated conditional age-at-length
 #' @param ogcaal original conditional age-at-length without any sampling
 #'
-#' @return
-#' @export bias_caal
+#' @export
 #'
-#' @examples
 bias_caal <- function(r_caal,
                       ogcaal) {
   
@@ -708,15 +738,17 @@ bias_caal <- function(r_caal,
   
 }
 
-#' calculate bias in bootstrapped length comp
+#' calculate bias in bootstrapped length composition
+#' 
+#' @description
+#' Computes the mean bias in bootstrapped population at length compared to original unsampled
+#' population at length
 #'
-#' @param r_length iterated length pop'n
-#' @param ogl original length comps without any sampling
+#' @param r_length iterated population at length 
+#' @param ogl original population at length without any sampling
 #'
-#' @return
-#' @export bias_length
+#' @export
 #'
-#' @examples
 bias_length <- function(r_length,
                         ogl) {
   
@@ -784,15 +816,16 @@ bias_length <- function(r_length,
   }
 }
 
-#' calculate mean length-at-age and sd
+#' calculate mean and SD in length-at-age
+#' 
+#' @description
+#' Calculate mean length-at-age and SD in length-at-age as aligned with gapindex package.
 #'
-#' @param r_age iterated age pop'n
-#' @param oga original age comps without any sampling
+#' @param r_age iterated population at age with mean length-at-age and sd in length-at-age output
+#' @param oga original population at age without any sampling with mean length-at-age and sd in length-at-age output
 #'
-#' @return
-#' @export grwth_stats
+#' @export
 #'
-#' @examples
 grwth_stats <- function(r_age,
                         oga) {
   
