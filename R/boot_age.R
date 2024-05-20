@@ -1,12 +1,11 @@
-#' resample age data w/replacement
+#' Function to resample age data w/replacement.
 #'
-#' @param age_dat age specimen data 
+#' @param age_dat age-length specimen input dataframe
 #'
-#' @return data.frame
-#' @export
+#' @return dataframe of resampled sex-length-age by year, species, and haul
+#' 
+#' @export boot_age
 #'
-#' @examples
-#' \dontrun{boot_age(age_data)}
 boot_age <- function(age_dat) {
 
   # combine sex-length-age to common id - bootstrap based on year, species, haul then split back apart
