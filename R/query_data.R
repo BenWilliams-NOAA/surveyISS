@@ -1,15 +1,20 @@
-#' query data to run surveyISS
-#'
+#' Query data to run surveyISS
+#' 
+#' @description
+#' Function that connects to AKFIN database (using afscdata package) and pulls catch per-unit-effort (cpue), 
+#' length frequency (lfreq), age-length specimen (specimen), survey strata (strata), and species information (species)
+#' data from the GAP_PRODUCTS tables
+#' 
 #' @param survey survey number for gap_products survey_definition_id (ai = 52, goa = 47, ebs = 98, nbs = 143, ebs slope = 78)
-#' @param region region description for output data file
-#' @param species species_codes e.g., c(10110, 21740)
-#' @param yrs minimum year to consider (default: NULL)
+#' @param region region description for output data file (i.e., 'goa')
+#' @param species species_codes, i.e., c(10110, 21740)
+#' @param yrs minimum survey year to consider (default = NULL)
 #'
-#' @return
-#' @export query_data
+#' @return dataframes that are written to csv files within the 'data' folder. Argument provided for 'region' will be appended
+#' to the end of the datafile name, i.e., 'cpue_goa.csv' is catch per-unit-effort data for the GOA survey.
+#' 
+#' @export
 #'
-#' @examples
-#'            
 query_data <- function(survey,
                        region, 
                        species, 
