@@ -27,7 +27,7 @@ srvy_comps_caal(
 
 \item{yrs}{any year filter >= (default = NULL)}
 
-\item{bin}{bin size (default = 1 cm)}
+\item{bin}{bin size (default = 1 cm), also can use custom length bins through defining vector of upper length bin limits, i.e., c(5, 10, 20, 35, 60), plus length group will automatically be populated and denoted with the largest defined bin + 1 (i.e., 61 for provided example)}
 
 \item{boot_hauls}{Boolean. Resample hauls w/replacement? (default = FALSE)}
 
