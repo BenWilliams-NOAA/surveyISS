@@ -2,7 +2,7 @@
 % Please edit documentation in R/srvy_comps.R
 \name{srvy_comps_caal}
 \alias{srvy_comps_caal}
-\title{primary survey condition age-at-length function}
+\title{Resample data and compute conditional age-at-length}
 \usage{
 srvy_comps_caal(
   specimen_data,
@@ -18,26 +18,30 @@ srvy_comps_caal(
 )
 }
 \arguments{
-\item{specimen_data}{age-length specimen data}
+\item{specimen_data}{age-length specimen input dataframe}
 
-\item{cpue_data}{abundance by length data}
+\item{cpue_data}{catch-per-unit effort input dataframe}
 
-\item{r_t}{reader/tester ageing data}
+\item{r_t}{age reader-tester input dataframe}
 
-\item{yrs}{returns years >= (default = NULL)}
+\item{yrs}{any year filter >= (default = NULL)}
 
-\item{bin}{bin size for length data}
+\item{bin}{bin size (default = 1 cm)}
 
-\item{boot_hauls}{switch for resampling hauls (default = FALSE)}
+\item{boot_hauls}{Boolean. Resample hauls w/replacement? (default = FALSE)}
 
-\item{boot_ages}{switch for resampling ages (default = FALSE)}
+\item{boot_ages}{Boolean. Resample ages w/replacement? (default = FALSE)}
 
-\item{al_var}{switch for including age-length variability (default = FALSE)}
+\item{al_var}{Boolean. Include age-length variability in resampled age data? (default = FALSE)}
 
-\item{al_var_ann}{resample age-length annually or pooled across years}
+\item{al_var_ann}{Boolean. Resample age-length variability annually or pooled across years? (default = FALSE)}
 
-\item{age_err}{switch for including ageing error (default = FALSE)}
+\item{age_err}{Boolean. Include ageing error in resampled age data? (default = FALSE)}
+}
+\value{
+List with dataframe of conditional age-at-length (.caal).
 }
 \description{
-primary survey condition age-at-length function
+This function resamples cpue and age specimen data, adds ageing error and growth variability,
+and then computes conditional age-at-length.
 }

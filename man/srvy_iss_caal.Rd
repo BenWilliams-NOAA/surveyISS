@@ -2,7 +2,7 @@
 % Please edit documentation in R/srvy_iss.R
 \name{srvy_iss_caal}
 \alias{srvy_iss_caal}
-\title{replicate survey input sample size function for production run for conditional age-at-length data}
+\title{Survey input sample size function}
 \usage{
 srvy_iss_caal(
   iters = 1,
@@ -23,36 +23,42 @@ srvy_iss_caal(
 )
 }
 \arguments{
-\item{iters}{number of iterations (500 recommended)}
+\item{iters}{number of iterations (min of 500 recommended for full run)}
 
-\item{specimen_data}{input dataframe}
+\item{specimen_data}{age-length specimen input dataframe}
 
-\item{cpue_data}{input dataframe}
+\item{cpue_data}{catch-per-unit effort input dataframe}
 
-\item{r_t}{input dataframe}
+\item{r_t}{age reader-tester input dataframe}
 
 \item{yrs}{any year filter >= (default = NULL)}
 
-\item{bin}{bin size for length data}
+\item{bin}{bin size (default = 1 cm)}
 
-\item{boot_hauls}{resample hauls w/replacement (default = FALSE)}
+\item{boot_hauls}{Boolean. Resample hauls w/replacement? (default = FALSE)}
 
-\item{boot_ages}{resample ages w/replacement (default = FALSE)}
+\item{boot_ages}{Boolean. Resample ages w/replacement? (default = FALSE)}
 
-\item{al_var}{include age-length variability (default = FALSE)}
+\item{al_var}{Boolean. Include age-length variability in resampled age data? (default = FALSE)}
 
-\item{al_var_ann}{resample age-length annually or pooled across years}
+\item{al_var_ann}{Boolean. Resample age-length variability annually or pooled across years? (default = FALSE)}
 
-\item{age_err}{include ageing error (default = FALSE)}
+\item{age_err}{Boolean. Include ageing error in resampled age data? (default = FALSE)}
 
-\item{region}{region will create a folder and place results in said folder}
+\item{region}{Region will create a folder and place results in said folder. (default = NULL)}
 
-\item{save_interm}{save the intermediate results: original comps, resampled comps (default = FALSE)}
+\item{save_interm}{Boolean. Save the intermediate results: resampled age/length comps and realized sample size per iteration? (default = FALSE)}
 
-\item{save_stats}{save other statistics: base age/length comps, mean length at age, bootstrap bias (default = FALSE)}
+\item{save_stats}{Boolean. Save other statistics: base age/length comps without resampling, mean length-at-age, bootstrap bias? (default = FALSE)}
 
-\item{save}{name to save output}
+\item{save}{Name to attach to and identify output files.}
+}
+\value{
+Dataframe of input sample size by year, species (using RACE species codes), sex (0 - combined sex,
+1 - males, 2 - females; all with short description IDs in sex_desc column), and length for conditional age-at-length
+ (output saved with 'iss_caal' in file name). For comparison, nominal sample size ('nss' - the number of age-length samples
+  actually taken) is included. Will also produce other dataframes if desired (see save_intern and save_stats argument descriptions).
 }
 \description{
-replicate survey input sample size function for production run for conditional age-at-length data
+Bootstrap data sources to replicate bottom trawl conditional age-at-length.
 }

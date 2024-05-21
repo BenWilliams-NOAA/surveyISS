@@ -2,17 +2,20 @@
 % Please edit documentation in R/comp_stats.R
 \name{iss_age}
 \alias{iss_age}
-\title{calculate age comp input sample size and add nominal sample size and number of sampled hauls to output}
+\title{Calculate age composition input sampled size (iss)}
 \usage{
 iss_age(rss_age, specimen_data, survey_region = NULL)
 }
 \arguments{
-\item{rss_age}{iterated realized sample size}
+\item{rss_age}{iterated age composition realized sample size}
 
-\item{specimen_data}{input dataframe}
+\item{specimen_data}{age-length specimen input dataframe}
 
-\item{survey_region}{overall region, e.g., goa or ai (default = NULL)}
+\item{survey_region}{overall region, i.e., goa, ai, ebs, nbs... If defined, will compute 
+statistics for spatially-explicit results. (default = NULL)}
 }
 \description{
-calculate age comp input sample size and add nominal sample size and number of sampled hauls to output
+Function to calculate age composition iss (harmonic mean of realized sample sizes) and add nominal sample
+size (the number of ages actually aged) and the number of sampled hauls to output. Will compute for regional
+or spatially-explicit cases (depending on whether survey_region is defined, see arguments below)
 }

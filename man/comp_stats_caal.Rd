@@ -2,19 +2,21 @@
 % Please edit documentation in R/comp_stats.R
 \name{comp_stats_caal}
 \alias{comp_stats_caal}
-\title{wrapper function to compute statistics of bootstrap resampling for conditional age-at-length}
+\title{Compute surveyISS statistics}
 \usage{
 comp_stats_caal(r_caal, ogcaal, specimen_data)
 }
 \arguments{
-\item{r_caal}{list of conditional age-at-lengthdata}
+\item{r_caal}{list of replicated conditional age-at-length}
 
-\item{ogcaal}{original conditional age-at-length data (single list)}
+\item{ogcaal}{original conditional age-at-length (computed with data that has not been resampled)}
 
-\item{specimen_data}{input dataframe}
-
-\item{lfreq_data}{input dataframe}
+\item{specimen_data}{age-length specimen input dataframe}
+}
+\value{
+list of dataframes for realized sample size by replicate (.rss_caal), input sample size (.iss_caal),
+and bias in resampled comp data compared to original values (.bias_caal)
 }
 \description{
-wrapper function to compute statistics of bootstrap resampling for conditional age-at-length
+Wrapper function to compute statistics of bootstrap resampling for conditional age-at-length
 }

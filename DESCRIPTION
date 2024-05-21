@@ -26,4 +26,8 @@ Imports:
     purrr,
     tidytable,
     vroom,
-    here
+    here,
+    DBI,
+    afscdata,
+    data.table,
+    dplyr

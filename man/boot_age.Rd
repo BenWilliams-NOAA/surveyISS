@@ -2,19 +2,16 @@
 % Please edit documentation in R/boot_age.R
 \name{boot_age}
 \alias{boot_age}
-\title{resample age data w/replacement}
+\title{Resample age data w/replacement.}
 \usage{
 boot_age(age_dat)
 }
 \arguments{
-\item{age_dat}{age specimen data}
+\item{age_dat}{age-length specimen input dataframe}
 }
 \value{
-data.frame
+dataframe of resampled sex-length-age by year, species, and haul
 }
 \description{
-resample age data w/replacement
-}
-\examples{
-\dontrun{boot_age(age_data)}
+Resample age data w/replacement.
 }

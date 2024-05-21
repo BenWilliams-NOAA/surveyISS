@@ -12,5 +12,6 @@ bias_caal(r_caal, ogcaal)
 \item{ogcaal}{original conditional age-at-length without any sampling}
 }
 \description{
-calculate bias in bootstrapped conditional age-at-length
+Computes the mean bias in bootstrapped conditional age-at-length compared to original unsampled
+conditional age-at-length.
 }

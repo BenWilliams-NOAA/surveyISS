@@ -2,15 +2,16 @@
 % Please edit documentation in R/comp_stats.R
 \name{bias_age}
 \alias{bias_age}
-\title{calculate bias in bootstrapped age comp}
+\title{calculate bias in bootstrapped age composition}
 \usage{
 bias_age(r_age, oga)
 }
 \arguments{
-\item{r_age}{iterated age pop'n}
+\item{r_age}{iterated population at age}
 
-\item{oga}{original age comps without any sampling}
+\item{oga}{original population at age}
 }
 \description{
-calculate bias in bootstrapped age comp
+Computes the mean bias in bootstrapped population at age compared to original unsampled
+population at age.
 }

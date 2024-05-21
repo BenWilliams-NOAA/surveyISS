@@ -2,15 +2,15 @@
 % Please edit documentation in R/comp_stats.R
 \name{grwth_stats}
 \alias{grwth_stats}
-\title{calculate mean length-at-age and sd}
+\title{calculate mean and SD in length-at-age}
 \usage{
 grwth_stats(r_age, oga)
 }
 \arguments{
-\item{r_age}{iterated age pop'n}
+\item{r_age}{iterated population at age with mean length-at-age and sd in length-at-age output}
 
-\item{oga}{original age comps without any sampling}
+\item{oga}{original population at age without any sampling with mean length-at-age and sd in length-at-age output}
 }
 \description{
-calculate mean length-at-age and sd
+Calculate mean length-at-age and SD in length-at-age as aligned with gapindex package.
 }

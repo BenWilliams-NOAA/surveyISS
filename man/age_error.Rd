@@ -2,17 +2,17 @@
 % Please edit documentation in R/age_error.R
 \name{age_error}
 \alias{age_error}
-\title{resample reader/tester data to implement ageing error}
+\title{Resample reader/tester data to implement ageing error.}
 \usage{
 age_error(age_dat, r_t, nonpar = FALSE)
 }
 \arguments{
-\item{age_dat}{age specimen data}
+\item{age_dat}{age-length specimen input dataframe}
 
-\item{r_t}{reader/tester data}
+\item{r_t}{reader/tester agreement data}
 
-\item{nonpar}{use either sampling with replacement or multinomial for reader-tester data (default = FALSE)}
+\item{nonpar}{Boolean. Use either sampling w/replacement (nonparameteric) or multinomial (parameteric) for reader-tester data (default = FALSE)}
 }
 \description{
-resample reader/tester data to implement ageing error
+Resample reader/tester data to implement ageing error.
 }

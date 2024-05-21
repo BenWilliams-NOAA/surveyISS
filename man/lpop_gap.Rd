@@ -2,17 +2,20 @@
 % Please edit documentation in R/lpop.R
 \name{lpop_gap}
 \alias{lpop_gap}
-\title{population at length following gapindex package}
+\title{Compute population at length}
 \usage{
-lpop_gap(lfreq_un, cpue, by_strata = FALSE)
+lpop_gap(lfreq_un, cpue_data, by_strata = FALSE)
 }
 \arguments{
-\item{lfreq_un}{uncounted length frequency data}
+\item{lfreq_un}{expanded length frequency data (one row per sample) input dataframe}
 
-\item{cpue}{cpue data}
+\item{cpue_data}{catch-per-unit effort input dataframe}
 
-\item{by_strata}{are the results to be given by strata, or summed to region level (default = FALSE)}
+\item{by_strata}{Boolean. Are the results to be given at strata level, or summed to region level (default = FALSE)}
+}
+\value{
+dataframe of population at length by year and species
 }
 \description{
-population at length following gapindex package
+Function to expand length frequency data to population at length aligned with gapindex package.
 }

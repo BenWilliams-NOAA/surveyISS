@@ -2,7 +2,7 @@
 % Please edit documentation in R/comp_stats.R
 \name{comp_stats}
 \alias{comp_stats}
-\title{wrrapper function to compute statistics of bootstrap resampling}
+\title{Compute surveyISS statistics}
 \usage{
 comp_stats(
   r_age,
@@ -15,20 +15,28 @@ comp_stats(
 )
 }
 \arguments{
-\item{r_age}{list of abundance by age data}
+\item{r_age}{list of replicated abundance at age}
 
-\item{oga}{original abundance by age data (single list)}
+\item{oga}{original abundance at age (computed with data that has not been resampled)}
 
-\item{r_length}{list of abundance by length data}
+\item{r_length}{list of replicated abundance at length}
 
-\item{ogl}{original abundance by length data (single list)}
+\item{ogl}{original abundance at length (computed with data that has not been resampled)}
 
-\item{specimen_data}{input dataframe}
+\item{specimen_data}{age-length specimen input dataframe}
 
-\item{lfreq_data}{input dataframe}
+\item{lfreq_data}{length frequency input dataframe}
 
-\item{survey_region}{overall region, e.g., goa or ai (default = NULL)}
+\item{survey_region}{overall region, i.e., goa, ai, ebs, nbs... If defined, will compute 
+statistics for spatially-explicit results. (default = NULL)}
+}
+\value{
+list of dataframes for realized sample size by replicate (.rss_age for age composition, 
+.rss_length for length composition), input sample size (.iss_age for age composition, 
+.iss_length for length composition), bias in resampled comp data compared to original values
+(.bias_age for age composition, .bias_length for length composition), and mean length-at-age
+(.mean_length, computed ala gapindex package)
 }
 \description{
-wrrapper function to compute statistics of bootstrap resampling
+Wrapper function to compute statistics of bootstrap resampling of age and length composition.
 }

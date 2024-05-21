@@ -70,7 +70,7 @@ lpop <- function(lcomp,
 #' @export
 #'
 lpop_gap <- function(lfreq_un, 
-                     cpue,
+                     cpue_data,
                      by_strata = FALSE) {
   
   # remove ebs strata 82 & 90 (to match results of gapindex)

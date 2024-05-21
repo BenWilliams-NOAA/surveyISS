@@ -483,7 +483,6 @@ iss_age <- function(rss_age,
 #' @param rss_caal iterated conditional age-at-length realized sample size
 #' @param specimen_data age-length specimen input dataframe
 #'
-#' @return
 #' @export
 #'
 iss_caal <- function(rss_caal,

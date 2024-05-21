@@ -2,7 +2,7 @@
 % Please edit documentation in R/srvy_iss.R
 \name{srvy_iss_goa_w_c_e}
 \alias{srvy_iss_goa_w_c_e}
-\title{replicate srvy_iss function for spatially-explicit input sample size for western, central and eastern gulf subregions}
+\title{Spatially-explicit survey input sample size function}
 \usage{
 srvy_iss_goa_w_c_e(
   iters = 1,
@@ -29,48 +29,60 @@ srvy_iss_goa_w_c_e(
 )
 }
 \arguments{
-\item{iters}{number of iterations (500 recommended)}
+\item{iters}{number of iterations (min of 500 recommended for full run)}
 
-\item{lfreq_data}{input dataframe}
+\item{lfreq_data}{length frequency input dataframe}
 
-\item{specimen_data}{input dataframe}
+\item{specimen_data}{age-length specimen input dataframe}
 
-\item{cpue_data}{input dataframe}
+\item{cpue_data}{catch-per-unit effort input dataframe}
 
-\item{strata_data}{input dataframe}
+\item{strata_data}{strata id and area size input dataframe}
 
-\item{r_t}{input dataframe}
+\item{r_t}{age reader-tester input dataframe}
 
 \item{yrs}{any year filter >= (default = NULL)}
 
 \item{bin}{bin size (default = 1 cm)}
 
-\item{boot_hauls}{resample hauls w/replacement (default = FALSE)}
+\item{boot_hauls}{Boolean. Resample hauls w/replacement? (default = FALSE)}
 
-\item{boot_lengths}{resample lengths w/replacement (default = FALSE)}
+\item{boot_lengths}{Boolean. Resample length frequency w/replacement? (default = FALSE)}
 
-\item{boot_ages}{resample ages w/replacement (default = FALSE)}
+\item{boot_ages}{Boolean. Resample ages w/replacement? (default = FALSE)}
 
-\item{al_var}{include age-length variability (default = FALSE)}
+\item{al_var}{Boolean. Include age-length variability in resampled age data? (default = FALSE)}
 
-\item{al_var_ann}{resample age-length annually or pooled across years}
+\item{al_var_ann}{Boolean. Resample age-length variability annually or pooled across years? (default = FALSE)}
 
-\item{age_err}{include ageing error (default = FALSE)}
+\item{age_err}{Boolean. Include ageing error in resampled age data? (default = FALSE)}
 
-\item{use_gapindex}{use functions derived from gapindex package (default = TRUE)}
+\item{use_gapindex}{Boolean. Use functions derived from gapindex package? (default = TRUE)}
 
-\item{by_strata}{should length/age pop'n values be computed at stratum level in gap fcns (default = FALSE)}
+\item{by_strata}{Boolean. Should length/age pop'n values be computed at stratum level in gap fcns? (default = FALSE)}
 
-\item{global}{fills in missing length bins with global alk in gap fcns (default = FALSE)}
+\item{global}{Boolean. Fill in missing length bins with global age-lenth key in gap fcns? (default = FALSE)}
 
-\item{region}{region will create a folder and place results in said folder}
+\item{region}{Region will create a folder and place results in said folder. (default = NULL)}
 
-\item{save_interm}{save the intermediate results: original comps, resampled comps (default = FALSE)}
+\item{save_interm}{Boolean. Save the intermediate results: resampled age/length comps and realized sample size per iteration? (default = FALSE)}
 
-\item{save_stats}{save other statistics: base age/length comps, mean length at age, bootstrap bias (default = FALSE)}
+\item{save_stats}{Boolean. Save other statistics: base age/length comps without resampling, mean length-at-age, bootstrap bias? (default = FALSE)}
 
-\item{save}{name to save output}
+\item{save}{Name to attach to and identify output files.}
+}
+\value{
+Dataframe of input sample size by year, region (western - 'wgoa', central - 'cgoa', eastern - 'egoa',
+and combined across subregions after subregion expansion - 'goa'), species (using RACE species codes), sex (0 - combined sex 
+with age/length data combined prior to expansion, 1 - males, 2 - females, 3 - unsexed, 12 - female/male
+compositions that sum to one across both sexes combined, 4 - combined sex after summing sex-specific age/length
+composition after expansion; all with short description IDs in sex_desc column) for age composition (output saved with
+'iss_age' in file name) and length composition (output saved with 'iss_ln' in file name). 
+For comparison, nominal sample size ('nss' - the number of age/length samples actually taken) and the number of 
+sampled hauls for age/length ('nhls') are included. GOA subregion output will be denoted with w_c_egoa in
+output filename. Will also produce other dataframes if desired (see save_intern and save_stats argument descriptions).
 }
 \description{
-replicate srvy_iss function for spatially-explicit input sample size for western, central and eastern gulf subregions
+Bootstrap data sources to replicate bottom trawl survey age and length composition
+for computation of input sample size by western, central and eastern GOA subregions
 }

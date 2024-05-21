@@ -2,13 +2,16 @@
 % Please edit documentation in R/boot_length.R
 \name{boot_length}
 \alias{boot_length}
-\title{resample length data w/replacement}
+\title{Resample length frequency data w/replacement.}
 \usage{
 boot_length(lfreq_un)
 }
 \arguments{
-\item{lfreq_un}{expanded length frequency data}
+\item{lfreq_un}{expanded length frequency data (one row per sample)}
+}
+\value{
+dataframe of resampled length-sex pairs by year, species, and haul
 }
 \description{
-resample length data w/replacement
+Resample length frequency data w/replacement.
 }

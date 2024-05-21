@@ -2,7 +2,7 @@
 % Please edit documentation in R/srvy_comps.R
 \name{srvy_comps}
 \alias{srvy_comps}
-\title{primary survey expansion for age/length pop'n numbers function}
+\title{Resample data and compute length and age population expansion}
 \usage{
 srvy_comps(
   lfreq_data,
@@ -24,38 +24,42 @@ srvy_comps(
 )
 }
 \arguments{
-\item{lfreq_data}{length frequency data}
+\item{lfreq_data}{length frequency input dataframe}
 
-\item{specimen_data}{age-length specimen data}
+\item{specimen_data}{age-length specimen input dataframe}
 
-\item{cpue_data}{abundance by length data}
+\item{cpue_data}{catch-per-unit effort input dataframe}
 
-\item{strata_data}{strata and associated area}
+\item{strata_data}{strata id and area size input dataframe}
 
-\item{r_t}{reader/tester ageing data}
+\item{r_t}{age reader-tester input dataframe}
 
-\item{yrs}{age filter returns years >= (default = NULL)}
+\item{yrs}{any year filter >= (default = NULL)}
 
-\item{bin}{length bin size (default = 1 cm)}
+\item{bin}{bin size (default = 1 cm)}
 
-\item{boot_hauls}{switch for resampling hauls (default = FALSE)}
+\item{boot_hauls}{Boolean. Resample hauls w/replacement? (default = FALSE)}
 
-\item{boot_lengths}{switch for resampling lengths (default = FALSE)}
+\item{boot_lengths}{Boolean. Resample length frequency w/replacement? (default = FALSE)}
 
-\item{boot_ages}{switch for resampling ages (default = FALSE)}
+\item{boot_ages}{Boolean. Resample ages w/replacement? (default = FALSE)}
 
-\item{al_var}{switch for including age-length variability (default = FALSE)}
+\item{al_var}{Boolean. Include age-length variability in resampled age data? (default = FALSE)}
 
-\item{al_var_ann}{resample age-length annually or pooled across years (default = FALSE)}
+\item{al_var_ann}{Boolean. Resample age-length variability annually or pooled across years? (default = FALSE)}
 
-\item{age_err}{switch for including ageing error (default = FALSE)}
+\item{age_err}{Boolean. Include ageing error in resampled age data? (default = FALSE)}
 
-\item{use_gapindex}{use functions derived from gapindex package (default = TRUE)}
+\item{use_gapindex}{Boolean. Use functions derived from gapindex package? (default = TRUE)}
 
-\item{by_strata}{should length/age pop'n values be computed at stratum level in gap fcns (default = FALSE)}
+\item{by_strata}{Boolean. Should length/age pop'n values be computed at stratum level in gap fcns? (default = FALSE)}
 
-\item{global}{fills in missing length bins with global alk in gap fcns (default = FALSE)}
+\item{global}{Boolean. Fill in missing length bins with global age-lenth key in gap fcns? (default = FALSE)}
+}
+\value{
+List with dataframes of population numbers at length (.lpop) and age (.apop).
 }
 \description{
-primary survey expansion for age/length pop'n numbers function
+Following Fig. 1 in Hulson and Williams 2024 this function resamples cpue, length frequency,
+and age specimen data, adds ageing error and growth variability, and expands these data to population at length and age.
 }

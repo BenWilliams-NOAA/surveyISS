@@ -2,7 +2,7 @@
 % Please edit documentation in R/srvy_iss.R
 \name{srvy_iss_goa_cmplx}
 \alias{srvy_iss_goa_cmplx}
-\title{replicate survey input sample size function for production run for goa stock complexes (e.g., rougheye-blackpostted and dusky rockfish)}
+\title{Stock complex survey input sample size function}
 \usage{
 srvy_iss_goa_cmplx(
   iters = 1,
@@ -19,11 +19,11 @@ srvy_iss_goa_cmplx(
   al_var = FALSE,
   al_var_ann = FALSE,
   age_err = FALSE,
-  cmplx_code = NULL,
+  cmplx_code = 3005012,
   use_gapindex = TRUE,
   by_strata = FALSE,
   global = FALSE,
-  cmplx = NULL,
+  cmplx = "rebs",
   region = "goa",
   save_interm = FALSE,
   save_stats = FALSE,
@@ -31,52 +31,65 @@ srvy_iss_goa_cmplx(
 )
 }
 \arguments{
-\item{iters}{number of iterations (500 recommended)}
+\item{iters}{number of iterations (min of 500 recommended for full run)}
 
-\item{lfreq_data}{input dataframe}
+\item{lfreq_data}{length frequency input dataframe}
 
-\item{specimen_data}{input dataframe}
+\item{specimen_data}{age-length specimen input dataframe}
 
-\item{cpue_data}{input dataframe}
+\item{cpue_data}{catch-per-unit effort input dataframe}
 
-\item{strata_data}{input dataframe}
+\item{strata_data}{strata id and area size input dataframe}
 
-\item{r_t}{input dataframe}
+\item{r_t}{age reader-tester input dataframe}
 
 \item{yrs}{any year filter >= (default = NULL)}
 
 \item{bin}{bin size (default = 1 cm)}
 
-\item{boot_hauls}{resample hauls w/replacement (default = FALSE)}
+\item{boot_hauls}{Boolean. Resample hauls w/replacement? (default = FALSE)}
 
-\item{boot_lengths}{resample lengths w/replacement (default = FALSE)}
+\item{boot_lengths}{Boolean. Resample length frequency w/replacement? (default = FALSE)}
 
-\item{boot_ages}{resample ages w/replacement (default = FALSE)}
+\item{boot_ages}{Boolean. Resample ages w/replacement? (default = FALSE)}
 
-\item{al_var}{include age-length variability (default = FALSE)}
+\item{al_var}{Boolean. Include age-length variability in resampled age data? (default = FALSE)}
 
-\item{al_var_ann}{resample age-length annually or pooled across years}
+\item{al_var_ann}{Boolean. Resample age-length variability annually or pooled across years? (default = FALSE)}
 
-\item{age_err}{include ageing error (default = FALSE)}
+\item{age_err}{Boolean. Include ageing error in resampled age data? (default = FALSE)}
 
-\item{cmplx_code}{numeric value to replace the individual species codes with a complex code (default = NULL)}
+\item{cmplx_code}{Numeric value to replace the individual species codes with a complex code shared across species. (default = 3005012)}
 
-\item{use_gapindex}{use functions derived from gapindex package (default = TRUE)}
+\item{use_gapindex}{Boolean. Use functions derived from gapindex package? (default = TRUE)}
 
-\item{by_strata}{should length/age pop'n values be computed at stratum level in gap fcns (default = FALSE)}
+\item{by_strata}{Boolean. Should length/age pop'n values be computed at stratum level in gap fcns? (default = FALSE)}
 
-\item{global}{fills in missing length bins with global alk in gap fcns (default = FALSE)}
+\item{global}{Boolean. Fill in missing length bins with global age-lenth key in gap fcns? (default = FALSE)}
 
-\item{cmplx}{complex name for saving results (default = NULL)}
+\item{cmplx}{Complex name for saving results. (default = 'rebs')}
 
-\item{region}{region will create a folder and place results in said folder (default = 'goa')}
+\item{region}{Region will create a folder and place results in said folder. (default = 'goa')}
 
-\item{save_interm}{save the intermediate results: original comps, resampled comps (default = FALSE)}
+\item{save_interm}{Boolean. Save the intermediate results: resampled age/length comps and realized sample size per iteration? (default = FALSE)}
 
-\item{save_stats}{save other statistics: base age/length comps, mean length at age, bootstrap bias (default = FALSE)}
+\item{save_stats}{Boolean. Save other statistics: base age/length comps without resampling, mean length-at-age, bootstrap bias? (default = FALSE)}
 
-\item{save}{name to save output}
+\item{save}{Name to attach to and identify output files.}
+}
+\value{
+Dataframe of input sample size by year, complex (designated with cmplx_code), sex (0 - combined sex 
+with age/length data combined prior to expansion, 1 - males, 2 - females, 3 - unsexed, 12 - female/male
+compositions that sum to one across both sexes combined, 4 - combined sex after summing sex-specific age/length
+composition after expansion; all with short description IDs in sex_desc column) for age composition (output saved with
+'iss_age' in file name) and length composition (output saved with 'iss_ln' in file name). For comparison, nominal 
+sample size ('nss' - the number of age/length samples actually taken) and the number of sampled hauls for 
+age/length ('nhls') are included. GOA complex output will be denoted with whatever is defined in cmplx argument 
+within the file name. Will also produce other dataframes if desired (see save_intern and save_stats argument descriptions).
 }
 \description{
-replicate survey input sample size function for production run for goa stock complexes (e.g., rougheye-blackpostted and dusky rockfish)
+Bootstrap data sources to replicate bottom trawl survey age and length composition
+for computation of input sample size tailored to GOA stock complexes (i.e., rougheye-blackspotted and
+dusky rockfish; where length and age composition are expanded for each individual species in the complex,
+and combined post expansion)
 }

@@ -2,14 +2,14 @@
 % Please edit documentation in R/comp_stats.R
 \name{iss_caal}
 \alias{iss_caal}
-\title{calculate conditional-age-at-length input sample size and add nominal sample size and number of sampled hauls to output}
+\title{Calculate conditional age-at-length input sampled size (iss)}
 \usage{
 iss_caal(rss_caal, specimen_data)
 }
 \arguments{
-\item{rss_caal}{iterated realized sample size}
+\item{rss_caal}{iterated conditional age-at-length realized sample size}
 
-\item{specimen_data}{input dataframe}
+\item{specimen_data}{age-length specimen input dataframe}
 }
 \description{
 calculate conditional-age-at-length input sample size and add nominal sample size and number of sampled hauls to output

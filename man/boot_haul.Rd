@@ -2,19 +2,16 @@
 % Please edit documentation in R/boot_haul.R
 \name{boot_haul}
 \alias{boot_haul}
-\title{resample hauls w/replacement}
+\title{Resample hauls w/replacement.}
 \usage{
 boot_haul(cpue_data)
 }
 \arguments{
-\item{cpue_data}{cpue dataframe}
+\item{cpue_data}{catch-per-unit effort input dataframe}
 }
 \value{
-data.table
+dataframe of resampled hauls by year and species
 }
 \description{
-resample hauls w/replacement
-}
-\examples{
-\dontrun(boot_haul(cpue_data))
+Resample hauls w/replacement.
 }

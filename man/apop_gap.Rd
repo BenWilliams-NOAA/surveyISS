@@ -2,21 +2,24 @@
 % Please edit documentation in R/apop.R
 \name{apop_gap}
 \alias{apop_gap}
-\title{population at age following computations in gapindex package}
+\title{Compute population at age}
 \usage{
 apop_gap(lpop, agedat, lngs, by_strata = FALSE, global = FALSE)
 }
 \arguments{
-\item{lpop}{length population data}
+\item{lpop}{population at length dataframe created from surveyISS::lpop_gap()}
 
-\item{agedat}{age dataframe}
+\item{agedat}{age-length specimen input dataframe}
 
 \item{lngs}{all combinations of possible lengths and ages}
 
-\item{by_strata}{are the length pop'n by strata or summed to region level (default = FALSE)}
+\item{by_strata}{Boolean. Are the pop'n data structed by strata or summed to region level? (default = FALSE)}
 
-\item{global}{fills in missing length bins with global alk (default = FALSE)}
+\item{global}{Boolean. Fill in missing length bins with global age-length key? (default = FALSE)}
+}
+\value{
+dataframe of population at age by year and species, also includes mean length-at-age and sd in length-at-age
 }
 \description{
-population at age following computations in gapindex package
+Function to expand age-length specimen data to population at age aligned with gapindex package.
 }

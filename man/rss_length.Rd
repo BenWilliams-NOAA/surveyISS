@@ -2,15 +2,16 @@
 % Please edit documentation in R/comp_stats.R
 \name{rss_length}
 \alias{rss_length}
-\title{calculate realized sample size for length comps}
+\title{Calculate length composition realized sampled size (rss)}
 \usage{
 rss_length(sim_data, og_data)
 }
 \arguments{
-\item{sim_data}{list of abundance by length data}
+\item{sim_data}{list of replicated abundance at length}
 
-\item{og_data}{original abundance by length data (single list)}
+\item{og_data}{original abundance at length}
 }
 \description{
-calculate realized sample size for length comps
+Function to calculate rss for length composition following McAllister and Ianelli 1997.
+Will compute rss for regional or spatially-explicit cases automatically.
 }

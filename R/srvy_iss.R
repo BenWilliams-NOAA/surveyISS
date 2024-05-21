@@ -1359,10 +1359,8 @@ srvy_iss_ai_subreg <- function(iters = 1,
 #' Bootstrap data sources to replicate bottom trawl conditional age-at-length.
 #' 
 #' @param iters number of iterations (min of 500 recommended for full run)
-#' @param lfreq_data  length frequency input dataframe
 #' @param specimen_data age-length specimen input dataframe
 #' @param cpue_data catch-per-unit effort input dataframe
-#' @param strata_data strata id and area size input dataframe
 #' @param r_t age reader-tester input dataframe
 #' @param yrs any year filter >= (default = NULL)
 #' @param bin bin size (default = 1 cm)

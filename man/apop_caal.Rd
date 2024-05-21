@@ -2,13 +2,16 @@
 % Please edit documentation in R/apop.R
 \name{apop_caal}
 \alias{apop_caal}
-\title{conditional age-at-length}
+\title{Compute conditional age-at-length.}
 \usage{
 apop_caal(agedat)
 }
 \arguments{
-\item{agedat}{age dataframe}
+\item{agedat}{age-length specimen input dataframe}
+}
+\value{
+dataframe of proportions-at-age by length
 }
 \description{
-conditional age-at-length
+Compute conditional age-at-length.
 }

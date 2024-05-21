@@ -2,15 +2,15 @@
 % Please edit documentation in R/al_variab.R
 \name{al_variab}
 \alias{al_variab}
-\title{resample age-length data to implement growth variability}
+\title{Resample age-length data to implement growth variability in age-length key.}
 \usage{
 al_variab(age_dat, annual = FALSE)
 }
 \arguments{
-\item{age_dat}{age specimen data}
+\item{age_dat}{age-length specimen input dataframe}
 
-\item{annual}{resample age data annually or pooled across years}
+\item{annual}{resample age-length data by years or pooled across years}
 }
 \description{
-resample age-length data to implement growth variability
+Resample age-length data to implement growth variability in age-length key.
 }

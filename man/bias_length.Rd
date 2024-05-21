@@ -2,15 +2,16 @@
 % Please edit documentation in R/comp_stats.R
 \name{bias_length}
 \alias{bias_length}
-\title{calculate bias in bootstrapped length comp}
+\title{calculate bias in bootstrapped length composition}
 \usage{
 bias_length(r_length, ogl)
 }
 \arguments{
-\item{r_length}{iterated length pop'n}
+\item{r_length}{iterated population at length}
 
-\item{ogl}{original length comps without any sampling}
+\item{ogl}{original population at length without any sampling}
 }
 \description{
-calculate bias in bootstrapped length comp
+Computes the mean bias in bootstrapped population at length compared to original unsampled
+population at length
 }

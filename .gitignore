@@ -2,13 +2,9 @@
 .Rhistory
 .RData
 .Ruserdata
-database_specs.csv
 output/ai/
 output/ebs/
 output/goa/
 output/nebs/
 output/ebs_slope/
-output/saved/ai/
-output/saved/bs/
-output/saved/goa/
 data/

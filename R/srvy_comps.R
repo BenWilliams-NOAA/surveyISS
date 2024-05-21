@@ -198,7 +198,6 @@ srvy_comps <- function(lfreq_data,
 #' @param use_gapindex Boolean. Use functions derived from gapindex package? (default = TRUE)
 #' @param by_strata Boolean. Should length/age pop'n values be computed at stratum level in gap fcns? (default = FALSE)
 #' @param global Boolean. Fill in missing length bins with global age-lenth key in gap fcns? (default = FALSE)
-#' @param cmplx Complex name for saving results. (default = 'bsre')
 #' 
 #' @return List with dataframes of population numbers at length (.lpop) and age (.apop).
 #' 
@@ -357,7 +356,6 @@ srvy_comps_ai_cmplx <- function(lfreq_data,
 #' 
 #' @param specimen_data age-length specimen input dataframe
 #' @param cpue_data catch-per-unit effort input dataframe
-#' @param strata_data strata id and area size input dataframe
 #' @param r_t age reader-tester input dataframe
 #' @param yrs any year filter >= (default = NULL)
 #' @param bin bin size (default = 1 cm)

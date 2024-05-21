@@ -2,15 +2,16 @@
 % Please edit documentation in R/comp_stats.R
 \name{rss_age}
 \alias{rss_age}
-\title{calculate realized sample size for age comps}
+\title{Calculate age composition realized sampled size (rss)}
 \usage{
 rss_age(sim_data, og_data)
 }
 \arguments{
-\item{sim_data}{list of abundance by age data}
+\item{sim_data}{list of replicated abundance by age}
 
-\item{og_data}{original abundance by age data (single list)}
+\item{og_data}{original abundance by age}
 }
 \description{
-calculate realized sample size for age comps
+Function to calculate rss for resampled age composition following McAllister and Ianelli 1997.
+Will compute rss for regional or spatially-explicit cases automatically.
 }

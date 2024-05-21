@@ -2,19 +2,25 @@
 % Please edit documentation in R/query_data.R
 \name{query_data}
 \alias{query_data}
-\title{query data to run surveyISS}
+\title{Query data to run surveyISS}
 \usage{
 query_data(survey, region, species, yrs = NULL)
 }
 \arguments{
 \item{survey}{survey number for gap_products survey_definition_id (ai = 52, goa = 47, ebs = 98, nbs = 143, ebs slope = 78)}
 
-\item{region}{region description for output data file}
+\item{region}{region description for output data file (i.e., 'goa')}
 
-\item{species}{species_codes e.g., c(10110, 21740)}
+\item{species}{species_codes, i.e., c(10110, 21740)}
 
-\item{yrs}{minimum year to consider (default: NULL)}
+\item{yrs}{minimum survey year to consider (default = NULL)}
+}
+\value{
+dataframes that are written to csv files within the 'data' folder. Argument provided for 'region' will be appended
+to the end of the datafile name, i.e., 'cpue_goa.csv' is catch per-unit-effort data for the GOA survey.
 }
 \description{
-query data to run surveyISS
+Function that connects to AKFIN database (using afscdata package) and pulls catch per-unit-effort (cpue), 
+length frequency (lfreq), age-length specimen (specimen), survey strata (strata), and species information (species)
+data from the GAP_PRODUCTS tables
 }

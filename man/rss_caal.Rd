@@ -2,15 +2,15 @@
 % Please edit documentation in R/comp_stats.R
 \name{rss_caal}
 \alias{rss_caal}
-\title{calculate realized sample size for conditional age-at-length}
+\title{Calculate conditional age-at-length realized sampled size (rss)}
 \usage{
 rss_caal(sim_data, og_data)
 }
 \arguments{
-\item{sim_data}{list of abundance by age data}
+\item{sim_data}{list of replicated conditional age-at-length}
 
-\item{og_data}{original abundance by age data (single list)}
+\item{og_data}{original conditional age-at-length}
 }
 \description{
-calculate realized sample size for conditional age-at-length
+Function to calculate rss for conditional age-at-length following McAllister and Ianelli 1997.
 }

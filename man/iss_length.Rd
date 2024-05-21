@@ -2,17 +2,20 @@
 % Please edit documentation in R/comp_stats.R
 \name{iss_length}
 \alias{iss_length}
-\title{calculate length comp input sample size and add nominal sample size and number of sampled hauls to output}
+\title{Calculate length composition input sampled size (iss)}
 \usage{
 iss_length(rss_length, lfreq_data, survey_region = NULL)
 }
 \arguments{
-\item{rss_length}{iterated realized sample size}
+\item{rss_length}{iterated length composition realized sample size}
 
-\item{lfreq_data}{input dataframe}
+\item{lfreq_data}{length frequency input dataframe}
 
-\item{survey_region}{overall region, e.g., goa or ai (default = NULL)}
+\item{survey_region}{overall region, i.e., goa, ai, ebs, nbs... If defined, will compute 
+statistics for spatially-explicit results. (default = NULL)}
 }
 \description{
-calculate length comp input sample size and add nominal sample size and number of sampled hauls to output
+Function to calculate length composition iss (harmonic mean of realized sample sizes) and add nominal sample
+size (the number of lengths actually measured) and the number of sampled hauls to output. Will compute for regional
+or spatially-explicit cases (depending on whether survey_region is defined, see arguments below)
 }
