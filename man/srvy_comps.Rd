@@ -18,6 +18,8 @@ srvy_comps(
   al_var = FALSE,
   al_var_ann = FALSE,
   age_err = FALSE,
+  len_samples = NULL,
+  age_samples = NULL,
   use_gapindex = TRUE,
   by_strata = FALSE,
   global = FALSE
@@ -49,6 +51,10 @@ srvy_comps(
 \item{al_var_ann}{Boolean. Resample age-length variability annually or pooled across years? (default = FALSE)}
 
 \item{age_err}{Boolean. Include ageing error in resampled age data? (default = FALSE)}
+
+\item{len_samples}{If set at a value, tests reductions in haul-level length sampling. To test, set this value at some smaller level than current sampling rate, i.e., 25 (default = NULL)}
+
+\item{age_samples}{If set at a value, tests reductions (and increases) in survey-level number of ages collected. To test, set at a proportion of ages collected, i.e., 0.8 or 1.2 (default = NULL)}
 
 \item{use_gapindex}{Boolean. Use functions derived from gapindex package? (default = TRUE)}
 

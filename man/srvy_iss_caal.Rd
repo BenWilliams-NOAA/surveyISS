@@ -16,6 +16,7 @@ srvy_iss_caal(
   al_var = FALSE,
   al_var_ann = FALSE,
   age_err = FALSE,
+  age_samples = NULL,
   region = NULL,
   save_interm = FALSE,
   save_stats = FALSE,
@@ -44,6 +45,8 @@ srvy_iss_caal(
 \item{al_var_ann}{Boolean. Resample age-length variability annually or pooled across years? (default = FALSE)}
 
 \item{age_err}{Boolean. Include ageing error in resampled age data? (default = FALSE)}
+
+\item{age_samples}{If set at a value, tests reductions (and increases) in survey-level number of ages collected. To test, set at a proportion of ages collected, i.e., 0.8 or 1.2 (default = NULL)}
 
 \item{region}{Region will create a folder and place results in said folder. (default = NULL)}
 
