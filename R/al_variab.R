@@ -19,7 +19,11 @@ al_variab <- function(age_dat,
                              tidytable::mutate(p_l = lengthed / sum(lengthed), 
                                                .by = c(species_code, year, sex, age)) %>% 
                              tidytable::drop_na() %>% 
-                             tidytable::mutate(samp_length = rmultinom(1, sum(lengthed), p_l), .by = c(species_code, year, sex, age)) %>% 
+                             dplyr::group_by(species_code, year, sex, age) %>% 
+                             dplyr::mutate(samp_length = rmultinom(1, sum(lengthed), p_l)) %>% 
+                             dplyr::ungroup() %>% 
+                             # note the following throws an error
+                             # tidytable::mutate(samp_length = rmultinom(1, sum(lengthed), p_l), .by = c(species_code, year, sex, age)) %>% 
                              tidytable::filter(samp_length[,1] != 0) %>% 
                              tidytable::select(species_code, year, sex, age, length, samp_length) %>% 
                              tidytable::uncount(., samp_length) %>% 
@@ -38,7 +42,11 @@ al_variab <- function(age_dat,
                              tidytable::mutate(p_l = lengthed / sum(lengthed), 
                                                .by = c(species_code, sex, age)) %>% 
                              tidytable::drop_na() %>% 
-                             tidytable::mutate(samp_length = rmultinom(1, sum(lengthed), p_l), .by = c(species_code, sex, age)) %>% 
+                             dplyr::group_by(species_code, sex, age) %>% 
+                             dplyr::mutate(samp_length = rmultinom(1, sum(lengthed), p_l)) %>% 
+                             dplyr::ungroup() %>% 
+                             # note the following throws an error
+                             # tidytable::mutate(samp_length = rmultinom(1, sum(lengthed), p_l), .by = c(species_code, sex, age)) %>% 
                              tidytable::filter(samp_length[,1] != 0) %>% 
                              tidytable::select(species_code, sex, age, length, samp_length) %>% 
                              tidytable::uncount(., samp_length) %>% 

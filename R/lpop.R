@@ -74,8 +74,8 @@ lpop_gap <- function(lfreq_un,
                      by_strata = FALSE) {
   
   # remove ebs strata 82 & 90 (to match results of gapindex)
-  if(length(unique(cpue$survey)) == 1 && unique(cpue$survey) %in% c(98)){
-    cpue <- cpue %>% 
+  if(length(unique(cpue_data$survey)) == 1 && unique(cpue_data$survey) %in% c(98)){
+    cpue_data <- cpue_data %>% 
       tidytable::filter(!(stratum %in% c(82, 90) & year <= 1985))
   }
   
@@ -109,7 +109,7 @@ lpop_gap <- function(lfreq_un,
                             tidytable::filter(sex != 0) %>% 
                             tidytable::summarise(s_ijk = .N, 
                                                  .by = c(year, species_code, stratum, hauljoin))) %>% 
-    tidytable::inner_join(cpue %>%
+    tidytable::inner_join(cpue_data %>%
                             tidytable::filter(numcpue > 0)) %>% 
     ## The size CPUE (S_ijklm)
     tidytable::mutate(S_ijklm = frequency / s_ijk * numcpue) -> size
@@ -123,7 +123,7 @@ lpop_gap <- function(lfreq_un,
                             tidytable::filter(sex == 0) %>% 
                             tidytable::summarise(s_ijk = .N, 
                                                  .by = c(year, species_code, stratum, hauljoin))) %>% 
-    tidytable::inner_join(cpue %>%
+    tidytable::inner_join(cpue_data %>%
                             tidytable::filter(numcpue > 0)) %>% 
     ## The size CPUE (S_ijklm)
     tidytable::mutate(S_ijklm = frequency / s_ijk * numcpue) -> size_tot
@@ -136,19 +136,19 @@ lpop_gap <- function(lfreq_un,
   # positive counts but missing size data is imputted by averaging the
   # size composition from the hauls in that same stratum and year.
   
-  if(length(unique(cpue$survey)) == 1 && unique(cpue$survey) %in% c(47, 52)){
+  if(length(unique(cpue_data$survey)) == 1 && unique(cpue_data$survey) %in% c(47, 52)){
     # male/female/unsexed
     size <- size %>% 
       tidytable::select(year, stratum, hauljoin, species_code, length, sex, numcpue, S_ijklm) %>% 
       ## Append the `missing_hauljoins` to size.
-      tidytable::bind_rows(cpue %>%
+      tidytable::bind_rows(cpue_data %>%
                              tidytable::filter(numcpue > 0) %>%
                              tidytable::distinct(hauljoin, species_code)  %>% 
                              ## ID hauls with positive counts but have no records in `size`
                              tidytable::anti_join(size %>%
                                                     tidytable::summarise(hauljoin = unique(hauljoin),
                                                                          .by = c(species_code, stratum))) %>% 
-                             tidytable::inner_join(cpue %>%
+                             tidytable::inner_join(cpue_data %>%
                                                      tidytable::filter(numcpue > 0)) %>%
                              ## Calculate mean S_ijklm of individuals of species-k with sex-m and 
                              ## length-l among the hauls within stratum-i. Technically, this would be
@@ -172,14 +172,14 @@ lpop_gap <- function(lfreq_un,
     size_tot <- size_tot %>% 
       tidytable::select(year, stratum, hauljoin, species_code, length, sex, numcpue, S_ijklm) %>% 
       ## Append the `missing_hauljoins` to size.
-      tidytable::bind_rows(cpue %>%
+      tidytable::bind_rows(cpue_data %>%
                              tidytable::filter(numcpue > 0) %>%
                              tidytable::distinct(hauljoin, species_code)  %>% 
                              ## ID hauls with positive counts but have no records in `size`
                              tidytable::anti_join(size_tot %>%
                                                     tidytable::summarise(hauljoin = unique(hauljoin),
                                                                          .by = c(species_code, stratum))) %>% 
-                             tidytable::inner_join(cpue %>%
+                             tidytable::inner_join(cpue_data %>%
                                                      tidytable::filter(numcpue > 0)) %>%
                              ## Calculate mean S_ijklm of individuals of species-k with sex-m and 
                              ## length-l among the hauls within stratum-i. Technically, this would be
@@ -226,7 +226,7 @@ lpop_gap <- function(lfreq_un,
                             tidytable::summarise(S_ik = sum(S_ijklm),
                                                  .by = c(year, stratum, species_code))) %>% 
     # join pop'n estimates
-    tidytable::inner_join(cpue %>%
+    tidytable::inner_join(cpue_data %>%
                             tidytable::filter(numcpue >= 0) %>%
                             tidytable::mutate(st_num = mean(numcpue) * area,
                                               tot = sum(numcpue), 
@@ -247,7 +247,7 @@ lpop_gap <- function(lfreq_un,
                            tidytable::inner_join(size_tot %>% ## Aggregate S_ijklm across stratum and species_code
                                                    tidytable::summarise(S_ik = sum(S_ijklm),
                                                                         .by = c(year, stratum, species_code))) %>% 
-                           tidytable::inner_join(cpue %>% # join pop'n estimates
+                           tidytable::inner_join(cpue_data %>% # join pop'n estimates
                                                    tidytable::filter(numcpue >= 0) %>%
                                                    tidytable::mutate(st_num = mean(numcpue) * area,
                                                                      tot = sum(numcpue), 

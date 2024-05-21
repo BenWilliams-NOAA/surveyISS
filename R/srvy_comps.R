@@ -17,6 +17,8 @@
 #' @param al_var Boolean. Include age-length variability in resampled age data? (default = FALSE)
 #' @param al_var_ann Boolean. Resample age-length variability annually or pooled across years? (default = FALSE)
 #' @param age_err Boolean. Include ageing error in resampled age data? (default = FALSE)
+#' @param len_samples If set at a value, tests reductions in haul-level length sampling. To test, set this value at some smaller level than current sampling rate, i.e., 25 (default = NULL)
+#' @param age_samples If set at a value, tests reductions (and increases) in survey-level number of ages collected. To test, set at a proportion of ages collected, i.e., 0.8 or 1.2 (default = NULL)
 #' @param use_gapindex Boolean. Use functions derived from gapindex package? (default = TRUE)
 #' @param by_strata Boolean. Should length/age pop'n values be computed at stratum level in gap fcns? (default = FALSE)
 #' @param global Boolean. Fill in missing length bins with global age-lenth key in gap fcns? (default = FALSE)
@@ -38,6 +40,8 @@ srvy_comps <- function(lfreq_data,
                        al_var = FALSE,
                        al_var_ann = FALSE,
                        age_err = FALSE,
+                       len_samples = NULL,
+                       age_samples = NULL,
                        use_gapindex = TRUE,
                        by_strata = FALSE,
                        global = FALSE) {
@@ -116,8 +120,12 @@ srvy_comps <- function(lfreq_data,
                              tidytable::mutate(sex = 0)) -> .lfreq_un
   }
   
-  # bin length data ---- 
-  # note that this automatically converts from mm to cm
+  # if desired, reduce length frequency sample sizes
+  if(!is.null(length_samples)) {
+    red_len_samples(.lfreq_un, samples = length_samples) -> .lfreq_un
+  }
+  
+  # bin length data, note that this automatically converts from mm to cm
   .lfreq_un %>% 
     tidytable::mutate(length = 10 * (bin * ceiling((length / 10) / bin))) -> .lfreq_un
   
@@ -138,7 +146,7 @@ srvy_comps <- function(lfreq_data,
                              tidytable::mutate(sex = 0)) -> .agedat
   }
   
-  # with age-length and ageing error ----
+  # with age-length and ageing error
   if(isTRUE(al_var) & isTRUE(age_err)) {
     al_variab(.agedat, annual = al_var_ann) -> .agedat_al
     age_error(.agedat_al, r_t) -> .agedat
@@ -148,8 +156,12 @@ srvy_comps <- function(lfreq_data,
     age_error(.agedat, r_t) -> .agedat
   }
   
-  # bin lengths in age data ----
-  # note that this automatically converts from mm to cm
+  # if desired, adjust age sample sizes
+  if(!is.null(age_samples)) {
+    adj_age_samples(.agedat, rate = age_samples) -> .agedat
+  }
+  
+  # bin lengths in age data, note that this automatically converts from mm to cm
   .agedat %>% 
     tidytable::mutate(length = 10 * (bin * ceiling((length / 10) / bin))) -> .agedat
   
@@ -194,6 +206,8 @@ srvy_comps <- function(lfreq_data,
 #' @param al_var Boolean. Include age-length variability in resampled age data? (default = FALSE)
 #' @param al_var_ann Boolean. Resample age-length variability annually or pooled across years? (default = FALSE)
 #' @param age_err Boolean. Include ageing error in resampled age data? (default = FALSE)
+#' @param len_samples If set at a value, tests reductions in haul-level length sampling. To test, set this value at some smaller level than current sampling rate, i.e., 25 (default = NULL)
+#' @param age_samples If set at a value, tests reductions (and increases) in survey-level number of ages collected. To test, set at a proportion of ages collected, i.e., 0.8 or 1.2 (default = NULL)
 #' @param cmplx_code Numeric value to replace the individual species codes with a complex code shared across species. (default = 3005012)
 #' @param use_gapindex Boolean. Use functions derived from gapindex package? (default = TRUE)
 #' @param by_strata Boolean. Should length/age pop'n values be computed at stratum level in gap fcns? (default = FALSE)
@@ -216,6 +230,8 @@ srvy_comps_ai_cmplx <- function(lfreq_data,
                                 al_var = FALSE,
                                 al_var_ann = FALSE,
                                 age_err = FALSE,
+                                len_samples = NULL,
+                                age_samples = NULL,
                                 cmplx_code = NULL,
                                 use_gapindex = TRUE,
                                 by_strata = FALSE,
@@ -282,8 +298,12 @@ srvy_comps_ai_cmplx <- function(lfreq_data,
                              tidytable::mutate(sex = 0)) -> .lfreq_un
   }
   
-  # bin length data ---- 
-  # note that this automatically converts from mm to cm
+  # if desired, reduce length frequency sample sizes
+  if(!is.null(length_samples)) {
+    red_len_samples(.lfreq_un, samples = length_samples) -> .lfreq_un
+  }
+  
+  # bin length data, note that this automatically converts from mm to cm
   .lfreq_un %>% 
     tidytable::mutate(length = 10 * (bin * ceiling((length / 10) / bin))) -> .lfreq_un
   
@@ -308,17 +328,17 @@ srvy_comps_ai_cmplx <- function(lfreq_data,
                              tidytable::mutate(sex = 0)) -> .agedat
   }
   
-  # add age-length variability ----
+  # add age-length variability
   if(isTRUE(al_var)) {
     al_variab(.agedat, annual = al_var_ann) -> .agedat_al
   }
   
-  # add ageing error ----
+  # add ageing error
   if(isTRUE(age_err)) {
     age_error(.agedat, r_t) -> .agedat_ae
   }
   
-  # with age-length and ageing error ----
+  # with age-length and ageing error
   if(isTRUE(al_var) & isTRUE(age_err)) {
     age_error(.agedat_al, r_t) -> .agedat
   } else if(isTRUE(al_var) & !isTRUE(age_err)){
@@ -327,8 +347,12 @@ srvy_comps_ai_cmplx <- function(lfreq_data,
     .agedat_ae -> .agedat
   }
   
-  # bin lengths in age data ----
-  # note that this automatically converts from mm to cm
+  # if desired, adjust age sample sizes
+  if(!is.null(age_samples)) {
+    adj_age_samples(.agedat, rate = age_samples) -> .agedat
+  }
+  
+  # bin lengths in age data, note that this automatically converts from mm to cm
   .agedat %>% 
     tidytable::mutate(species_code = cmplx_code) %>% 
     tidytable::mutate(length = 10 * (bin * ceiling((length / 10) / bin))) -> .agedat
@@ -364,6 +388,7 @@ srvy_comps_ai_cmplx <- function(lfreq_data,
 #' @param al_var Boolean. Include age-length variability in resampled age data? (default = FALSE)
 #' @param al_var_ann Boolean. Resample age-length variability annually or pooled across years? (default = FALSE)
 #' @param age_err Boolean. Include ageing error in resampled age data? (default = FALSE)
+#' @param age_samples If set at a value, tests reductions (and increases) in survey-level number of ages collected. To test, set at a proportion of ages collected, i.e., 0.8 or 1.2 (default = NULL)
 #' 
 #' @return List with dataframe of conditional age-at-length (.caal).
 #' 
@@ -378,7 +403,8 @@ srvy_comps_caal <- function(specimen_data,
                             boot_ages = FALSE,
                             al_var = FALSE,
                             al_var_ann = FALSE,
-                            age_err = FALSE) {
+                            age_err = FALSE,
+                            age_samples = NULL) {
   # globals ----
   # year switch
   if (is.null(yrs)) yrs <- 0
@@ -415,17 +441,17 @@ srvy_comps_caal <- function(specimen_data,
                              tidytable::mutate(sex = 0)) -> .agedat
   }
   
-  # add age-length variability ----
+  # add age-length variability
   if(isTRUE(al_var)) {
     al_variab(.agedat, annual = al_var_ann) -> .agedat_al
   }
   
-  # add ageing error ----
+  # add ageing error
   if(isTRUE(age_err)) {
     age_error(.agedat, r_t) -> .agedat_ae
   }
   
-  # with age-length and ageing error ----
+  # with age-length and ageing error
   if(isTRUE(al_var) & isTRUE(age_err)) {
     age_error(.agedat_al, r_t) -> .agedat
   } else if(isTRUE(al_var) & !isTRUE(age_err)){
@@ -434,8 +460,12 @@ srvy_comps_caal <- function(specimen_data,
     .agedat_ae -> .agedat
   }
   
-  # bin lengths in age data ----
-  # note that this automatically converts from mm to cm
+  # if desired, adjust age sample sizes
+  if(!is.null(age_samples)) {
+    adj_age_samples(.agedat, rate = age_samples) -> .agedat
+  }
+  
+  # bin lengths in age data, note that this automatically converts from mm to cm
   .agedat %>% 
     tidytable::mutate(length = 10 * (bin * ceiling((length / 10) / bin))) -> .agedat
   
