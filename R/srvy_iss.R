@@ -1,4 +1,4 @@
-#' Survey input sample size function for generic run
+#' Survey input sample size function
 #' 
 #' @description
 #' Bootstrap data sources to replicate bottom trawl survey age and length composition
@@ -35,7 +35,7 @@
 #' sampled hauls for age/length ('nhls') are included. Will also produce other dataframes if desired 
 #' (see save_intern and save_stats argument descriptions).
 #' 
-#' @export srvy_iss
+#' @export
 #'
 srvy_iss <- function(iters = 1, 
                      lfreq_data,
@@ -146,11 +146,11 @@ srvy_iss <- function(iters = 1,
   
 }
 
-#' Survey input sample size function for ai stock complexes (i.e., blackspotted-rougheye rockfish)
+#' Stock complex survey input sample size function
 #' 
 #' @description
 #' Bootstrap data sources to replicate bottom trawl survey age and length composition
-#' for computation of input sample size tailored to ai stock complexes (where length composition
+#' for computation of input sample size tailored to AI stock complexes (where length composition
 #' is expanded for each individual species in the complex, but age-length specimen data is combined 
 #' across species in the complex prior to age composition expansion)
 #' 
@@ -187,7 +187,7 @@ srvy_iss <- function(iters = 1,
 #' age/length ('nhls') are included. AI complex output will be denoted with whatever is defined in cmplx argument
 #'  within the file name. Will also produce other dataframes if desired (see save_intern and save_stats argument descriptions).
 #' 
-#' @export srvy_iss_ai_cmplx
+#' @export
 #'
 srvy_iss_ai_cmplx <- function(iters = 1, 
                               lfreq_data, 
@@ -306,12 +306,13 @@ srvy_iss_ai_cmplx <- function(iters = 1,
   
 }
 
-#' #' Survey input sample size function for goa stock complexes (i.e., rougheye-blackspotted and dusky rockfish)
+#' Stock complex survey input sample size function
 #' 
 #' @description
 #' Bootstrap data sources to replicate bottom trawl survey age and length composition
-#' for computation of input sample size tailored to goa stock complexes (where length and age composition
-#' is expanded for each individual species in the complex, and combined post expansion)
+#' for computation of input sample size tailored to GOA stock complexes (i.e., rougheye-blackspotted and
+#' dusky rockfish; where length and age composition are expanded for each individual species in the complex,
+#' and combined post expansion)
 #' 
 #' @param iters number of iterations (min of 500 recommended for full run)
 #' @param lfreq_data  length frequency input dataframe
@@ -346,7 +347,7 @@ srvy_iss_ai_cmplx <- function(iters = 1,
 #' age/length ('nhls') are included. GOA complex output will be denoted with whatever is defined in cmplx argument 
 #' within the file name. Will also produce other dataframes if desired (see save_intern and save_stats argument descriptions).
 #' 
-#' @export srvy_iss_goa_cmplx
+#' @export
 #'
 srvy_iss_goa_cmplx <- function(iters = 1, 
                                lfreq_data, 
@@ -478,11 +479,11 @@ srvy_iss_goa_cmplx <- function(iters = 1,
   }
 }
 
-#' Survey input sample size function for spatially-explicit input sample sizes for western, central and eastern GOA subregions
+#' Spatially-explicit survey input sample size function
 #' 
 #' @description
 #' Bootstrap data sources to replicate bottom trawl survey age and length composition
-#' for computation of input sample size by GOA subregions
+#' for computation of input sample size by western, central and eastern GOA subregions
 #' 
 #' @param iters number of iterations (min of 500 recommended for full run)
 #' @param lfreq_data  length frequency input dataframe
@@ -516,7 +517,7 @@ srvy_iss_goa_cmplx <- function(iters = 1,
 #' sampled hauls for age/length ('nhls') are included. GOA subregion output will be denoted with w_c_egoa in
 #' output filename. Will also produce other dataframes if desired (see save_intern and save_stats argument descriptions).
 #' 
-#' @export srvy_iss_goa_w_c_e
+#' @export
 #'
 srvy_iss_goa_w_c_e <- function(iters = 1, 
                                lfreq_data, 
@@ -704,11 +705,11 @@ srvy_iss_goa_w_c_e <- function(iters = 1,
   
 }
 
-#' Survey input sample size function for spatially-explicit input sample sizes for western-central combined and eastern GOA subregions
+#' Spatially-explicit survey input sample size function
 #' 
 #' @description
 #' Bootstrap data sources to replicate bottom trawl survey age and length composition
-#' for computation of input sample size by GOA subregions
+#' for computation of input sample size by western-central combined and eastern GOA subregions
 #' 
 #' @param iters number of iterations (min of 500 recommended for full run)
 #' @param lfreq_data  length frequency input dataframe
@@ -742,7 +743,7 @@ srvy_iss_goa_w_c_e <- function(iters = 1,
 #' sampled hauls for age/length ('nhls') are included. GOA subregion output will be denoted with wc_egoa in
 #' output filename. Will also produce other dataframes if desired (see save_intern and save_stats argument descriptions).
 #' 
-#' @export srvy_iss_goa_wc_e
+#' @export
 #'
 srvy_iss_goa_wc_e <- function(iters = 1, 
                               lfreq_data, 
@@ -924,11 +925,11 @@ srvy_iss_goa_wc_e <- function(iters = 1,
   
 }
 
-#' Survey input sample size function for goa west of 140 (i.e., for goa pollock stock)
+#' Survey input sample size function
 #' 
 #' @description
 #' Bootstrap data sources to replicate bottom trawl survey age and length composition
-#' for computation of input sample size
+#' for computation of input sample size for goa west of 140 (i.e., for goa pollock stock)
 #' 
 #' @param iters number of iterations (min of 500 recommended for full run)
 #' @param lfreq_data  length frequency input dataframe
@@ -961,7 +962,7 @@ srvy_iss_goa_wc_e <- function(iters = 1,
 #' sampled hauls for age/length ('nhls') are included.  Output for west of 140 will be designated with 'w140' in filename.
 #' Will also produce other dataframes if desired (see save_intern and save_stats argument descriptions).
 #' 
-#' @export srvy_iss_w140
+#' @export
 #'
 srvy_iss_w140 <- function(iters = 1, 
                           lfreq_data,
@@ -1104,11 +1105,11 @@ srvy_iss_w140 <- function(iters = 1,
   
 }
 
-#' Survey input sample size function for spatially-explicit input sample sizes for AI subregions
+#' Spatially-explicit survey input sample size function
 #' 
 #' @description
 #' Bootstrap data sources to replicate bottom trawl survey age and length composition
-#' for computation of input sample size by AI subregions
+#' for computation of spatially-explicit input sample size by AI subregions
 #' 
 #' @param iters number of iterations (min of 500 recommended for full run)
 #' @param lfreq_data  length frequency input dataframe
@@ -1143,7 +1144,7 @@ srvy_iss_w140 <- function(iters = 1,
 #' output will be denoted with 'ai_subreg' in output filename. Will also produce other dataframes if desired 
 #' (see save_intern and save_stats argument descriptions).
 #' 
-#' @export srvy_iss_ai_subreg
+#' @export
 #'
 srvy_iss_ai_subreg <- function(iters = 1,
                                lfreq_data, 
@@ -1352,11 +1353,10 @@ srvy_iss_ai_subreg <- function(iters = 1,
   
 }
 
-#' Survey input sample size function for condition age-at-length
+#' Survey input sample size function
 #' 
 #' @description
-#' Bootstrap data sources to replicate bottom trawl conditional age-at-length
-#' for computation of input sample size
+#' Bootstrap data sources to replicate bottom trawl conditional age-at-length.
 #' 
 #' @param iters number of iterations (min of 500 recommended for full run)
 #' @param lfreq_data  length frequency input dataframe
@@ -1381,7 +1381,7 @@ srvy_iss_ai_subreg <- function(iters = 1,
 #'  (output saved with 'iss_caal' in file name). For comparison, nominal sample size ('nss' - the number of age-length samples
 #'   actually taken) is included. Will also produce other dataframes if desired (see save_intern and save_stats argument descriptions).
 #' 
-#' @export srvy_iss_caal
+#' @export
 #'
 srvy_iss_caal <- function(iters = 1, 
                           specimen_data, 
