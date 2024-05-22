@@ -1,5 +1,5 @@
 Package: surveyISS
-Title: Survey age composition input sample sizes with ageing error
+Title: Survey composition input sample size
 Version: 1.0.0
 Type: Package
 Authors@R: 
@@ -29,4 +29,3 @@ Imports:
     afscdata,
     dplyr,
     tidyr
-LazyData: true
