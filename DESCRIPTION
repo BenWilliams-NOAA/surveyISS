@@ -23,7 +23,6 @@ Imports:
     magrittr,
     psych,
     purrr,
-    tidytable,
     vroom,
     here,
     DBI,
