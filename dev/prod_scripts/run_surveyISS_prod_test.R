@@ -67,32 +67,6 @@ read_test %>%
 # by_strata = TRUE
 # global = FALSE
 
-
-
-
-purrr::map(1:iters, ~ surveyISS::srvy_comps(lfreq_data = .lfreq,
-                                            specimen_data = .specimen, 
-                                            cpue_data = .cpue, 
-                                            strata_data = strata, 
-                                            r_t = .read_test, 
-                                            yrs = yrs, 
-                                            bin = 1, 
-                                            boot_hauls = FALSE, 
-                                            boot_lengths = FALSE, 
-                                            boot_ages = FALSE, 
-                                            al_var = FALSE, 
-                                            al_var_ann = FALSE, 
-                                            age_err = TRUE,
-                                            use_gapindex = TRUE,
-                                            by_strata = FALSE,
-                                            global = FALSE))
-
-
-
-
-
-
-
 surveyISS::srvy_iss(iters = iters, 
                     lfreq_data = .lfreq,
                     specimen_data = .specimen, 

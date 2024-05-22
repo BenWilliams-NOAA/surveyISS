@@ -75,9 +75,7 @@ srvy_iss(
 
 \item{save_stats}{Boolean. Save other statistics: base age/length comps without resampling, mean length-at-age, bootstrap bias? (default = FALSE)}
 
-\item{save}{Name to attach to and identify output files. 
-
-#' load dependent packages to NAMESPACE}
+\item{save}{Name to attach to and identify output files.}
 }
 \value{
 Dataframe of input sample size by year, species (using RACE species codes), sex (0 - combined sex 
