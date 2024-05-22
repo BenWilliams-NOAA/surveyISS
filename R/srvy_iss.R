@@ -28,6 +28,16 @@
 #' @param save_stats Boolean. Save other statistics: base age/length comps without resampling, mean length-at-age, bootstrap bias? (default = FALSE)
 #' @param save Name to attach to and identify output files. 
 #' 
+#' @import psych
+#' @import purrr
+#' @import tidytable
+#' @import vroom
+#' @import here
+#' @import DBI
+#' @import afscdata
+#' @import dplyr
+#' @import tidyr
+#' 
 #' @return Dataframe of input sample size by year, species (using RACE species codes), sex (0 - combined sex 
 #' with age/length data combined prior to expansion, 1 - males, 2 - females, 3 - unsexed, 12 - female/male
 #' compositions that sum to one across both sexes combined, 4 - combined sex after summing sex-specific age/length
