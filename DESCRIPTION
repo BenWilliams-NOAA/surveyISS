@@ -29,4 +29,5 @@ Imports:
     DBI,
     afscdata,
     data.table,
-    dplyr
+    dplyr,
+    tidyr
