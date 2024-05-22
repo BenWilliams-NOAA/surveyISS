@@ -6,5 +6,11 @@ output/ai/
 output/ebs/
 output/goa/
 output/nebs/
+output/nbs/
 output/ebs_slope/
-data/
+data/ai/
+data/ebs/
+data/goa/
+data/nebs/
+data/nbs/
+data/ebs_slope/

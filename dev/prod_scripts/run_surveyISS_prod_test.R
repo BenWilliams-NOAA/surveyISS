@@ -30,6 +30,12 @@ yrs = 1990
 species = c(10110, 10130, 10180, 20510, 21720, 21740, 30060, 30420, 30050, 30051, 30052, 30150, 30152, 10261, 10262, 10200)
 # species = c(21740, 30060) # pollock and pop for testing
 
+data <- surveyISS::query_data(survey = 47,
+                              region = region,
+                              species = species,
+                              yrs = yrs)
+
+
 # pull data for Tier 3 species in Gulf of Alaska (1990 on)
 cpue <- vroom::vroom(here::here('data', 'cpue_goa.csv'))
 lfreq <- vroom::vroom(here::here('data', 'lfreq_goa.csv'))
@@ -40,6 +46,9 @@ read_test <- vroom::vroom(here::here('data', 'reader_tester.csv')) %>%
   tidytable::select(species_code, region, read_age, test_age) %>% 
   tidytable::rename(age = 'read_age') %>% 
   tidytable::filter(species_code %in% species)
+
+save(read_test, file = here::here('data', 'r_t.Rda'))
+
 
 ## run for all species (and subsetting out special cases so we don't have two places with those results) ----
 cpue %>% 

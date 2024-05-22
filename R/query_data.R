@@ -10,8 +10,7 @@
 #' @param species species_codes, i.e., c(10110, 21740)
 #' @param yrs minimum survey year to consider (default = NULL)
 #'
-#' @return dataframes that are written to csv files within the 'data' folder. Argument provided for 'region' will be appended
-#' to the end of the datafile name, i.e., 'cpue_goa.csv' is catch per-unit-effort data for the GOA survey.
+#' @return a list of necessary data sources, dataframes are also written to csv files within the 'data/region' folder.
 #' 
 #' @export
 #'
@@ -21,7 +20,7 @@ query_data <- function(survey,
                        yrs = NULL) {
 
   # create folder
-  if (!dir.exists("data")) {dir.create("data")}
+  if (!dir.exists(paste0("data/", region))) {dir.create(paste0("data/", region))}
 
   # year switch
   if (is.null(yrs)) yrs <- 0
@@ -65,8 +64,8 @@ query_data <- function(survey,
                   survey = survey_definition_id,
                   length = length_mm) %>% 
     collect() %>% 
-    vroom::vroom_write(here::here('data', paste0("lfreq_", tolower(region), ".csv")), 
-                       delim = ',')
+    vroom::vroom_write(here::here('data', region, "lfreq.csv"), 
+                       delim = ',') -> lfreq
   
   # specimen data ----
   
@@ -102,8 +101,8 @@ query_data <- function(survey,
                   survey = survey_definition_id,
                   length = length_mm) %>% 
     collect() %>% 
-    vroom::vroom_write(here::here('data', paste0("specimen_", tolower(region), ".csv")), 
-                       delim = ',')
+    vroom::vroom_write(here::here('data', region, "specimen.csv"), 
+                       delim = ',') -> specimen
 
   # cpue data ----
   
@@ -182,8 +181,8 @@ query_data <- function(survey,
     tidytable::left_join(cpue_calc %>% 
                            tidytable::replace_na(list(numcpue = -1))) %>% 
     tidytable::replace_na(list(numcpue = 0)) %>% 
-    vroom::vroom_write(here::here('data', paste0("cpue_", tolower(region), ".csv")), 
-                       delim = ',')
+    vroom::vroom_write(here::here('data', region, "cpue.csv"), 
+                       delim = ',') -> cpue
   
   # strata data ----
   
@@ -224,8 +223,8 @@ query_data <- function(survey,
                            tidytable::left_join(subreg) %>% 
                            tidytable::drop_na()) %>%
     tidytable::filter(design_year == max(design_year), .by = c(stratum)) %>% 
-    vroom::vroom_write(here::here('data', paste0("strata_", tolower(region), ".csv")), 
-                       delim = ',') 
+    vroom::vroom_write(here::here('data', region, "strata.csv"), 
+                       delim = ',') -> strata
   
   # species names ----
   
@@ -237,11 +236,12 @@ query_data <- function(survey,
     dplyr::select(species_code,
                   species_name,
                   common_name) %>% 
-    vroom::vroom_write(here::here('data', paste0("species_", tolower(region), ".csv")), 
-                       delim = ',')
+    vroom::vroom_write(here::here('data', region, "species.csv"), 
+                       delim = ',') -> species
 
   DBI::dbDisconnect(conn)
   cat("finished.\n")
+  list(lfreq = lfreq, specimen = specimen, cpue = cpue, strata = strata)
 }
 
 

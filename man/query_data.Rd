@@ -16,8 +16,7 @@ query_data(survey, region, species, yrs = NULL)
 \item{yrs}{minimum survey year to consider (default = NULL)}
 }
 \value{
-dataframes that are written to csv files within the 'data' folder. Argument provided for 'region' will be appended
-to the end of the datafile name, i.e., 'cpue_goa.csv' is catch per-unit-effort data for the GOA survey.
+a list of necessary data sources, dataframes are also written to csv files within the 'data/region' folder.
 }
 \description{
 Function that connects to AKFIN database (using afscdata package) and pulls catch per-unit-effort (cpue), 
