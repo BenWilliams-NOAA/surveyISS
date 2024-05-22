@@ -30,18 +30,18 @@ comp_stats <- function(r_age,
   
   # compute realized sample size of bootstrapped age/length
   rss_age(r_age, oga) %>%
-    tidytable::mutate(sex_desc = case_when(sex == 0 ~ 'total_pre',
-                                           sex == 1 ~ 'male',
-                                           sex == 2 ~ 'female',
-                                           sex == 12 ~ 'female_male',
-                                           sex == 4 ~ 'total_post')) -> .rss_age
+    tidytable::mutate(sex_desc = dplyr::case_when(sex == 0 ~ 'total_pre',
+                                                  sex == 1 ~ 'male',
+                                                  sex == 2 ~ 'female',
+                                                  sex == 12 ~ 'female_male',
+                                                  sex == 4 ~ 'total_post')) -> .rss_age
   
   rss_length(r_length, ogl) %>%
-    tidytable::mutate(sex_desc = case_when(sex == 0 ~ 'total_pre',
-                                           sex == 1 ~ 'male',
-                                           sex == 2 ~ 'female',
-                                           sex == 12 ~ 'female_male',
-                                           sex == 4 ~ 'total_post')) -> .rss_length
+    tidytable::mutate(sex_desc = dplyr::case_when(sex == 0 ~ 'total_pre',
+                                                  sex == 1 ~ 'male',
+                                                  sex == 2 ~ 'female',
+                                                  sex == 12 ~ 'female_male',
+                                                  sex == 4 ~ 'total_post')) -> .rss_length
   
   # age comps: 
   # compute harmonic mean of iterated realized sample size, which is the input sample size (iss)
@@ -95,9 +95,9 @@ comp_stats_caal <- function(r_caal,
   
   # compute realized sample size of bootstrapped age/length
   rss_caal(r_caal, ogcaal) %>%
-    tidytable::mutate(sex_desc = case_when(sex == 0 ~ 'total',
-                                           sex == 1 ~ 'male',
-                                           sex == 2 ~ 'female')) -> .rss_caal
+    tidytable::mutate(sex_desc = dplyr::case_when(sex == 0 ~ 'total',
+                                                  sex == 1 ~ 'male',
+                                                  sex == 2 ~ 'female')) -> .rss_caal
   
   # compute harmonic mean of iterated realized sample size, which is the input sample size (iss)
   .iss_caal <- iss_caal(.rss_caal, specimen_data)
@@ -349,46 +349,46 @@ iss_age <- function(rss_age,
   
   # compute for region scale
   if(is.null(survey_region)){
-  # age comps: compute harmonic mean of iterated realized sample size, which is the input sample size (iss)
-  rss_age %>% 
-    tidytable::summarise(iss = psych::harmonic.mean(rss, na.rm = TRUE, zero = FALSE),
-                         .by = c(year, species_code, sex, sex_desc)) %>% 
-    # add nominal sample size (nss) and number of hauls (nhls)
-    tidytable::left_join(specimen_data %>% 
-                           tidytable::drop_na(age) %>% 
-                           tidytable::filter(sex != 3) %>% 
-                           tidytable::summarize(nss = .N, .by = c(year, species_code, sex)) %>% 
-                           tidytable::bind_rows(specimen_data %>% 
-                                                  tidytable::drop_na(age) %>% 
-                                                  tidytable::summarize(nss = .N, .by = c(year, species_code)) %>% 
-                                                  tidytable::mutate(sex = 0)) %>% 
-                           tidytable::bind_rows(specimen_data %>% 
-                                                  tidytable::drop_na(age) %>% 
-                                                  tidytable::summarize(nss = .N, .by = c(year, species_code)) %>% 
-                                                  tidytable::mutate(sex = 4)) %>% 
-                           tidytable::bind_rows(specimen_data %>% 
-                                                  tidytable::drop_na(age) %>% 
-                                                  tidytable::filter(sex != 3) %>% 
-                                                  tidytable::summarize(nss = .N, .by = c(year, species_code)) %>% 
-                                                  tidytable::mutate(sex = 12)) %>% 
-                           tidytable::left_join(specimen_data %>% 
-                                                  tidytable::drop_na(age) %>% 
-                                                  tidytable::filter(sex != 3) %>% 
-                                                  tidytable::summarize(nhl = length(unique(hauljoin)), .by = c(year, species_code, sex)) %>% 
-                                                  tidytable::bind_rows(specimen_data %>% 
-                                                                         tidytable::drop_na(age) %>% 
-                                                                         tidytable::summarize(nhl = length(unique(hauljoin)), .by = c(year, species_code)) %>% 
-                                                                         tidytable::mutate(sex = 0)) %>% 
-                                                  tidytable::bind_rows(specimen_data %>% 
-                                                                         tidytable::drop_na(age) %>% 
-                                                                         tidytable::summarize(nhl = length(unique(hauljoin)), .by = c(year, species_code)) %>% 
-                                                                         tidytable::mutate(sex = 4)) %>% 
-                                                  tidytable::bind_rows(specimen_data %>% 
-                                                                         tidytable::drop_na(age) %>% 
-                                                                         tidytable::filter(sex != 3) %>% 
-                                                                         tidytable::summarize(nhl = length(unique(hauljoin)), .by = c(year, species_code)) %>% 
-                                                                         tidytable::mutate(sex = 12)))) %>% 
-    tidytable::filter(iss > 0)
+    # age comps: compute harmonic mean of iterated realized sample size, which is the input sample size (iss)
+    rss_age %>% 
+      tidytable::summarise(iss = psych::harmonic.mean(rss, na.rm = TRUE, zero = FALSE),
+                           .by = c(year, species_code, sex, sex_desc)) %>% 
+      # add nominal sample size (nss) and number of hauls (nhls)
+      tidytable::left_join(specimen_data %>% 
+                             tidytable::drop_na(age) %>% 
+                             tidytable::filter(sex != 3) %>% 
+                             tidytable::summarize(nss = .N, .by = c(year, species_code, sex)) %>% 
+                             tidytable::bind_rows(specimen_data %>% 
+                                                    tidytable::drop_na(age) %>% 
+                                                    tidytable::summarize(nss = .N, .by = c(year, species_code)) %>% 
+                                                    tidytable::mutate(sex = 0)) %>% 
+                             tidytable::bind_rows(specimen_data %>% 
+                                                    tidytable::drop_na(age) %>% 
+                                                    tidytable::summarize(nss = .N, .by = c(year, species_code)) %>% 
+                                                    tidytable::mutate(sex = 4)) %>% 
+                             tidytable::bind_rows(specimen_data %>% 
+                                                    tidytable::drop_na(age) %>% 
+                                                    tidytable::filter(sex != 3) %>% 
+                                                    tidytable::summarize(nss = .N, .by = c(year, species_code)) %>% 
+                                                    tidytable::mutate(sex = 12)) %>% 
+                             tidytable::left_join(specimen_data %>% 
+                                                    tidytable::drop_na(age) %>% 
+                                                    tidytable::filter(sex != 3) %>% 
+                                                    tidytable::summarize(nhl = length(unique(hauljoin)), .by = c(year, species_code, sex)) %>% 
+                                                    tidytable::bind_rows(specimen_data %>% 
+                                                                           tidytable::drop_na(age) %>% 
+                                                                           tidytable::summarize(nhl = length(unique(hauljoin)), .by = c(year, species_code)) %>% 
+                                                                           tidytable::mutate(sex = 0)) %>% 
+                                                    tidytable::bind_rows(specimen_data %>% 
+                                                                           tidytable::drop_na(age) %>% 
+                                                                           tidytable::summarize(nhl = length(unique(hauljoin)), .by = c(year, species_code)) %>% 
+                                                                           tidytable::mutate(sex = 4)) %>% 
+                                                    tidytable::bind_rows(specimen_data %>% 
+                                                                           tidytable::drop_na(age) %>% 
+                                                                           tidytable::filter(sex != 3) %>% 
+                                                                           tidytable::summarize(nhl = length(unique(hauljoin)), .by = c(year, species_code)) %>% 
+                                                                           tidytable::mutate(sex = 12)))) %>% 
+      tidytable::filter(iss > 0)
   } else{ # compute for subregion scale
     # age comps: compute harmonic mean of iterated realized sample size, which is the input sample size (iss)
     rss_age %>% 
