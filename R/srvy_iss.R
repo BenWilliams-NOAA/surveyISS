@@ -38,7 +38,8 @@
 #' @import DBI
 #' @import data.table
 #' @import afscdata
-#' @import dplyr
+#' @importFrom dplyr group_by
+#' @importFrom dplyr ungroup
 #' 
 #' @return Dataframe of input sample size by year, species (using RACE species codes), sex (0 - combined sex 
 #' with age/length data combined prior to expansion, 1 - males, 2 - females, 3 - unsexed, 12 - female/male
