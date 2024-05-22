@@ -22,7 +22,6 @@ Remotes:
 Imports: 
     magrittr,
     psych,
-    tidyverse,
     purrr,
     tidytable,
     vroom,
