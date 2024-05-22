@@ -12,3 +12,16 @@
 #' @param rhs A function call using the magrittr semantics.
 #' @return The result of calling `rhs(lhs)`.
 NULL
+
+#' load dependent packages
+#' @name pckgs
+#' 
+#' @importFrom psych harmonic.mean
+#' @importFrom purrr map
+#' @import tidytable
+#' @import vroom
+#' @import here
+#' @import DBI
+#' @import data.table
+#' @import afscdata
+NULL
