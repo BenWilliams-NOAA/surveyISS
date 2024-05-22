@@ -1,16 +1,3 @@
-#' load dependent packages to NAMESPACE
-#' 
-#' @importFrom psych harmonic.mean
-#' @importFrom purrr map
-#' @import tidytable
-#' @import vroom
-#' @import here
-#' @import DBI
-#' @import data.table
-#' @import afscdata
-#' @import dplyr
-#' 
-#' 
 #' Survey input sample size function
 #' 
 #' @description
@@ -41,6 +28,17 @@
 #' @param save_stats Boolean. Save other statistics: base age/length comps without resampling, mean length-at-age, bootstrap bias? (default = FALSE)
 #' @param save Name to attach to and identify output files. 
 #' 
+#' #' load dependent packages to NAMESPACE
+#' 
+#' @importFrom psych harmonic.mean
+#' @importFrom purrr map
+#' @import tidytable
+#' @import vroom
+#' @import here
+#' @import DBI
+#' @import data.table
+#' @import afscdata
+#' @import dplyr
 #' 
 #' @return Dataframe of input sample size by year, species (using RACE species codes), sex (0 - combined sex 
 #' with age/length data combined prior to expansion, 1 - males, 2 - females, 3 - unsexed, 12 - female/male

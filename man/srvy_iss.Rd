@@ -2,7 +2,7 @@
 % Please edit documentation in R/srvy_iss.R
 \name{srvy_iss}
 \alias{srvy_iss}
-\title{load dependent packages to NAMESPACE}
+\title{Survey input sample size function}
 \usage{
 srvy_iss(
   iters = 1,
@@ -75,7 +75,9 @@ srvy_iss(
 
 \item{save_stats}{Boolean. Save other statistics: base age/length comps without resampling, mean length-at-age, bootstrap bias? (default = FALSE)}
 
-\item{save}{Name to attach to and identify output files.}
+\item{save}{Name to attach to and identify output files. 
+
+#' load dependent packages to NAMESPACE}
 }
 \value{
 Dataframe of input sample size by year, species (using RACE species codes), sex (0 - combined sex 
