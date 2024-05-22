@@ -63,7 +63,7 @@ query_data <- function(survey,
                   -longitude_dd_end, 
                   survey = survey_definition_id,
                   length = length_mm) %>% 
-    collect() %>% 
+    dplyr::collect() %>% 
     vroom::vroom_write(here::here('data', region, "lfreq.csv"), 
                        delim = ',') -> lfreq
   
@@ -100,7 +100,7 @@ query_data <- function(survey,
                   -longitude_dd_end, 
                   survey = survey_definition_id,
                   length = length_mm) %>% 
-    collect() %>% 
+    dplyr::collect() %>% 
     vroom::vroom_write(here::here('data', region, "specimen.csv"), 
                        delim = ',') -> specimen
 
@@ -136,7 +136,7 @@ query_data <- function(survey,
                   -longitude_dd_end, 
                   survey = survey_definition_id,
                   numcpue = cpue_nokm2) %>% 
-    collect() -> cpue
+    dplyr::collect() -> cpue
   
   # get gap_products catch
   dplyr::tbl(conn, dplyr::sql('gap_products.akfin_haul')) %>% 
@@ -171,7 +171,7 @@ query_data <- function(survey,
                   -distance_fished_km, 
                   -net_width_m,
                   survey = survey_definition_id) %>% 
-    collect() -> cpue_calc
+    dplyr::collect() -> cpue_calc
 
   # filling in 0's like gapindex and write cpue data
   tidytable::expand_grid(hauljoin = unique(cpue$hauljoin), species_code = species) %>% 
@@ -197,7 +197,7 @@ query_data <- function(survey,
                   design_year,
                   stratum = area_id,
                   area = area_km2) %>% 
-    collect() -> st_area
+    dplyr::collect() -> st_area
   
   # subregion level with description (e.g., wgoa, etc)
   dplyr::tbl(conn, dplyr::sql('gap_products.akfin_area')) %>% 
@@ -207,7 +207,7 @@ query_data <- function(survey,
     dplyr::select(area_id,
                   subarea_name = description,
                   design_year) %>% 
-    collect() -> subreg
+    dplyr::collect() -> subreg
   
   # strata within subregions
   dplyr::tbl(conn, dplyr::sql('gap_products.akfin_stratum_groups')) %>% 
@@ -215,7 +215,7 @@ query_data <- function(survey,
     dplyr::filter(survey_definition_id %in% survey) %>% 
     dplyr::select(stratum, 
                   area_id) %>% 
-    collect() -> st_subreg
+    dplyr::collect() -> st_subreg
   
   # join all to get strata with area sizes and subregion ids
   st_area %>% 
