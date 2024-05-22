@@ -10,6 +10,9 @@
     <loc>/index.html</loc>
   </url>
   <url>
+    <loc>/reference/adj_age_samples.html</loc>
+  </url>
+  <url>
     <loc>/reference/age_error.html</loc>
   </url>
   <url>
@@ -22,6 +25,18 @@
     <loc>/reference/apop_caal.html</loc>
   </url>
   <url>
+    <loc>/reference/apop_gap.html</loc>
+  </url>
+  <url>
+    <loc>/reference/bias_age.html</loc>
+  </url>
+  <url>
+    <loc>/reference/bias_caal.html</loc>
+  </url>
+  <url>
+    <loc>/reference/bias_length.html</loc>
+  </url>
+  <url>
     <loc>/reference/boot_age.html</loc>
   </url>
   <url>
@@ -29,6 +44,12 @@
   </url>
   <url>
     <loc>/reference/boot_length.html</loc>
+  </url>
+  <url>
+    <loc>/reference/comp_stats.html</loc>
+  </url>
+  <url>
+    <loc>/reference/comp_stats_caal.html</loc>
   </url>
   <url>
     <loc>/reference/ess_age.html</loc>
@@ -40,13 +61,28 @@
     <loc>/reference/ess_size.html</loc>
   </url>
   <url>
+    <loc>/reference/grwth_stats.html</loc>
+  </url>
+  <url>
     <loc>/reference/index.html</loc>
+  </url>
+  <url>
+    <loc>/reference/iss_age.html</loc>
+  </url>
+  <url>
+    <loc>/reference/iss_caal.html</loc>
+  </url>
+  <url>
+    <loc>/reference/iss_length.html</loc>
   </url>
   <url>
     <loc>/reference/lcomp.html</loc>
   </url>
   <url>
     <loc>/reference/lpop.html</loc>
+  </url>
+  <url>
+    <loc>/reference/lpop_gap.html</loc>
   </url>
   <url>
     <loc>/reference/match_gap.html</loc>
@@ -61,10 +97,28 @@
     <loc>/reference/query_data.html</loc>
   </url>
   <url>
+    <loc>/reference/reduce_samples.html</loc>
+  </url>
+  <url>
+    <loc>/reference/red_len_samples.html</loc>
+  </url>
+  <url>
+    <loc>/reference/rss_age.html</loc>
+  </url>
+  <url>
+    <loc>/reference/rss_caal.html</loc>
+  </url>
+  <url>
+    <loc>/reference/rss_length.html</loc>
+  </url>
+  <url>
     <loc>/reference/sample.html</loc>
   </url>
   <url>
     <loc>/reference/srvy_comps.html</loc>
+  </url>
+  <url>
+    <loc>/reference/srvy_comps_ai_cmplx.html</loc>
   </url>
   <url>
     <loc>/reference/srvy_comps_ai_rebs.html</loc>
@@ -76,13 +130,22 @@
     <loc>/reference/srvy_iss.html</loc>
   </url>
   <url>
+    <loc>/reference/srvy_iss_ai_cmplx.html</loc>
+  </url>
+  <url>
     <loc>/reference/srvy_iss_ai_rebs.html</loc>
+  </url>
+  <url>
+    <loc>/reference/srvy_iss_ai_subreg.html</loc>
   </url>
   <url>
     <loc>/reference/srvy_iss_caal.html</loc>
   </url>
   <url>
     <loc>/reference/srvy_iss_exp.html</loc>
+  </url>
+  <url>
+    <loc>/reference/srvy_iss_goa_cmplx.html</loc>
   </url>
   <url>
     <loc>/reference/srvy_iss_goa_dr.html</loc>
@@ -95,5 +158,8 @@
   </url>
   <url>
     <loc>/reference/srvy_iss_goa_w_c_e.html</loc>
+  </url>
+  <url>
+    <loc>/reference/srvy_iss_w140.html</loc>
   </url>
 </urlset>
