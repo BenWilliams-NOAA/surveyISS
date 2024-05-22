@@ -2,8 +2,6 @@
 "_PACKAGE"
 
 ## usethis namespace: start
-#' @importFrom psych harmonic.mean
-#' @importFrom purrr map
 #' @import tidytable
 #' @import vroom
 #' @import here
