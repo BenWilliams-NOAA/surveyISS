@@ -145,7 +145,7 @@ srvy_comps <- function(lfreq_data,
   }
   
   # if desired, reduce length frequency sample sizes
-  if(!is.null(length_samples)) {
+  if(!is.null(len_samples)) {
     red_len_samples(.lfreq_un, samples = length_samples) -> .lfreq_un
   }
   
@@ -396,7 +396,7 @@ srvy_comps_ai_cmplx <- function(lfreq_data,
   }
   
   # if desired, reduce length frequency sample sizes
-  if(!is.null(length_samples)) {
+  if(!is.null(len_samples)) {
     red_len_samples(.lfreq_un, samples = length_samples) -> .lfreq_un
   }
   

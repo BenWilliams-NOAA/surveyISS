@@ -1,19 +1,19 @@
 # example script to obtain age/length input sample size for production run
 
-# load surveyISS library
-#devtools::install_github("afsc-assessments/surveyISS", force = TRUE)
-#library(surveyISS)
+# load surveyISS library ----
+devtools::install_github("BenWilliams-NOAA/surveyISS", force = TRUE)
+library(surveyISS)
 
-# load/source libraries/functions for testing ----
-library(purrr)
-library(tidyverse)
-library(tidytable)
-library(psych)
-library(vroom)
-library(here)
-
-source_files <- list.files(here::here("R"), "*.R$")
-map(here::here("R", source_files), source)
+## load/source libraries/functions for testing ----
+# library(purrr)
+# library(tidyverse)
+# library(tidytable)
+# library(psych)
+# library(vroom)
+# library(here)
+# 
+# source_files <- list.files(here::here("R"), "*.R$")
+# map(here::here("R", source_files), source)
 
 # set number of desired bootstrap iterations (suggested here: 10 for testing, 500 for running)
 # iters = 500
@@ -67,26 +67,26 @@ read_test %>%
 # by_strata = TRUE
 # global = FALSE
 
-srvy_iss(iters = iters, 
-         lfreq_data = .lfreq,
-         specimen_data = .specimen, 
-         cpue_data = .cpue, 
-         strata_data = strata, 
-         r_t = .read_test, 
-         yrs = yrs, 
-         bin = 1, 
-         boot_hauls = TRUE, 
-         boot_lengths = TRUE, 
-         boot_ages = TRUE, 
-         al_var = TRUE, 
-         al_var_ann = TRUE, 
-         age_err = TRUE,
-         use_gapindex = TRUE,
-         by_strata = FALSE,
-         global = FALSE,
-         region = region, 
-         save_interm = FALSE, 
-         save = 'prodtest')
+surveyISS::srvy_iss(iters = iters, 
+                    lfreq_data = .lfreq,
+                    specimen_data = .specimen, 
+                    cpue_data = .cpue, 
+                    strata_data = strata, 
+                    r_t = .read_test, 
+                    yrs = yrs, 
+                    bin = 1, 
+                    boot_hauls = TRUE, 
+                    boot_lengths = TRUE, 
+                    boot_ages = TRUE, 
+                    al_var = TRUE, 
+                    al_var_ann = TRUE, 
+                    age_err = TRUE,
+                    use_gapindex = TRUE,
+                    by_strata = FALSE,
+                    global = FALSE,
+                    region = region, 
+                    save_interm = FALSE, 
+                    save = 'prodtest')
 
 ## run for goa pollock (west of 140) ----
 cpue %>% 
