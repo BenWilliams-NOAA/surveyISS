@@ -17,7 +17,7 @@ library(surveyISS)
 
 # set number of desired bootstrap iterations (suggested here: 10 for testing, 500 for running)
 # iters = 500
-iters = 10
+iters = 2
 
 # for testing run time
 if(iters < 100){
@@ -67,6 +67,32 @@ read_test %>%
 # by_strata = TRUE
 # global = FALSE
 
+
+
+
+purrr::map(1:iters, ~ surveyISS::srvy_comps(lfreq_data = .lfreq,
+                                            specimen_data = .specimen, 
+                                            cpue_data = .cpue, 
+                                            strata_data = strata, 
+                                            r_t = .read_test, 
+                                            yrs = yrs, 
+                                            bin = 1, 
+                                            boot_hauls = FALSE, 
+                                            boot_lengths = FALSE, 
+                                            boot_ages = FALSE, 
+                                            al_var = FALSE, 
+                                            al_var_ann = FALSE, 
+                                            age_err = TRUE,
+                                            use_gapindex = TRUE,
+                                            by_strata = FALSE,
+                                            global = FALSE))
+
+
+
+
+
+
+
 surveyISS::srvy_iss(iters = iters, 
                     lfreq_data = .lfreq,
                     specimen_data = .specimen, 
@@ -98,7 +124,7 @@ specimen %>%
 read_test %>% 
   tidytable::filter(species_code %in% c(21740)) -> .read_test_poll
 
-srvy_iss_w140(iters = iters, 
+surveyISS::srvy_iss_w140(iters = iters, 
               lfreq_data = .lfreq_poll,
               specimen_data = .specimen_poll, 
               cpue_data = .cpue_poll, 
@@ -129,7 +155,7 @@ specimen %>%
 read_test %>% 
   tidytable::filter(species_code %in% c(30050, 30051, 30052)) -> .read_test_rebs
 
-srvy_iss_goa_cmplx(iters = iters, 
+surveyISS::srvy_iss_goa_cmplx(iters = iters, 
                    lfreq_data = .lfreq_rebs, 
                    specimen_data = .specimen_rebs, 
                    cpue_data = .cpue_rebs, 
@@ -162,7 +188,7 @@ specimen %>%
 read_test %>% 
   tidytable::filter(species_code %in% c(30150, 30152)) -> .read_test_dr
 
-srvy_iss_goa_cmplx(iters = iters, 
+surveyISS::srvy_iss_goa_cmplx(iters = iters, 
                    lfreq_data = .lfreq_dr, 
                    specimen_data = .specimen_dr, 
                    cpue_data = .cpue_dr, 
@@ -195,7 +221,7 @@ specimen %>%
 read_test %>% 
   tidytable::filter(species_code %in% c(10261, 10262)) -> .read_test_nsrs
 
-srvy_iss_goa_w_c_e(iters = iters, 
+surveyISS::srvy_iss_goa_w_c_e(iters = iters, 
                    lfreq_data = .lfreq_nsrs, 
                    specimen_data = .specimen_nsrs, 
                    cpue_data = .cpue_nsrs, 
@@ -226,7 +252,7 @@ specimen %>%
 read_test %>% 
   tidytable::filter(species_code %in% c(10200)) -> .read_test_rex
 
-srvy_iss_goa_wc_e(iters = iters, 
+surveyISS::srvy_iss_goa_wc_e(iters = iters, 
                   lfreq_data = .lfreq_rex, 
                   specimen_data = .specimen_rex, 
                   cpue_data = .cpue_rex,
@@ -273,7 +299,7 @@ specimen %>%
 read_test %>% 
   tidytable::filter(!(species_code %in% c(30050, 30051, 30052, 30420))) -> .read_test
 
-srvy_iss(iters = iters, 
+surveyISS::srvy_iss(iters = iters, 
          lfreq_data = .lfreq,
          specimen_data = .specimen, 
          cpue_data = .cpue, 
@@ -304,7 +330,7 @@ specimen %>%
 read_test %>% 
   tidytable::filter(species_code %in% c(30050, 30051, 30052)) -> .read_test_bsre
 
-srvy_iss_ai_cmplx(iters = iters, 
+surveyISS::srvy_iss_ai_cmplx(iters = iters, 
                   lfreq_data = .lfreq_bsre, 
                   specimen_data = .specimen_bsre, 
                   cpue_data = .cpue_bsre, 
@@ -337,7 +363,7 @@ specimen %>%
 read_test %>% 
   tidytable::filter(species_code %in% c(30420)) -> .read_test_nr
 
-srvy_iss_ai_subreg(iters = iters,
+surveyISS::srvy_iss_ai_subreg(iters = iters,
                    lfreq_data = .lfreq_nr, 
                    specimen_data = .specimen_nr, 
                    cpue_data = .cpue_nr, 
@@ -375,7 +401,7 @@ read_test <- vroom::vroom(here::here('data', 'reader_tester.csv')) %>%
   tidytable::rename(age = 'read_age') %>% 
   tidytable::filter(species_code %in% species)
 
-srvy_iss(iters = iters, 
+surveyISS::srvy_iss(iters = iters, 
          lfreq_data = lfreq,
          specimen_data = specimen, 
          cpue_data = cpue, 
@@ -413,7 +439,7 @@ read_test <- vroom::vroom(here::here('data', 'reader_tester.csv')) %>%
   tidytable::rename(age = 'read_age') %>% 
   tidytable::filter(species_code %in% species)
 
-srvy_iss(iters = iters, 
+surveyISS::srvy_iss(iters = iters, 
          lfreq_data = lfreq_data,
          specimen_data = specimen_data, 
          cpue_data = cpue_data, 
@@ -450,7 +476,7 @@ read_test <- vroom::vroom(here::here('data', 'reader_tester.csv')) %>%
   tidytable::rename(age = 'read_age') %>% 
   tidytable::filter(species_code %in% species)
 
-srvy_iss(iters = iters, 
+surveyISS::srvy_iss(iters = iters, 
          lfreq_data = lfreq,
          specimen_data = specimen, 
          cpue_data = cpue, 
@@ -495,7 +521,7 @@ specimen %>%
 read_test %>% 
   tidytable::filter(species_code %in% species) -> .read_test
 
-srvy_iss_caal(iters = iters, 
+surveyISS::srvy_iss_caal(iters = iters, 
               specimen_data = .specimen, 
               cpue_data = .cpue, 
               r_t = .read_test, 

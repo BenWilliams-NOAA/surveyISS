@@ -20,7 +20,7 @@ al_variab <- function(age_dat,
                                                .by = c(species_code, year, sex, age)) %>% 
                              tidytable::drop_na() %>% 
                              dplyr::group_by(species_code, year, sex, age) %>% 
-                             tidytable::mutate(samp_length = rmultinom(1, sum(lengthed), p_l)) %>% 
+                             dplyr::mutate(samp_length = rmultinom(1, sum(lengthed), p_l)) %>% 
                              dplyr::ungroup() %>% 
                              # note the following throws an error
                              # tidytable::mutate(samp_length = rmultinom(1, sum(lengthed), p_l), .by = c(species_code, year, sex, age)) %>% 
@@ -43,7 +43,7 @@ al_variab <- function(age_dat,
                                                .by = c(species_code, sex, age)) %>% 
                              tidytable::drop_na() %>% 
                              dplyr::group_by(species_code, sex, age) %>% 
-                             tidytable::mutate(samp_length = rmultinom(1, sum(lengthed), p_l)) %>% 
+                             dplyr::mutate(samp_length = rmultinom(1, sum(lengthed), p_l)) %>% 
                              dplyr::ungroup() %>% 
                              # note the following throws an error
                              # tidytable::mutate(samp_length = rmultinom(1, sum(lengthed), p_l), .by = c(species_code, sex, age)) %>% 

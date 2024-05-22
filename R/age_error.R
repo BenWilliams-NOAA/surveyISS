@@ -44,7 +44,7 @@ age_error <- function(age_dat,
                                                     tidytable::mutate(p_a = count / sum(count), .by = c(species_code, age))) %>% 
                              tidytable::drop_na() %>% 
                              dplyr::group_by(species_code, year, age) %>% 
-                             tidytable::mutate(new_age = rmultinom(1, aged, p_a)) %>% 
+                             dplyr::mutate(new_age = rmultinom(1, aged, p_a)) %>% 
                              dplyr::ungroup() %>% 
                              # note the following throws an error
                              # tidytable::mutate(new_age = rmultinom(1, aged, p_a), .by = c(species_code, year, age)) %>% 
