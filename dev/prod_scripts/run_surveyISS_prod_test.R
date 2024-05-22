@@ -15,47 +15,139 @@ library(surveyISS)
 # source_files <- list.files(here::here("R"), "*.R$")
 # map(here::here("R", source_files), source)
 
+# set iterations ----
 # set number of desired bootstrap iterations (suggested here: 10 for testing, 500 for running)
 # iters = 500
 iters = 10
+
+# get data ----
+# if query = TRUE then will run data queries, if FALSE will read previously run data
+# set = TRUE if first time running, or if data has changed
+query = TRUE
+
+## gulf of alaska ----
+region = 'goa'
+yrs = 1990
+species = c(10110, 10130, 10180, 20510, 21720, 21740, 30060, 30420, 30050, 30051, 30052, 30150, 30152, 10261, 10262, 10200)
+# species = c(21740, 30060) # pollock and pop for testing
+survey = 47
+
+if(isTRUE(query)){
+  data_goa <- surveyISS::query_data(survey = survey,
+                                    region = region,
+                                    species = species,
+                                    yrs = yrs)
+  
+  saveRDS(data, file = here::here('data', region, 'data.RDS'))
+} else{
+  data_goa <- readRDS(file = here::here('data', region, 'data.RDS'))
+}
+
+## aleutian islands ----
+region = 'ai'
+yrs = 1991
+species = c(10110, 10112, 21720, 21740, 21921, 30060, 30420, 30050, 30051, 30052)
+survey = 52
+
+if(isTRUE(query)){
+  data_ai <- surveyISS::query_data(survey = survey,
+                                   region = region,
+                                   species = species,
+                                   yrs = yrs)
+  
+  saveRDS(data, file = here::here('data', region, 'data.RDS'))
+} else{
+  data_ai <- readRDS(file = here::here('data', region, 'data.RDS'))
+}
+
+## ebs slope ----
+region = 'ebs_slope'
+yrs = 2002
+species = c(10110, 10112, 10115,30060)
+survey = 78
+
+if(isTRUE(query)){
+  data_ebss <- surveyISS::query_data(survey = survey,
+                                     region = region,
+                                     species = species,
+                                     yrs = yrs)
+  
+  saveRDS(data, file = here::here('data', region, 'data.RDS'))
+} else{
+  data_ebss <- readRDS(file = here::here('data', region, 'data.RDS'))
+}
+
+## ebs ----
+region = 'ebs'
+yrs = 1979
+species = c(10110, 10112, 10115, 10130, 10210, 10261, 10285, 21720, 21740)
+survey = 98
+
+if(isTRUE(query)){
+  data_ebs <- surveyISS::query_data(survey = survey,
+                                    region = region,
+                                    species = species,
+                                    yrs = yrs)
+  
+  saveRDS(data, file = here::here('data', region, 'data.RDS'))
+} else{
+  data_ebs <- readRDS(file = here::here('data', region, 'data.RDS'))
+}
+
+
+## nbs ----
+region = 'nbs'
+yrs = 1979
+species = c(10110, 10112, 10115, 10130, 10210, 10261, 10285, 21720, 21740)
+survey = 143
+
+if(isTRUE(query)){
+  data_nbs <- surveyISS::query_data(survey = survey,
+                                    region = region,
+                                    species = species,
+                                    yrs = yrs)
+  
+  saveRDS(data, file = here::here('data', region, 'data.RDS'))
+} else{
+  data_nbs <- readRDS(file = here::here('data', region, 'data.RDS'))
+}
+
+## ebs & nbs ----
+region = 'nebs'
+yrs = 1979
+species = c(10110, 10112, 10115, 10130, 10210, 10261, 10285, 21720, 21740)
+survey = c(98, 143)
+
+if(isTRUE(query)){
+  data_nebs <- surveyISS::query_data(survey = survey,
+                                     region = region,
+                                     species = species,
+                                     yrs = yrs)
+  
+  saveRDS(data, file = here::here('data', region, 'data.RDS'))
+} else{
+  data_nebs <- readRDS(file = here::here('data', region, 'data.RDS'))
+}
+
+
 
 # for testing run time
 if(iters < 100){
   st <- Sys.time()
 }
 
+
+
+
+
 # gulf of alaska ----
-region = 'goa'
-yrs = 1990
-species = c(10110, 10130, 10180, 20510, 21720, 21740, 30060, 30420, 30050, 30051, 30052, 30150, 30152, 10261, 10262, 10200)
-# species = c(21740, 30060) # pollock and pop for testing
-
-data <- surveyISS::query_data(survey = 47,
-                              region = region,
-                              species = species,
-                              yrs = yrs)
-
-
-# pull data for Tier 3 species in Gulf of Alaska (1990 on)
-cpue <- vroom::vroom(here::here('data', 'cpue_goa.csv'))
-lfreq <- vroom::vroom(here::here('data', 'lfreq_goa.csv'))
-strata <- vroom::vroom(here::here('data', 'strata_goa.csv'))
-specimen <- vroom::vroom(here::here('data', 'specimen_goa.csv'))
-read_test <- vroom::vroom(here::here('data', 'reader_tester.csv')) %>% 
-  dplyr::rename_all(tolower) %>% 
-  tidytable::select(species_code, region, read_age, test_age) %>% 
-  tidytable::rename(age = 'read_age') %>% 
-  tidytable::filter(species_code %in% species)
-
-save(read_test, file = here::here('data', 'r_t.Rda'))
-
 
 ## run for all species (and subsetting out special cases so we don't have two places with those results) ----
-cpue %>% 
+data_goa$cpue %>% 
   tidytable::filter(!(species_code %in% c(30050, 30051, 30052, 30150, 30152, 10261, 10262, 10200, 21740))) -> .cpue
-lfreq %>% 
+data_goa$lfreq %>% 
   tidytable::filter(!(species_code %in% c(30050, 30051, 30052, 30150, 30152, 10261, 10262, 10200, 21740))) -> .lfreq
-specimen %>% 
+data_goa$specimen %>% 
   tidytable::filter(!(species_code %in% c(30050, 30051, 30052, 30150, 30152, 10261, 10262, 10200, 21740))) -> .specimen
 read_test %>% 
   tidytable::filter(!(species_code %in% c(30050, 30051, 30052, 30150, 30152, 10261, 10262, 10200, 21740))) -> .read_test
@@ -94,11 +186,11 @@ surveyISS::srvy_iss(iters = iters,
                     save = 'prodtest')
 
 ## run for goa pollock (west of 140) ----
-cpue %>% 
+data_goa$cpue %>% 
   tidytable::filter(species_code %in% c(21740)) -> .cpue_poll
-lfreq %>% 
+data_goa$lfreq %>% 
   tidytable::filter(species_code %in% c(21740)) -> .lfreq_poll
-specimen %>% 
+data_goa$specimen %>% 
   tidytable::filter(species_code %in% c(21740)) -> .specimen_poll
 read_test %>% 
   tidytable::filter(species_code %in% c(21740)) -> .read_test_poll
@@ -120,11 +212,11 @@ surveyISS::srvy_iss_w140(iters = iters,
                          save = 'prodtest')
 
 ## run for goa rougheye-blackspotted stock complex ----
-cpue %>% 
+data_goa$cpue %>% 
   tidytable::filter(species_code %in% c(30050, 30051, 30052)) -> .cpue_rebs
-lfreq %>% 
+data_goa$lfreq %>% 
   tidytable::filter(species_code %in% c(30050, 30051, 30052)) -> .lfreq_rebs
-specimen %>% 
+data_goa$specimen %>% 
   tidytable::filter(species_code %in% c(30050, 30051, 30052)) -> .specimen_rebs
 read_test %>% 
   tidytable::filter(species_code %in% c(30050, 30051, 30052)) -> .read_test_rebs
@@ -148,11 +240,11 @@ surveyISS::srvy_iss_goa_cmplx(iters = iters,
                               save = 'prodtest')
 
 ## run for goa dusky stock (has different historical species codes) ----
-cpue %>% 
+data_goa$cpue %>% 
   tidytable::filter(species_code %in% c(30150, 30152)) -> .cpue_dr
-lfreq %>% 
+data_goa$lfreq %>% 
   tidytable::filter(species_code %in% c(30150, 30152)) -> .lfreq_dr
-specimen %>% 
+data_goa$specimen %>% 
   tidytable::filter(species_code %in% c(30150, 30152)) -> .specimen_dr
 read_test %>% 
   tidytable::filter(species_code %in% c(30150, 30152)) -> .read_test_dr
@@ -176,11 +268,11 @@ surveyISS::srvy_iss_goa_cmplx(iters = iters,
                               save = 'prodtest')
 
 ## run for goa northern/southern rock sole ----
-cpue %>% 
+data_goa$cpue %>% 
   tidytable::filter(species_code %in% c(10261, 10262)) -> .cpue_nsrs
-lfreq %>% 
+data_goa$lfreq %>% 
   tidytable::filter(species_code %in% c(10261, 10262)) -> .lfreq_nsrs
-specimen %>% 
+data_goa$specimen %>% 
   tidytable::filter(species_code %in% c(10261, 10262)) -> .specimen_nsrs
 read_test %>% 
   tidytable::filter(species_code %in% c(10261, 10262)) -> .read_test_nsrs
@@ -202,11 +294,11 @@ surveyISS::srvy_iss_goa_w_c_e(iters = iters,
                               save = 'prodtest')
 
 ## run for goa rex sole ----
-cpue %>% 
+data_goa$cpue %>% 
   tidytable::filter(species_code %in% c(10200)) -> .cpue_rex
-lfreq %>% 
+data_goa$lfreq %>% 
   tidytable::filter(species_code %in% c(10200)) -> .lfreq_rex
-specimen %>% 
+data_goa$specimen %>% 
   tidytable::filter(species_code %in% c(10200)) -> .specimen_rex
 read_test %>% 
   tidytable::filter(species_code %in% c(10200)) -> .read_test_rex
