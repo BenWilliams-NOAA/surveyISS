@@ -433,11 +433,16 @@ surveyISS::srvy_iss_ai_subreg(iters = iters,
 
 # ebs shelf ----
 
-read_test <- vroom::vroom(here::here('data', 'reader_tester.csv')) %>% 
+read_test <- vroom::vroom(here::here('data', 'r_t', 'reader_tester.csv')) %>% 
   dplyr::rename_all(tolower) %>% 
   tidytable::select(species_code, region, read_age, test_age) %>% 
-  tidytable::rename(age = 'read_age') %>% 
-  tidytable::filter(species_code %in% species)
+  tidytable::rename(age = 'read_age')
+
+
+save(read_test, file = here::here('data', 'read_test.rda'))
+
+readRDS(here::here('data', 'r_t.rda'))
+
 
 surveyISS::srvy_iss(iters = iters, 
                     lfreq_data = data_ebs$lfreq,
