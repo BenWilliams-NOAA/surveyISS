@@ -29,3 +29,4 @@ Imports:
     afscdata,
     dplyr,
     tidyr
+LazyData: true

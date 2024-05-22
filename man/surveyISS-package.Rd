@@ -4,7 +4,7 @@
 \name{surveyISS-package}
 \alias{surveyISS}
 \alias{surveyISS-package}
-\title{surveyISS: Survey age composition input sample sizes with ageing error}
+\title{surveyISS: Survey composition input sample size}
 \description{
 Produce bootstrap estimates of input sample sizes for use in statistical catch at age fishery assessments
 }

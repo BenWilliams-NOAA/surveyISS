@@ -2,5 +2,11 @@
 ^\.Rproj\.user$
 ^dev$
 ^output$
-^data$
+^data/ai$
+^data/ebs$
+^data/ebs_slope$
+^data/goa$
+^data/nbs$
+^data/nebs$
+^data/r_t$
 ^LICENSE\.md$
