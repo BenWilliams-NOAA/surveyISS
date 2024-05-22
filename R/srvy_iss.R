@@ -585,23 +585,23 @@ srvy_iss_goa_w_c_e <- function(iters = 1,
   # define data by subregion 
   lfreq_data %>%
     tidytable::left_join(strata_data) %>% 
-    tidytable::mutate(region = case_when(area_id == 803 ~ 'cgoa',
-                                         area_id == 804 ~ 'egoa',
-                                         area_id == 805 ~ 'wgoa')) %>% 
+    tidytable::mutate(region = dplyr::case_when(area_id == 803 ~ 'cgoa',
+                                                area_id == 804 ~ 'egoa',
+                                                area_id == 805 ~ 'wgoa')) %>% 
     tidytable::select(-design_year, -area, -area_id, -subarea_name) -> .lfreq_data
   
   specimen_data %>% 
     tidytable::left_join(strata_data) %>% 
-    tidytable::mutate(region = case_when(area_id == 803 ~ 'cgoa',
-                                         area_id == 804 ~ 'egoa',
-                                         area_id == 805 ~ 'wgoa')) %>% 
+    tidytable::mutate(region = dplyr::case_when(area_id == 803 ~ 'cgoa',
+                                                area_id == 804 ~ 'egoa',
+                                                area_id == 805 ~ 'wgoa')) %>% 
     tidytable::select(-design_year, -area, -area_id, -subarea_name) -> .specimen_data
   
   cpue_data %>%  
     tidytable::left_join(strata_data) %>% 
-    tidytable::mutate(region = case_when(area_id == 803 ~ 'cgoa',
-                                         area_id == 804 ~ 'egoa',
-                                         area_id == 805 ~ 'wgoa')) %>% 
+    tidytable::mutate(region = dplyr::case_when(area_id == 803 ~ 'cgoa',
+                                                area_id == 804 ~ 'egoa',
+                                                area_id == 805 ~ 'wgoa')) %>% 
     tidytable::select(-design_year, -area, -area_id, -subarea_name)  -> .cpue_data
   
   # get original age/length pop'n values ----
@@ -627,9 +627,9 @@ srvy_iss_goa_w_c_e <- function(iters = 1,
   
   oga <- do.call(mapply, c(list, og, SIMPLIFY = FALSE))$age %>% 
     tidytable::map_df(., ~as.data.frame(.x), .id = "region") %>% 
-    tidytable::mutate(region = case_when(region == 1 ~ subregion[1],
-                                         region == 2 ~ subregion[2],
-                                         region == 3 ~ subregion[3])) %>% 
+    tidytable::mutate(region = dplyr::case_when(region == 1 ~ subregion[1],
+                                                region == 2 ~ subregion[2],
+                                                region == 3 ~ subregion[3])) %>% 
     tidytable::bind_rows(do.call(mapply, c(list, og, SIMPLIFY = FALSE))$age %>% 
                            tidytable::map_df(., ~as.data.frame(.x), .id = "region") %>% 
                            tidytable::summarize(agepop = sum(agepop),
@@ -640,9 +640,9 @@ srvy_iss_goa_w_c_e <- function(iters = 1,
   
   ogl <- do.call(mapply, c(list, og, SIMPLIFY = FALSE))$length %>% 
     tidytable::map_df(., ~as.data.frame(.x), .id = "region") %>% 
-    tidytable::mutate(region = case_when(region == 1 ~ subregion[1],
-                                         region == 2 ~ subregion[2],
-                                         region == 3 ~ subregion[3])) %>% 
+    tidytable::mutate(region = dplyr::case_when(region == 1 ~ subregion[1],
+                                                region == 2 ~ subregion[2],
+                                                region == 3 ~ subregion[3])) %>% 
     tidytable::bind_rows(do.call(mapply, c(list, og, SIMPLIFY = FALSE))$length %>% 
                            tidytable::map_df(., ~as.data.frame(.x), .id = "region") %>% 
                            tidytable::summarize(abund = sum(abund),
@@ -672,16 +672,16 @@ srvy_iss_goa_w_c_e <- function(iters = 1,
   # get resampled age pop'n
   r_age <- purrr::map(1:iters, ~(do.call(mapply, c(list, rr[[.]], SIMPLIFY = FALSE))$age %>% 
                                    tidytable::map_df(., ~as.data.frame(.x), .id = "region") %>% 
-                                   tidytable::mutate(region = case_when(region == 1 ~ subregion[1],
-                                                                        region == 2 ~ subregion[2],
-                                                                        region == 3 ~ subregion[3])))) %>% 
+                                   tidytable::mutate(region = dplyr::case_when(region == 1 ~ subregion[1],
+                                                                               region == 2 ~ subregion[2],
+                                                                               region == 3 ~ subregion[3])))) %>% 
     tidytable::map_df(., ~as.data.frame(.x), .id = "sim") %>% 
     # sum across subregions to get region age pop'n
     tidytable::bind_rows(purrr::map(1:iters, ~(do.call(mapply, c(list, rr[[.]], SIMPLIFY = FALSE))$age %>% 
                                                  tidytable::map_df(., ~as.data.frame(.x), .id = "region") %>% 
-                                                 tidytable::mutate(region = case_when(region == 1 ~ subregion[1],
-                                                                                      region == 2 ~ subregion[2],
-                                                                                      region == 3 ~ subregion[3])))) %>% 
+                                                 tidytable::mutate(region = dplyr::case_when(region == 1 ~ subregion[1],
+                                                                                             region == 2 ~ subregion[2],
+                                                                                             region == 3 ~ subregion[3])))) %>% 
                            tidytable::map_df(., ~as.data.frame(.x), .id = "sim") %>% 
                            tidytable::summarise(agepop = sum(agepop),
                                                 mean_length = sum(mean_length * agepop) / sum(agepop),
@@ -691,16 +691,16 @@ srvy_iss_goa_w_c_e <- function(iters = 1,
   # get resampled length pop'n
   r_length <- purrr::map(1:iters, ~(do.call(mapply, c(list, rr[[.]], SIMPLIFY = FALSE))$length %>% 
                                       tidytable::map_df(., ~as.data.frame(.x), .id = "region") %>% 
-                                      tidytable::mutate(region = case_when(region == 1 ~ subregion[1],
-                                                                           region == 2 ~ subregion[2],
-                                                                           region == 3 ~ subregion[3])))) %>% 
+                                      tidytable::mutate(region = dplyr::case_when(region == 1 ~ subregion[1],
+                                                                                  region == 2 ~ subregion[2],
+                                                                                  region == 3 ~ subregion[3])))) %>% 
     tidytable::map_df(., ~as.data.frame(.x), .id = "sim") %>% 
     # sum across subregions to get region length pop'n
     tidytable::bind_rows(purrr::map(1:iters, ~(do.call(mapply, c(list, rr[[.]], SIMPLIFY = FALSE))$length %>% 
                                                  tidytable::map_df(., ~as.data.frame(.x), .id = "region") %>% 
-                                                 tidytable::mutate(region = case_when(region == 1 ~ subregion[1],
-                                                                                      region == 2 ~ subregion[2],
-                                                                                      region == 3 ~ subregion[3])))) %>% 
+                                                 tidytable::mutate(region = dplyr::case_when(region == 1 ~ subregion[1],
+                                                                                             region == 2 ~ subregion[2],
+                                                                                             region == 3 ~ subregion[3])))) %>% 
                            tidytable::map_df(., ~as.data.frame(.x), .id = "sim") %>% 
                            tidytable::summarise(abund = sum(abund),
                                                 .by = c(sim, year, species_code, sex, length)) %>% 
@@ -818,20 +818,20 @@ srvy_iss_goa_wc_e <- function(iters = 1,
   # define data by subregion 
   lfreq_data %>%
     tidytable::left_join(strata_data) %>% 
-    tidytable::mutate(region = case_when(area_id %in% c(803, 805) ~ 'wcgoa',
-                                         area_id == 804 ~ 'egoa')) %>% 
+    tidytable::mutate(region = dplyr::case_when(area_id %in% c(803, 805) ~ 'wcgoa',
+                                                area_id == 804 ~ 'egoa')) %>% 
     tidytable::select(-design_year, -area, -area_id, -subarea_name) -> .lfreq_data
   
   specimen_data %>% 
     tidytable::left_join(strata_data) %>% 
-    tidytable::mutate(region = case_when(area_id %in% c(803, 805) ~ 'wcgoa',
-                                         area_id == 804 ~ 'egoa')) %>% 
+    tidytable::mutate(region = dplyr::case_when(area_id %in% c(803, 805) ~ 'wcgoa',
+                                                area_id == 804 ~ 'egoa')) %>% 
     tidytable::select(-design_year, -area, -area_id, -subarea_name) -> .specimen_data
   
   cpue_data %>%  
     tidytable::left_join(strata_data) %>% 
-    tidytable::mutate(region = case_when(area_id %in% c(803, 805) ~ 'wcgoa',
-                                         area_id == 804 ~ 'egoa')) %>% 
+    tidytable::mutate(region = dplyr::case_when(area_id %in% c(803, 805) ~ 'wcgoa',
+                                                area_id == 804 ~ 'egoa')) %>% 
     tidytable::select(-design_year, -area, -area_id, -subarea_name)  -> .cpue_data
   
   # get original age/length pop'n values ----
@@ -857,8 +857,8 @@ srvy_iss_goa_wc_e <- function(iters = 1,
   
   oga <- do.call(mapply, c(list, og, SIMPLIFY = FALSE))$age %>% 
     tidytable::map_df(., ~as.data.frame(.x), .id = "region") %>% 
-    tidytable::mutate(region = case_when(region == 1 ~ subregion[1],
-                                         region == 2 ~ subregion[2])) %>% 
+    tidytable::mutate(region = dplyr::case_when(region == 1 ~ subregion[1],
+                                                region == 2 ~ subregion[2])) %>% 
     tidytable::bind_rows(do.call(mapply, c(list, og, SIMPLIFY = FALSE))$age %>% 
                            tidytable::map_df(., ~as.data.frame(.x), .id = "region") %>% 
                            tidytable::summarize(agepop = sum(agepop),
@@ -869,8 +869,8 @@ srvy_iss_goa_wc_e <- function(iters = 1,
   
   ogl <- do.call(mapply, c(list, og, SIMPLIFY = FALSE))$length %>% 
     tidytable::map_df(., ~as.data.frame(.x), .id = "region") %>% 
-    tidytable::mutate(region = case_when(region == 1 ~ subregion[1],
-                                         region == 2 ~ subregion[2])) %>% 
+    tidytable::mutate(region = dplyr::case_when(region == 1 ~ subregion[1],
+                                                region == 2 ~ subregion[2])) %>% 
     tidytable::bind_rows(do.call(mapply, c(list, og, SIMPLIFY = FALSE))$length %>% 
                            tidytable::map_df(., ~as.data.frame(.x), .id = "region") %>% 
                            tidytable::summarize(abund = sum(abund),
@@ -900,16 +900,16 @@ srvy_iss_goa_wc_e <- function(iters = 1,
   # get resampled age pop'n
   r_age <- purrr::map(1:iters, ~(do.call(mapply, c(list, rr[[.]], SIMPLIFY = FALSE))$age %>% 
                                    tidytable::map_df(., ~as.data.frame(.x), .id = "region") %>% 
-                                   tidytable::mutate(region = case_when(region == 1 ~ subregion[1],
-                                                                        region == 2 ~ subregion[2],
-                                                                        region == 3 ~ subregion[3])))) %>% 
+                                   tidytable::mutate(region = dplyr::case_when(region == 1 ~ subregion[1],
+                                                                               region == 2 ~ subregion[2],
+                                                                               region == 3 ~ subregion[3])))) %>% 
     tidytable::map_df(., ~as.data.frame(.x), .id = "sim") %>% 
     # sum across subregions to get region age pop'n
     tidytable::bind_rows(purrr::map(1:iters, ~(do.call(mapply, c(list, rr[[.]], SIMPLIFY = FALSE))$age %>% 
                                                  tidytable::map_df(., ~as.data.frame(.x), .id = "region") %>% 
-                                                 tidytable::mutate(region = case_when(region == 1 ~ subregion[1],
-                                                                                      region == 2 ~ subregion[2],
-                                                                                      region == 3 ~ subregion[3])))) %>% 
+                                                 tidytable::mutate(region = dplyr::case_when(region == 1 ~ subregion[1],
+                                                                                             region == 2 ~ subregion[2],
+                                                                                             region == 3 ~ subregion[3])))) %>% 
                            tidytable::map_df(., ~as.data.frame(.x), .id = "sim") %>% 
                            tidytable::summarise(agepop = sum(agepop),
                                                 mean_length = sum(mean_length * agepop) / sum(agepop),
@@ -919,16 +919,16 @@ srvy_iss_goa_wc_e <- function(iters = 1,
   # get resampled length pop'n
   r_length <- purrr::map(1:iters, ~(do.call(mapply, c(list, rr[[.]], SIMPLIFY = FALSE))$length %>% 
                                       tidytable::map_df(., ~as.data.frame(.x), .id = "region") %>% 
-                                      tidytable::mutate(region = case_when(region == 1 ~ subregion[1],
-                                                                           region == 2 ~ subregion[2],
-                                                                           region == 3 ~ subregion[3])))) %>% 
+                                      tidytable::mutate(region = dplyr::case_when(region == 1 ~ subregion[1],
+                                                                                  region == 2 ~ subregion[2],
+                                                                                  region == 3 ~ subregion[3])))) %>% 
     tidytable::map_df(., ~as.data.frame(.x), .id = "sim") %>% 
     # sum across subregions to get region length pop'n
     tidytable::bind_rows(purrr::map(1:iters, ~(do.call(mapply, c(list, rr[[.]], SIMPLIFY = FALSE))$length %>% 
                                                  tidytable::map_df(., ~as.data.frame(.x), .id = "region") %>% 
-                                                 tidytable::mutate(region = case_when(region == 1 ~ subregion[1],
-                                                                                      region == 2 ~ subregion[2],
-                                                                                      region == 3 ~ subregion[3])))) %>% 
+                                                 tidytable::mutate(region = dplyr::case_when(region == 1 ~ subregion[1],
+                                                                                             region == 2 ~ subregion[2],
+                                                                                             region == 3 ~ subregion[3])))) %>% 
                            tidytable::map_df(., ~as.data.frame(.x), .id = "sim") %>% 
                            tidytable::summarise(abund = sum(abund),
                                                 .by = c(sim, year, species_code, sex, length)) %>% 
@@ -1046,16 +1046,16 @@ srvy_iss_w140 <- function(iters = 1,
   # subset data to be west of 140 and reclassify stratum 142 west of 140 to now be 141
   lfreq_data %>% 
     tidytable::filter(long_mid < -140) %>% 
-    tidytable::mutate(stratum = case_when(stratum == 142 ~ 141,
-                                          stratum != 142 ~ stratum)) -> lfreq_data
+    tidytable::mutate(stratum = dplyr::case_when(stratum == 142 ~ 141,
+                                                 stratum != 142 ~ stratum)) -> lfreq_data
   specimen_data %>% 
     tidytable::filter(long_mid < -140) %>% 
-    tidytable::mutate(stratum = case_when(stratum == 142 ~ 141,
-                                          stratum != 142 ~ stratum)) -> specimen_data
+    tidytable::mutate(stratum = dplyr::case_when(stratum == 142 ~ 141,
+                                                 stratum != 142 ~ stratum)) -> specimen_data
   cpue_data %>% 
     tidytable::filter(long_mid < -140) %>% 
-    tidytable::mutate(stratum = case_when(stratum == 142 ~ 141,
-                                          stratum != 142 ~ stratum)) -> cpue_data
+    tidytable::mutate(stratum = dplyr::case_when(stratum == 142 ~ 141,
+                                                 stratum != 142 ~ stratum)) -> cpue_data
   
   # update stratum areas (from zack oyafuso provided in issue #88 in afsc-ga-products/data-requests)
   updated_stratum_area <- 
@@ -1236,38 +1236,38 @@ srvy_iss_ai_subreg <- function(iters = 1,
   # define data by subregion 
   lfreq_data %>%
     tidytable::left_join(strata_data) %>% 
-    tidytable::mutate(region = case_when(stratum %in% 
-                                           c(211, 212, 213, 214, 221, 222, 223) ~ 'wai',
-                                         stratum %in% 
-                                           c(311, 312, 313, 314, 321, 322, 323, 324, 411, 412, 413, 414, 421, 422, 423, 424) ~ 'cai',
-                                         stratum %in% 
-                                           c(511, 512, 513, 521, 522, 523, 594, 611, 612, 613, 614, 621, 622, 623, 624) ~ 'eai',
-                                         stratum %in% 
-                                           c(711, 712, 721, 722, 793, 794) ~ 'sbs')) %>% 
+    tidytable::mutate(region = dplyr::case_when(stratum %in% 
+                                                  c(211, 212, 213, 214, 221, 222, 223) ~ 'wai',
+                                                stratum %in% 
+                                                  c(311, 312, 313, 314, 321, 322, 323, 324, 411, 412, 413, 414, 421, 422, 423, 424) ~ 'cai',
+                                                stratum %in% 
+                                                  c(511, 512, 513, 521, 522, 523, 594, 611, 612, 613, 614, 621, 622, 623, 624) ~ 'eai',
+                                                stratum %in% 
+                                                  c(711, 712, 721, 722, 793, 794) ~ 'sbs')) %>% 
     tidytable::select(-design_year, -area, -area_id, -subarea_name) -> .lfreq_data
   
   specimen_data %>% 
     tidytable::left_join(strata_data) %>% 
-    tidytable::mutate(region = case_when(stratum %in% 
-                                           c(211, 212, 213, 214, 221, 222, 223) ~ 'wai',
-                                         stratum %in% 
-                                           c(311, 312, 313, 314, 321, 322, 323, 324, 411, 412, 413, 414, 421, 422, 423, 424) ~ 'cai',
-                                         stratum %in% 
-                                           c(511, 512, 513, 521, 522, 523, 594, 611, 612, 613, 614, 621, 622, 623, 624) ~ 'eai',
-                                         stratum %in% 
-                                           c(711, 712, 721, 722, 793, 794) ~ 'sbs')) %>% 
+    tidytable::mutate(region = dplyr::case_when(stratum %in% 
+                                                  c(211, 212, 213, 214, 221, 222, 223) ~ 'wai',
+                                                stratum %in% 
+                                                  c(311, 312, 313, 314, 321, 322, 323, 324, 411, 412, 413, 414, 421, 422, 423, 424) ~ 'cai',
+                                                stratum %in% 
+                                                  c(511, 512, 513, 521, 522, 523, 594, 611, 612, 613, 614, 621, 622, 623, 624) ~ 'eai',
+                                                stratum %in% 
+                                                  c(711, 712, 721, 722, 793, 794) ~ 'sbs')) %>% 
     tidytable::select(-design_year, -area, -area_id, -subarea_name) -> .specimen_data
   
   cpue_data %>%  
     tidytable::left_join(strata_data) %>% 
-    tidytable::mutate(region = case_when(stratum %in% 
-                                           c(211, 212, 213, 214, 221, 222, 223) ~ 'wai',
-                                         stratum %in% 
-                                           c(311, 312, 313, 314, 321, 322, 323, 324, 411, 412, 413, 414, 421, 422, 423, 424) ~ 'cai',
-                                         stratum %in% 
-                                           c(511, 512, 513, 521, 522, 523, 594, 611, 612, 613, 614, 621, 622, 623, 624) ~ 'eai',
-                                         stratum %in% 
-                                           c(711, 712, 721, 722, 793, 794) ~ 'sbs')) %>% 
+    tidytable::mutate(region = dplyr::case_when(stratum %in% 
+                                                  c(211, 212, 213, 214, 221, 222, 223) ~ 'wai',
+                                                stratum %in% 
+                                                  c(311, 312, 313, 314, 321, 322, 323, 324, 411, 412, 413, 414, 421, 422, 423, 424) ~ 'cai',
+                                                stratum %in% 
+                                                  c(511, 512, 513, 521, 522, 523, 594, 611, 612, 613, 614, 621, 622, 623, 624) ~ 'eai',
+                                                stratum %in% 
+                                                  c(711, 712, 721, 722, 793, 794) ~ 'sbs')) %>% 
     tidytable::select(-design_year, -area, -area_id, -subarea_name)  -> .cpue_data
   
   # get original age/length pop'n values ----
@@ -1293,10 +1293,10 @@ srvy_iss_ai_subreg <- function(iters = 1,
   
   oga <- do.call(mapply, c(list, og, SIMPLIFY = FALSE))$age %>% 
     tidytable::map_df(., ~as.data.frame(.x), .id = "region") %>% 
-    tidytable::mutate(region = case_when(region == 1 ~ subregion[1],
-                                         region == 2 ~ subregion[2],
-                                         region == 3 ~ subregion[3],
-                                         region == 4 ~ subregion[4])) %>% 
+    tidytable::mutate(region = dplyr::case_when(region == 1 ~ subregion[1],
+                                                region == 2 ~ subregion[2],
+                                                region == 3 ~ subregion[3],
+                                                region == 4 ~ subregion[4])) %>% 
     tidytable::bind_rows(do.call(mapply, c(list, og, SIMPLIFY = FALSE))$age %>% 
                            tidytable::map_df(., ~as.data.frame(.x), .id = "region") %>% 
                            tidytable::summarize(agepop = sum(agepop),
@@ -1307,10 +1307,10 @@ srvy_iss_ai_subreg <- function(iters = 1,
   
   ogl <- do.call(mapply, c(list, og, SIMPLIFY = FALSE))$length %>% 
     tidytable::map_df(., ~as.data.frame(.x), .id = "region") %>% 
-    tidytable::mutate(region = case_when(region == 1 ~ subregion[1],
-                                         region == 2 ~ subregion[2],
-                                         region == 3 ~ subregion[3],
-                                         region == 4 ~ subregion[4])) %>% 
+    tidytable::mutate(region = dplyr::case_when(region == 1 ~ subregion[1],
+                                                region == 2 ~ subregion[2],
+                                                region == 3 ~ subregion[3],
+                                                region == 4 ~ subregion[4])) %>% 
     tidytable::bind_rows(do.call(mapply, c(list, og, SIMPLIFY = FALSE))$length %>% 
                            tidytable::map_df(., ~as.data.frame(.x), .id = "region") %>% 
                            tidytable::summarize(abund = sum(abund),
@@ -1340,18 +1340,18 @@ srvy_iss_ai_subreg <- function(iters = 1,
   # get resampled age pop'n
   r_age <- purrr::map(1:iters, ~(do.call(mapply, c(list, rr[[.]], SIMPLIFY = FALSE))$age %>% 
                                    tidytable::map_df(., ~as.data.frame(.x), .id = "region") %>% 
-                                   tidytable::mutate(region = case_when(region == 1 ~ subregion[1],
-                                                                        region == 2 ~ subregion[2],
-                                                                        region == 3 ~ subregion[3],
-                                                                        region == 4 ~ subregion[4])))) %>% 
+                                   tidytable::mutate(region = dplyr::case_when(region == 1 ~ subregion[1],
+                                                                               region == 2 ~ subregion[2],
+                                                                               region == 3 ~ subregion[3],
+                                                                               region == 4 ~ subregion[4])))) %>% 
     tidytable::map_df(., ~as.data.frame(.x), .id = "sim") %>% 
     # sum across subregions to get region age pop'n
     tidytable::bind_rows(purrr::map(1:iters, ~(do.call(mapply, c(list, rr[[.]], SIMPLIFY = FALSE))$age %>% 
                                                  tidytable::map_df(., ~as.data.frame(.x), .id = "region") %>% 
-                                                 tidytable::mutate(region = case_when(region == 1 ~ subregion[1],
-                                                                                      region == 2 ~ subregion[2],
-                                                                                      region == 3 ~ subregion[3],
-                                                                                      region == 4 ~ subregion[4])))) %>% 
+                                                 tidytable::mutate(region = dplyr::case_when(region == 1 ~ subregion[1],
+                                                                                             region == 2 ~ subregion[2],
+                                                                                             region == 3 ~ subregion[3],
+                                                                                             region == 4 ~ subregion[4])))) %>% 
                            tidytable::map_df(., ~as.data.frame(.x), .id = "sim") %>% 
                            tidytable::summarise(agepop = sum(agepop),
                                                 mean_length = sum(mean_length * agepop) / sum(agepop),
@@ -1361,18 +1361,18 @@ srvy_iss_ai_subreg <- function(iters = 1,
   # get resampled length pop'n
   r_length <- purrr::map(1:iters, ~(do.call(mapply, c(list, rr[[.]], SIMPLIFY = FALSE))$length %>% 
                                       tidytable::map_df(., ~as.data.frame(.x), .id = "region") %>% 
-                                      tidytable::mutate(region = case_when(region == 1 ~ subregion[1],
-                                                                           region == 2 ~ subregion[2],
-                                                                           region == 3 ~ subregion[3],
-                                                                           region == 4 ~ subregion[4])))) %>% 
+                                      tidytable::mutate(region = dplyr::case_when(region == 1 ~ subregion[1],
+                                                                                  region == 2 ~ subregion[2],
+                                                                                  region == 3 ~ subregion[3],
+                                                                                  region == 4 ~ subregion[4])))) %>% 
     tidytable::map_df(., ~as.data.frame(.x), .id = "sim") %>% 
     # sum across subregions to get region length pop'n
     tidytable::bind_rows(purrr::map(1:iters, ~(do.call(mapply, c(list, rr[[.]], SIMPLIFY = FALSE))$length %>% 
                                                  tidytable::map_df(., ~as.data.frame(.x), .id = "region") %>% 
-                                                 tidytable::mutate(region = case_when(region == 1 ~ subregion[1],
-                                                                                      region == 2 ~ subregion[2],
-                                                                                      region == 3 ~ subregion[3],
-                                                                                      region == 4 ~ subregion[4])))) %>% 
+                                                 tidytable::mutate(region = dplyr::case_when(region == 1 ~ subregion[1],
+                                                                                             region == 2 ~ subregion[2],
+                                                                                             region == 3 ~ subregion[3],
+                                                                                             region == 4 ~ subregion[4])))) %>% 
                            tidytable::map_df(., ~as.data.frame(.x), .id = "sim") %>% 
                            tidytable::summarise(abund = sum(abund),
                                                 .by = c(sim, year, species_code, sex, length)) %>% 

@@ -51,6 +51,7 @@ specimen %>%
 read_test %>% 
   tidytable::filter(!(species_code %in% c(30050, 30051, 30052, 30150, 30152, 10261, 10262, 10200, 21740))) -> .read_test
 
+# for testing
 # lfreq_data = .lfreq
 # specimen_data = .specimen
 # cpue_data = .cpue
@@ -73,19 +74,14 @@ surveyISS::srvy_iss(iters = iters,
                     cpue_data = .cpue, 
                     strata_data = strata, 
                     r_t = .read_test, 
-                    yrs = yrs, 
-                    bin = 1, 
+                    yrs = yrs,  
                     boot_hauls = TRUE, 
                     boot_lengths = TRUE, 
                     boot_ages = TRUE, 
                     al_var = TRUE, 
                     al_var_ann = TRUE, 
                     age_err = TRUE,
-                    use_gapindex = TRUE,
-                    by_strata = FALSE,
-                    global = FALSE,
                     region = region, 
-                    save_interm = FALSE, 
                     save = 'prodtest')
 
 ## run for goa pollock (west of 140) ----
@@ -99,25 +95,20 @@ read_test %>%
   tidytable::filter(species_code %in% c(21740)) -> .read_test_poll
 
 surveyISS::srvy_iss_w140(iters = iters, 
-              lfreq_data = .lfreq_poll,
-              specimen_data = .specimen_poll, 
-              cpue_data = .cpue_poll, 
-              strata_data = strata, 
-              r_t = .read_test_poll, 
-              yrs = yrs, 
-              bin = 1, 
-              boot_hauls = TRUE, 
-              boot_lengths = TRUE, 
-              boot_ages = TRUE, 
-              al_var = TRUE, 
-              al_var_ann = TRUE, 
-              age_err = TRUE,
-              use_gapindex = TRUE,
-              by_strata = FALSE,
-              global = FALSE,
-              region = region, 
-              save_interm = FALSE, 
-              save = 'prodtest')
+                         lfreq_data = .lfreq_poll,
+                         specimen_data = .specimen_poll, 
+                         cpue_data = .cpue_poll, 
+                         strata_data = strata, 
+                         r_t = .read_test_poll, 
+                         yrs = yrs, 
+                         boot_hauls = TRUE, 
+                         boot_lengths = TRUE, 
+                         boot_ages = TRUE, 
+                         al_var = TRUE, 
+                         al_var_ann = TRUE, 
+                         age_err = TRUE,
+                         region = region, 
+                         save = 'prodtest')
 
 ## run for goa rougheye-blackspotted stock complex ----
 cpue %>% 
@@ -130,27 +121,22 @@ read_test %>%
   tidytable::filter(species_code %in% c(30050, 30051, 30052)) -> .read_test_rebs
 
 surveyISS::srvy_iss_goa_cmplx(iters = iters, 
-                   lfreq_data = .lfreq_rebs, 
-                   specimen_data = .specimen_rebs, 
-                   cpue_data = .cpue_rebs, 
-                   strata_data = strata, 
-                   r_t = .read_test_rebs, 
-                   yrs = yrs, 
-                   bin = 1, 
-                   boot_hauls = TRUE, 
-                   boot_lengths = TRUE, 
-                   boot_ages = TRUE, 
-                   al_var = TRUE, 
-                   al_var_ann = TRUE, 
-                   age_err = TRUE,
-                   cmplx_code = 3005012,
-                   use_gapindex = TRUE,
-                   by_strata = FALSE,
-                   global = FALSE,
-                   cmplx = 'rebs',
-                   region = region, 
-                   save_interm = FALSE, 
-                   save = 'prodtest')
+                              lfreq_data = .lfreq_rebs, 
+                              specimen_data = .specimen_rebs, 
+                              cpue_data = .cpue_rebs, 
+                              strata_data = strata, 
+                              r_t = .read_test_rebs, 
+                              yrs = yrs, 
+                              boot_hauls = TRUE, 
+                              boot_lengths = TRUE, 
+                              boot_ages = TRUE, 
+                              al_var = TRUE, 
+                              al_var_ann = TRUE, 
+                              age_err = TRUE,
+                              cmplx_code = 3005012,
+                              cmplx = 'rebs',
+                              region = region, 
+                              save = 'prodtest')
 
 ## run for goa dusky stock (has different historical species codes) ----
 cpue %>% 
@@ -163,27 +149,22 @@ read_test %>%
   tidytable::filter(species_code %in% c(30150, 30152)) -> .read_test_dr
 
 surveyISS::srvy_iss_goa_cmplx(iters = iters, 
-                   lfreq_data = .lfreq_dr, 
-                   specimen_data = .specimen_dr, 
-                   cpue_data = .cpue_dr, 
-                   strata_data = strata, 
-                   r_t = .read_test_dr, 
-                   yrs = yrs, 
-                   bin = 1, 
-                   boot_hauls = TRUE, 
-                   boot_lengths = TRUE, 
-                   boot_ages = TRUE, 
-                   al_var = TRUE, 
-                   al_var_ann = TRUE, 
-                   age_err = TRUE,
-                   cmplx_code = 301502,
-                   use_gapindex = TRUE,
-                   by_strata = FALSE,
-                   global = FALSE,
-                   cmplx = 'dr',
-                   region = region, 
-                   save_interm = FALSE, 
-                   save = 'prodtest')
+                              lfreq_data = .lfreq_dr, 
+                              specimen_data = .specimen_dr, 
+                              cpue_data = .cpue_dr, 
+                              strata_data = strata, 
+                              r_t = .read_test_dr, 
+                              yrs = yrs, 
+                              boot_hauls = TRUE, 
+                              boot_lengths = TRUE, 
+                              boot_ages = TRUE, 
+                              al_var = TRUE, 
+                              al_var_ann = TRUE, 
+                              age_err = TRUE,
+                              cmplx_code = 301502,
+                              cmplx = 'dr',
+                              region = region,  
+                              save = 'prodtest')
 
 ## run for goa northern/southern rock sole ----
 cpue %>% 
@@ -196,25 +177,20 @@ read_test %>%
   tidytable::filter(species_code %in% c(10261, 10262)) -> .read_test_nsrs
 
 surveyISS::srvy_iss_goa_w_c_e(iters = iters, 
-                   lfreq_data = .lfreq_nsrs, 
-                   specimen_data = .specimen_nsrs, 
-                   cpue_data = .cpue_nsrs, 
-                   strata_data = strata,
-                   r_t = .read_test_nsrs, 
-                   yrs = yrs, 
-                   bin = 1, 
-                   boot_hauls = TRUE,
-                   boot_lengths = TRUE,
-                   boot_ages = TRUE,
-                   al_var = TRUE,
-                   al_var_ann = TRUE,
-                   age_err = TRUE,
-                   use_gapindex = TRUE,
-                   by_strata = FALSE,
-                   global = FALSE,
-                   region = region,
-                   save_interm = FALSE,
-                   save = 'prodtest')
+                              lfreq_data = .lfreq_nsrs, 
+                              specimen_data = .specimen_nsrs, 
+                              cpue_data = .cpue_nsrs, 
+                              strata_data = strata,
+                              r_t = .read_test_nsrs, 
+                              yrs = yrs,
+                              boot_hauls = TRUE,
+                              boot_lengths = TRUE,
+                              boot_ages = TRUE,
+                              al_var = TRUE,
+                              al_var_ann = TRUE,
+                              age_err = TRUE,
+                              region = region,
+                              save = 'prodtest')
 
 ## run for goa rex sole ----
 cpue %>% 
@@ -227,25 +203,20 @@ read_test %>%
   tidytable::filter(species_code %in% c(10200)) -> .read_test_rex
 
 surveyISS::srvy_iss_goa_wc_e(iters = iters, 
-                  lfreq_data = .lfreq_rex, 
-                  specimen_data = .specimen_rex, 
-                  cpue_data = .cpue_rex,
-                  strata_data = strata,
-                  r_t = .read_test_rex, 
-                  yrs = yrs,
-                  bin = 1, 
-                  boot_hauls = TRUE,
-                  boot_lengths = TRUE,
-                  boot_ages = TRUE,
-                  al_var = TRUE,
-                  al_var_ann = TRUE,
-                  age_err = TRUE,
-                  use_gapindex = TRUE,
-                  by_strata = FALSE,
-                  global = FALSE,
-                  region = region,
-                  save_interm = FALSE,
-                  save = 'prodtest')
+                             lfreq_data = .lfreq_rex, 
+                             specimen_data = .specimen_rex, 
+                             cpue_data = .cpue_rex,
+                             strata_data = strata,
+                             r_t = .read_test_rex, 
+                             yrs = yrs,
+                             boot_hauls = TRUE,
+                             boot_lengths = TRUE,
+                             boot_ages = TRUE,
+                             al_var = TRUE,
+                             al_var_ann = TRUE,
+                             age_err = TRUE,
+                             region = region,
+                             save = 'prodtest')
 
 
 # aleutian islands ----
@@ -274,25 +245,20 @@ read_test %>%
   tidytable::filter(!(species_code %in% c(30050, 30051, 30052, 30420))) -> .read_test
 
 surveyISS::srvy_iss(iters = iters, 
-         lfreq_data = .lfreq,
-         specimen_data = .specimen, 
-         cpue_data = .cpue, 
-         strata_data = strata, 
-         r_t = .read_test, 
-         yrs = yrs, 
-         bin = 1, 
-         boot_hauls = TRUE, 
-         boot_lengths = TRUE, 
-         boot_ages = TRUE, 
-         al_var = TRUE, 
-         al_var_ann = TRUE, 
-         age_err = TRUE,
-         use_gapindex = TRUE,
-         by_strata = FALSE,
-         global = FALSE,
-         region = region, 
-         save_interm = FALSE, 
-         save = 'prodtest')
+                    lfreq_data = .lfreq,
+                    specimen_data = .specimen, 
+                    cpue_data = .cpue, 
+                    strata_data = strata, 
+                    r_t = .read_test, 
+                    yrs = yrs, 
+                    boot_hauls = TRUE, 
+                    boot_lengths = TRUE, 
+                    boot_ages = TRUE, 
+                    al_var = TRUE, 
+                    al_var_ann = TRUE, 
+                    age_err = TRUE,
+                    region = region, 
+                    save = 'prodtest')
 
 ## Run for ai blackspotted-rougheye stock complex ----
 cpue %>% 
@@ -305,27 +271,22 @@ read_test %>%
   tidytable::filter(species_code %in% c(30050, 30051, 30052)) -> .read_test_bsre
 
 surveyISS::srvy_iss_ai_cmplx(iters = iters, 
-                  lfreq_data = .lfreq_bsre, 
-                  specimen_data = .specimen_bsre, 
-                  cpue_data = .cpue_bsre, 
-                  strata_data = strata, 
-                  r_t = .read_test_bsre, 
-                  yrs = yrs, 
-                  bin = 1, 
-                  boot_hauls = TRUE, 
-                  boot_lengths = TRUE, 
-                  boot_ages = TRUE, 
-                  al_var = TRUE, 
-                  al_var_ann = TRUE, 
-                  age_err = TRUE,
-                  cmplx_code = 3005012,
-                  use_gapindex = TRUE,
-                  by_strata = FALSE,
-                  global = FALSE,
-                  cmplx = 'bsre',
-                  region = region, 
-                  save_interm = FALSE, 
-                  save = 'prodtest')
+                             lfreq_data = .lfreq_bsre, 
+                             specimen_data = .specimen_bsre, 
+                             cpue_data = .cpue_bsre, 
+                             strata_data = strata, 
+                             r_t = .read_test_bsre, 
+                             yrs = yrs,
+                             boot_hauls = TRUE, 
+                             boot_lengths = TRUE, 
+                             boot_ages = TRUE, 
+                             al_var = TRUE, 
+                             al_var_ann = TRUE, 
+                             age_err = TRUE,
+                             cmplx_code = 3005012,
+                             cmplx = 'bsre',
+                             region = region,  
+                             save = 'prodtest')
 
 ## Run for ai northern rockfish (subregion expansion) ----
 cpue %>% 
@@ -338,25 +299,20 @@ read_test %>%
   tidytable::filter(species_code %in% c(30420)) -> .read_test_nr
 
 surveyISS::srvy_iss_ai_subreg(iters = iters,
-                   lfreq_data = .lfreq_nr, 
-                   specimen_data = .specimen_nr, 
-                   cpue_data = .cpue_nr, 
-                   strata_data = strata, 
-                   r_t = .read_test_nr, 
-                   yrs = yrs,
-                   bin = 1, 
-                   boot_hauls = TRUE,
-                   boot_lengths = TRUE,
-                   boot_ages = TRUE, 
-                   al_var = TRUE, 
-                   al_var_ann = TRUE, 
-                   age_err = TRUE,
-                   use_gapindex = TRUE,
-                   by_strata = FALSE,
-                   global = FALSE,
-                   region = region, 
-                   save_interm = FALSE, 
-                   save = 'prodtest')
+                              lfreq_data = .lfreq_nr, 
+                              specimen_data = .specimen_nr, 
+                              cpue_data = .cpue_nr, 
+                              strata_data = strata, 
+                              r_t = .read_test_nr, 
+                              yrs = yrs,
+                              boot_hauls = TRUE,
+                              boot_lengths = TRUE,
+                              boot_ages = TRUE, 
+                              al_var = TRUE, 
+                              al_var_ann = TRUE, 
+                              age_err = TRUE,
+                              region = region,  
+                              save = 'prodtest')
 
 
 # ebs shelf ----
@@ -376,25 +332,20 @@ read_test <- vroom::vroom(here::here('data', 'reader_tester.csv')) %>%
   tidytable::filter(species_code %in% species)
 
 surveyISS::srvy_iss(iters = iters, 
-         lfreq_data = lfreq,
-         specimen_data = specimen, 
-         cpue_data = cpue, 
-         strata_data = strata, 
-         r_t = read_test, 
-         yrs = yrs, 
-         bin = 1, 
-         boot_hauls = TRUE, 
-         boot_lengths = TRUE, 
-         boot_ages = TRUE, 
-         al_var = TRUE, 
-         al_var_ann = TRUE, 
-         age_err = TRUE,
-         use_gapindex = TRUE,
-         by_strata = FALSE,
-         global = FALSE,
-         region = region, 
-         save_interm = FALSE, 
-         save = 'prodtest')
+                    lfreq_data = lfreq,
+                    specimen_data = specimen, 
+                    cpue_data = cpue, 
+                    strata_data = strata, 
+                    r_t = read_test, 
+                    yrs = yrs,
+                    boot_hauls = TRUE, 
+                    boot_lengths = TRUE, 
+                    boot_ages = TRUE, 
+                    al_var = TRUE, 
+                    al_var_ann = TRUE, 
+                    age_err = TRUE,
+                    region = region, 
+                    save = 'prodtest')
 
 
 # ebs slope ----
@@ -414,25 +365,20 @@ read_test <- vroom::vroom(here::here('data', 'reader_tester.csv')) %>%
   tidytable::filter(species_code %in% species)
 
 surveyISS::srvy_iss(iters = iters, 
-         lfreq_data = lfreq_data,
-         specimen_data = specimen_data, 
-         cpue_data = cpue_data, 
-         strata_data = strata_data, 
-         r_t = read_test, 
-         yrs = yrs, 
-         bin = 1, 
-         boot_hauls = TRUE, 
-         boot_lengths = TRUE, 
-         boot_ages = TRUE, 
-         al_var = TRUE, 
-         al_var_ann = TRUE, 
-         age_err = TRUE,
-         use_gapindex = TRUE,
-         by_strata = FALSE,
-         global = FALSE,
-         region = region, 
-         save_interm = FALSE, 
-         save = 'prodtest')
+                    lfreq_data = lfreq_data,
+                    specimen_data = specimen_data, 
+                    cpue_data = cpue_data, 
+                    strata_data = strata_data, 
+                    r_t = read_test, 
+                    yrs = yrs,
+                    boot_hauls = TRUE, 
+                    boot_lengths = TRUE, 
+                    boot_ages = TRUE, 
+                    al_var = TRUE, 
+                    al_var_ann = TRUE, 
+                    age_err = TRUE,
+                    region = region, 
+                    save = 'prodtest')
 
 # nbs & ebs ----
 region = 'nebs'
@@ -451,25 +397,20 @@ read_test <- vroom::vroom(here::here('data', 'reader_tester.csv')) %>%
   tidytable::filter(species_code %in% species)
 
 surveyISS::srvy_iss(iters = iters, 
-         lfreq_data = lfreq,
-         specimen_data = specimen, 
-         cpue_data = cpue, 
-         strata_data = strata, 
-         r_t = read_test, 
-         yrs = yrs, 
-         bin = 1, 
-         boot_hauls = TRUE, 
-         boot_lengths = TRUE, 
-         boot_ages = TRUE, 
-         al_var = TRUE, 
-         al_var_ann = TRUE, 
-         age_err = TRUE,
-         use_gapindex = TRUE,
-         by_strata = FALSE,
-         global = FALSE,
-         region = region, 
-         save_interm = FALSE, 
-         save = 'prodtest')
+                    lfreq_data = lfreq,
+                    specimen_data = specimen, 
+                    cpue_data = cpue, 
+                    strata_data = strata, 
+                    r_t = read_test, 
+                    yrs = yrs,
+                    boot_hauls = TRUE, 
+                    boot_lengths = TRUE, 
+                    boot_ages = TRUE, 
+                    al_var = TRUE, 
+                    al_var_ann = TRUE, 
+                    age_err = TRUE,
+                    region = region,  
+                    save = 'prodtest')
 
 # caal ----
 region = 'goa'
@@ -496,19 +437,17 @@ read_test %>%
   tidytable::filter(species_code %in% species) -> .read_test
 
 surveyISS::srvy_iss_caal(iters = iters, 
-              specimen_data = .specimen, 
-              cpue_data = .cpue, 
-              r_t = .read_test, 
-              yrs = yrs, 
-              bin = 1,
-              boot_hauls = TRUE, 
-              boot_ages = TRUE,
-              al_var = TRUE, 
-              al_var_ann = TRUE, 
-              age_err = TRUE,
-              region = region, 
-              save_interm = FALSE,
-              save = 'prodtest')
+                         specimen_data = .specimen, 
+                         cpue_data = .cpue, 
+                         r_t = .read_test, 
+                         yrs = yrs,
+                         boot_hauls = TRUE, 
+                         boot_ages = TRUE,
+                         al_var = TRUE, 
+                         al_var_ann = TRUE, 
+                         age_err = TRUE,
+                         region = region, 
+                         save = 'prodtest')
 
 
 # For testing run time of 500 iterations ----
