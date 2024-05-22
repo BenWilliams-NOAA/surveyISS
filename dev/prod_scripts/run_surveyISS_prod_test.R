@@ -1,7 +1,7 @@
 # example script to obtain age/length input sample size for production run
 
 # load surveyISS library ----
-devtools::install_github("BenWilliams-NOAA/surveyISS", force = TRUE)
+devtools::install_github("BenWilliams-NOAA/surveyISS")
 library(surveyISS)
 
 ## load/source libraries/functions for testing ----
@@ -17,7 +17,7 @@ library(surveyISS)
 
 # set number of desired bootstrap iterations (suggested here: 10 for testing, 500 for running)
 # iters = 500
-iters = 2
+iters = 10
 
 # for testing run time
 if(iters < 100){
