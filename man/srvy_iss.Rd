@@ -2,7 +2,7 @@
 % Please edit documentation in R/srvy_iss.R
 \name{srvy_iss}
 \alias{srvy_iss}
-\title{Survey input sample size function}
+\title{load dependent packages to NAMESPACE}
 \usage{
 srvy_iss(
   iters = 1,

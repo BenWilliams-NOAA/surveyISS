@@ -1,3 +1,16 @@
+#' load dependent packages to NAMESPACE
+#' 
+#' @importFrom psych harmonic.mean
+#' @importFrom purrr map
+#' @import tidytable
+#' @import vroom
+#' @import here
+#' @import DBI
+#' @import data.table
+#' @import afscdata
+#' @import dplyr
+#' 
+#' 
 #' Survey input sample size function
 #' 
 #' @description
