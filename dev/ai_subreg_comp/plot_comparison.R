@@ -34,7 +34,19 @@ surveyISS::srvy_iss_ai_subreg(iters = 2,
 
 
 
-
+iters = 2
+lfreq_data = data_ai$lfreq 
+specimen_data = data_ai$specimen 
+cpue_data = data_ai$cpue 
+strata_data = data_ai$strata 
+yrs = yrs
+boot_hauls = TRUE
+boot_lengths = TRUE
+boot_ages = TRUE 
+al_var = TRUE 
+al_var_ann = TRUE 
+age_err = TRUE
+region = 'ai'
 
 
 
