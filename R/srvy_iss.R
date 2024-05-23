@@ -9,7 +9,6 @@
 #' @param specimen_data age-length specimen input dataframe
 #' @param cpue_data catch-per-unit effort input dataframe
 #' @param strata_data strata id and area size input dataframe
-#' @param r_t age reader-tester input dataframe
 #' @param yrs any year filter >= (default = NULL)
 #' @param bin bin size (default = 1 cm), also can use custom length bins through defining vector of upper length bin limits, i.e., c(5, 10, 20, 35, 60), plus length group will automatically be populated and denoted with the largest defined bin + 1 (i.e., 61 for provided example)
 #' @param boot_hauls Boolean. Resample hauls w/replacement? (default = FALSE)
@@ -44,8 +43,7 @@ srvy_iss <- function(iters = 1,
                      lfreq_data,
                      specimen_data, 
                      cpue_data, 
-                     strata_data, 
-                     r_t, 
+                     strata_data,  
                      yrs = NULL, 
                      bin = 1, 
                      boot_hauls = FALSE, 
@@ -75,6 +73,12 @@ srvy_iss <- function(iters = 1,
   specimen_data <- tidytable::as_tidytable(specimen_data) 
   cpue_data <- tidytable::as_tidytable(cpue_data) 
   strata_data <- tidytable::as_tidytable(strata_data) 
+  
+  # filter reader-tester data to species
+  lfreq_data %>% 
+    tidytable::distinct(species_code) -> species
+  surveyISS::read_test %>% 
+    tidytable::filter(species_code %in% species$species_code) -> r_t
   
   # get original age/length pop'n values ----
   og <- srvy_comps(lfreq_data = lfreq_data, 
@@ -168,7 +172,6 @@ srvy_iss <- function(iters = 1,
 #' @param specimen_data age-length specimen input dataframe
 #' @param cpue_data catch-per-unit effort input dataframe
 #' @param strata_data strata id and area size input dataframe
-#' @param r_t age reader-tester input dataframe
 #' @param yrs any year filter >= (default = NULL)
 #' @param bin bin size (default = 1 cm), also can use custom length bins through defining vector of upper length bin limits, i.e., c(5, 10, 20, 35, 60), plus length group will automatically be populated and denoted with the largest defined bin + 1 (i.e., 61 for provided example)
 #' @param boot_hauls Boolean. Resample hauls w/replacement? (default = FALSE)
@@ -205,7 +208,6 @@ srvy_iss_ai_cmplx <- function(iters = 1,
                               specimen_data, 
                               cpue_data, 
                               strata_data, 
-                              r_t, 
                               yrs = NULL, 
                               bin = 1, 
                               boot_hauls = FALSE,
@@ -236,7 +238,13 @@ srvy_iss_ai_cmplx <- function(iters = 1,
   lfreq_data <- tidytable::as_tidytable(lfreq_data) 
   specimen_data <- tidytable::as_tidytable(specimen_data) 
   cpue_data <- tidytable::as_tidytable(cpue_data) 
-  strata_data <- tidytable::as_tidytable(strata_data) 
+  strata_data <- tidytable::as_tidytable(strata_data)
+  
+  # filter reader-tester data to species
+  lfreq_data %>% 
+    tidytable::distinct(species_code) -> species
+  surveyISS::read_test %>% 
+    tidytable::filter(species_code %in% species$species_code) -> r_t
   
   # get original age/length pop'n values ----
   og <- srvy_comps_ai_cmplx(lfreq_data = lfreq_data, 
@@ -336,7 +344,6 @@ srvy_iss_ai_cmplx <- function(iters = 1,
 #' @param specimen_data age-length specimen input dataframe
 #' @param cpue_data catch-per-unit effort input dataframe
 #' @param strata_data strata id and area size input dataframe
-#' @param r_t age reader-tester input dataframe
 #' @param yrs any year filter >= (default = NULL)
 #' @param bin bin size (default = 1 cm), also can use custom length bins through defining vector of upper length bin limits, i.e., c(5, 10, 20, 35, 60), plus length group will automatically be populated and denoted with the largest defined bin + 1 (i.e., 61 for provided example)
 #' @param boot_hauls Boolean. Resample hauls w/replacement? (default = FALSE)
@@ -372,8 +379,7 @@ srvy_iss_goa_cmplx <- function(iters = 1,
                                lfreq_data, 
                                specimen_data, 
                                cpue_data, 
-                               strata_data, 
-                               r_t, 
+                               strata_data,
                                yrs = NULL, 
                                bin = 1, 
                                boot_hauls = FALSE, 
@@ -405,6 +411,12 @@ srvy_iss_goa_cmplx <- function(iters = 1,
   specimen_data <- tidytable::as_tidytable(specimen_data) 
   cpue_data <- tidytable::as_tidytable(cpue_data) 
   strata_data <- tidytable::as_tidytable(strata_data) 
+  
+  # filter reader-tester data to species
+  lfreq_data %>% 
+    tidytable::distinct(species_code) -> species
+  surveyISS::read_test %>% 
+    tidytable::filter(species_code %in% species$species_code) -> r_t
   
   # get original age/length pop'n values ----
   og <- srvy_comps(lfreq_data = lfreq_data, 
@@ -515,7 +527,6 @@ srvy_iss_goa_cmplx <- function(iters = 1,
 #' @param specimen_data age-length specimen input dataframe
 #' @param cpue_data catch-per-unit effort input dataframe
 #' @param strata_data strata id and area size input dataframe
-#' @param r_t age reader-tester input dataframe
 #' @param yrs any year filter >= (default = NULL)
 #' @param bin bin size (default = 1 cm), also can use custom length bins through defining vector of upper length bin limits, i.e., c(5, 10, 20, 35, 60), plus length group will automatically be populated and denoted with the largest defined bin + 1 (i.e., 61 for provided example)
 #' @param boot_hauls Boolean. Resample hauls w/replacement? (default = FALSE)
@@ -551,7 +562,6 @@ srvy_iss_goa_w_c_e <- function(iters = 1,
                                specimen_data, 
                                cpue_data, 
                                strata_data,
-                               r_t, 
                                yrs = NULL, 
                                bin = 1, 
                                boot_hauls = FALSE,
@@ -603,6 +613,12 @@ srvy_iss_goa_w_c_e <- function(iters = 1,
                                                 area_id == 804 ~ 'egoa',
                                                 area_id == 805 ~ 'wgoa')) %>% 
     tidytable::select(-design_year, -area, -area_id, -subarea_name)  -> .cpue_data
+  
+  # filter reader-tester data to species
+  lfreq_data %>% 
+    tidytable::distinct(species_code) -> species
+  surveyISS::read_test %>% 
+    tidytable::filter(species_code %in% species$species_code) -> r_t
   
   # get original age/length pop'n values ----
   subregion = c('wgoa', 'cgoa', 'egoa')
@@ -749,7 +765,6 @@ srvy_iss_goa_w_c_e <- function(iters = 1,
 #' @param specimen_data age-length specimen input dataframe
 #' @param cpue_data catch-per-unit effort input dataframe
 #' @param strata_data strata id and area size input dataframe
-#' @param r_t age reader-tester input dataframe
 #' @param yrs any year filter >= (default = NULL)
 #' @param bin bin size (default = 1 cm), also can use custom length bins through defining vector of upper length bin limits, i.e., c(5, 10, 20, 35, 60), plus length group will automatically be populated and denoted with the largest defined bin + 1 (i.e., 61 for provided example)
 #' @param boot_hauls Boolean. Resample hauls w/replacement? (default = FALSE)
@@ -785,7 +800,6 @@ srvy_iss_goa_wc_e <- function(iters = 1,
                               specimen_data, 
                               cpue_data,
                               strata_data,
-                              r_t, 
                               yrs = NULL,
                               bin = 1, 
                               boot_hauls = FALSE,
@@ -833,6 +847,12 @@ srvy_iss_goa_wc_e <- function(iters = 1,
     tidytable::mutate(region = dplyr::case_when(area_id %in% c(803, 805) ~ 'wcgoa',
                                                 area_id == 804 ~ 'egoa')) %>% 
     tidytable::select(-design_year, -area, -area_id, -subarea_name)  -> .cpue_data
+  
+  # filter reader-tester data to species
+  lfreq_data %>% 
+    tidytable::distinct(species_code) -> species
+  surveyISS::read_test %>% 
+    tidytable::filter(species_code %in% species$species_code) -> r_t
   
   # get original age/length pop'n values ----
   subregion = c('wcgoa', 'egoa')
@@ -977,7 +997,6 @@ srvy_iss_goa_wc_e <- function(iters = 1,
 #' @param specimen_data age-length specimen input dataframe
 #' @param cpue_data catch-per-unit effort input dataframe
 #' @param strata_data strata id and area size input dataframe
-#' @param r_t age reader-tester input dataframe
 #' @param yrs any year filter >= (default = NULL)
 #' @param bin bin size (default = 1 cm), also can use custom length bins through defining vector of upper length bin limits, i.e., c(5, 10, 20, 35, 60), plus length group will automatically be populated and denoted with the largest defined bin + 1 (i.e., 61 for provided example)
 #' @param boot_hauls Boolean. Resample hauls w/replacement? (default = FALSE)
@@ -1012,7 +1031,6 @@ srvy_iss_w140 <- function(iters = 1,
                           specimen_data, 
                           cpue_data, 
                           strata_data, 
-                          r_t, 
                           yrs = NULL, 
                           bin = 1, 
                           boot_hauls = FALSE, 
@@ -1056,6 +1074,12 @@ srvy_iss_w140 <- function(iters = 1,
     tidytable::filter(long_mid < -140) %>% 
     tidytable::mutate(stratum = dplyr::case_when(stratum == 142 ~ 141,
                                                  stratum != 142 ~ stratum)) -> cpue_data
+  
+  # filter reader-tester data to species
+  lfreq_data %>% 
+    tidytable::distinct(species_code) -> species
+  surveyISS::read_test %>% 
+    tidytable::filter(species_code %in% species$species_code) -> r_t
   
   # update stratum areas (from zack oyafuso provided in issue #88 in afsc-ga-products/data-requests)
   updated_stratum_area <- 
@@ -1165,7 +1189,6 @@ srvy_iss_w140 <- function(iters = 1,
 #' @param specimen_data age-length specimen input dataframe
 #' @param cpue_data catch-per-unit effort input dataframe
 #' @param strata_data strata id and area size input dataframe
-#' @param r_t age reader-tester input dataframe
 #' @param yrs any year filter >= (default = NULL)
 #' @param bin bin size (default = 1 cm), also can use custom length bins through defining vector of upper length bin limits, i.e., c(5, 10, 20, 35, 60), plus length group will automatically be populated and denoted with the largest defined bin + 1 (i.e., 61 for provided example)
 #' @param boot_hauls Boolean. Resample hauls w/replacement? (default = FALSE)
@@ -1201,8 +1224,7 @@ srvy_iss_ai_subreg <- function(iters = 1,
                                lfreq_data, 
                                specimen_data, 
                                cpue_data, 
-                               strata_data, 
-                               r_t, 
+                               strata_data,
                                yrs = NULL,
                                bin = 1, 
                                boot_hauls = FALSE,
@@ -1269,6 +1291,12 @@ srvy_iss_ai_subreg <- function(iters = 1,
                                                 stratum %in% 
                                                   c(711, 712, 721, 722, 793, 794) ~ 'sbs')) %>% 
     tidytable::select(-design_year, -area, -area_id, -subarea_name)  -> .cpue_data
+  
+  # filter reader-tester data to species
+  lfreq_data %>% 
+    tidytable::distinct(species_code) -> species
+  surveyISS::read_test %>% 
+    tidytable::filter(species_code %in% species$species_code) -> r_t
   
   # get original age/length pop'n values ----
   subregion = c('wai', 'cai', 'eai', 'sbs')
@@ -1418,7 +1446,6 @@ srvy_iss_ai_subreg <- function(iters = 1,
 #' @param iters number of iterations (min of 500 recommended for full run)
 #' @param specimen_data age-length specimen input dataframe
 #' @param cpue_data catch-per-unit effort input dataframe
-#' @param r_t age reader-tester input dataframe
 #' @param yrs any year filter >= (default = NULL)
 #' @param bin bin size (default = 1 cm), also can use custom length bins through defining vector of upper length bin limits, i.e., c(5, 10, 20, 35, 60), plus length group will automatically be populated and denoted with the largest defined bin + 1 (i.e., 61 for provided example)
 #' @param boot_hauls Boolean. Resample hauls w/replacement? (default = FALSE)
@@ -1442,7 +1469,6 @@ srvy_iss_ai_subreg <- function(iters = 1,
 srvy_iss_caal <- function(iters = 1, 
                           specimen_data, 
                           cpue_data, 
-                          r_t, 
                           yrs = NULL,  
                           bin = 1, 
                           boot_hauls = FALSE, 
@@ -1465,6 +1491,12 @@ srvy_iss_caal <- function(iters = 1,
   # restructure data
   specimen_data <- tidytable::as_tidytable(specimen_data) 
   cpue_data <- tidytable::as_tidytable(cpue_data) 
+  
+  # filter reader-tester data to species
+  lfreq_data %>% 
+    tidytable::distinct(species_code) -> species
+  surveyISS::read_test %>% 
+    tidytable::filter(species_code %in% species$species_code) -> r_t
   
   # get original caal values ----
   og <- srvy_comps_caal(specimen_data = specimen_data, 

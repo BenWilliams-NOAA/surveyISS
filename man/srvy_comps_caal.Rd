@@ -23,7 +23,7 @@ srvy_comps_caal(
 
 \item{cpue_data}{catch-per-unit effort input dataframe}
 
-\item{r_t}{age reader-tester input dataframe}
+\item{r_t}{age reader-tester input dataframe, included in surveyISS package data}
 
 \item{yrs}{any year filter >= (default = NULL)}
 

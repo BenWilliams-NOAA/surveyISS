@@ -8,7 +8,7 @@
 #' @param specimen_data age-length specimen input dataframe
 #' @param cpue_data catch-per-unit effort input dataframe
 #' @param strata_data strata id and area size input dataframe
-#' @param r_t age reader-tester input dataframe
+#' @param r_t age reader-tester input dataframe, included in surveyISS package data
 #' @param yrs any year filter >= (default = NULL)
 #' @param bin bin size (default = 1 cm), also can use custom length bins through defining vector of upper length bin limits, i.e., c(5, 10, 20, 35, 60), plus length group will automatically be populated and denoted with the largest defined bin + 1 (i.e., 61 for provided example)
 #' @param boot_hauls Boolean. Resample hauls w/replacement? (default = FALSE)
@@ -257,7 +257,7 @@ srvy_comps <- function(lfreq_data,
 #' @param specimen_data age-length specimen input dataframe
 #' @param cpue_data catch-per-unit effort input dataframe
 #' @param strata_data strata id and area size input dataframe
-#' @param r_t age reader-tester input dataframe
+#' @param r_t age reader-tester input dataframe, included in surveyISS package data
 #' @param yrs any year filter >= (default = NULL)
 #' @param bin bin size (default = 1 cm), also can use custom length bins through defining vector of upper length bin limits, i.e., c(5, 10, 20, 35, 60), plus length group will automatically be populated and denoted with the largest defined bin + 1 (i.e., 61 for provided example)
 #' @param boot_hauls Boolean. Resample hauls w/replacement? (default = FALSE)
@@ -358,7 +358,11 @@ srvy_comps_ai_cmplx <- function(lfreq_data,
   
   data.table::setDT(specimen_data) %>%
     tidytable::filter(year >= yrs) %>% 
-    tidytable::drop_na() -> .agedat
+    tidytable::drop_na() %>%
+    tidytable::mutate(species_code = cmplx_code) -> .agedat
+  
+  data.table::setDT(r_t) %>%
+    tidytable::mutate(species_code = cmplx_code) -> r_t
   
   # randomize hauls ----  
   if(isTRUE(boot_hauls)) {
@@ -512,7 +516,7 @@ srvy_comps_ai_cmplx <- function(lfreq_data,
 #' 
 #' @param specimen_data age-length specimen input dataframe
 #' @param cpue_data catch-per-unit effort input dataframe
-#' @param r_t age reader-tester input dataframe
+#' @param r_t age reader-tester input dataframe, included in surveyISS package data
 #' @param yrs any year filter >= (default = NULL)
 #' @param bin bin size (default = 1 cm), also can use custom length bins through defining vector of upper length bin limits, i.e., c(5, 10, 20, 35, 60), plus length group will automatically be populated and denoted with the largest defined bin + 1 (i.e., 61 for provided example)
 #' @param boot_hauls Boolean. Resample hauls w/replacement? (default = FALSE)

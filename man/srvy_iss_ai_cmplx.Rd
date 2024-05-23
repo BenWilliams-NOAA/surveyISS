@@ -10,7 +10,6 @@ srvy_iss_ai_cmplx(
   specimen_data,
   cpue_data,
   strata_data,
-  r_t,
   yrs = NULL,
   bin = 1,
   boot_hauls = FALSE,
@@ -42,8 +41,6 @@ srvy_iss_ai_cmplx(
 \item{cpue_data}{catch-per-unit effort input dataframe}
 
 \item{strata_data}{strata id and area size input dataframe}
-
-\item{r_t}{age reader-tester input dataframe}
 
 \item{yrs}{any year filter >= (default = NULL)}
 

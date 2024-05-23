@@ -34,7 +34,7 @@ srvy_comps(
 
 \item{strata_data}{strata id and area size input dataframe}
 
-\item{r_t}{age reader-tester input dataframe}
+\item{r_t}{age reader-tester input dataframe, included in surveyISS package data}
 
 \item{yrs}{any year filter >= (default = NULL)}
 

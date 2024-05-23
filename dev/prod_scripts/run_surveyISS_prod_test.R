@@ -23,7 +23,7 @@ iters = 10
 # get data ----
 # if query = TRUE then will run data queries, if FALSE will read previously run data
 # set = TRUE if first time running, or if data has changed
-query = TRUE
+query = FALSE
 
 ## gulf of alaska ----
 region = 'goa'
@@ -38,7 +38,7 @@ if(isTRUE(query)){
                                     species = species,
                                     yrs = yrs)
   
-  saveRDS(data, file = here::here('data', region, 'data.RDS'))
+  saveRDS(data_goa, file = here::here('data', region, 'data.RDS'))
 } else{
   data_goa <- readRDS(file = here::here('data', region, 'data.RDS'))
 }
@@ -55,7 +55,7 @@ if(isTRUE(query)){
                                    species = species,
                                    yrs = yrs)
   
-  saveRDS(data, file = here::here('data', region, 'data.RDS'))
+  saveRDS(data_ai, file = here::here('data', region, 'data.RDS'))
 } else{
   data_ai <- readRDS(file = here::here('data', region, 'data.RDS'))
 }
@@ -72,7 +72,7 @@ if(isTRUE(query)){
                                      species = species,
                                      yrs = yrs)
   
-  saveRDS(data, file = here::here('data', region, 'data.RDS'))
+  saveRDS(data_ebss, file = here::here('data', region, 'data.RDS'))
 } else{
   data_ebss <- readRDS(file = here::here('data', region, 'data.RDS'))
 }
@@ -89,7 +89,7 @@ if(isTRUE(query)){
                                     species = species,
                                     yrs = yrs)
   
-  saveRDS(data, file = here::here('data', region, 'data.RDS'))
+  saveRDS(data_ebs, file = here::here('data', region, 'data.RDS'))
 } else{
   data_ebs <- readRDS(file = here::here('data', region, 'data.RDS'))
 }
@@ -107,7 +107,7 @@ if(isTRUE(query)){
                                     species = species,
                                     yrs = yrs)
   
-  saveRDS(data, file = here::here('data', region, 'data.RDS'))
+  saveRDS(data_nbs, file = here::here('data', region, 'data.RDS'))
 } else{
   data_nbs <- readRDS(file = here::here('data', region, 'data.RDS'))
 }
@@ -124,7 +124,7 @@ if(isTRUE(query)){
                                      species = species,
                                      yrs = yrs)
   
-  saveRDS(data, file = here::here('data', region, 'data.RDS'))
+  saveRDS(data_nebs, file = here::here('data', region, 'data.RDS'))
 } else{
   data_nebs <- readRDS(file = here::here('data', region, 'data.RDS'))
 }
@@ -145,14 +145,6 @@ data_goa$lfreq %>%
 data_goa$specimen %>% 
   tidytable::filter(!(species_code %in% c(30050, 30051, 30052, 30150, 30152, 10261, 10262, 10200, 21740))) -> .specimen
 strata_data <- data_goa$strata
-
-
-
-
-surveyISS::r_t
-
-read_test %>% 
-  tidytable::filter(!(species_code %in% c(30050, 30051, 30052, 30150, 30152, 10261, 10262, 10200, 21740))) -> .read_test
 
 # for testing
 # lfreq_data = .lfreq
@@ -175,8 +167,7 @@ surveyISS::srvy_iss(iters = iters,
                     lfreq_data = .lfreq,
                     specimen_data = .specimen, 
                     cpue_data = .cpue, 
-                    strata_data = strata_data, 
-                    r_t = .read_test, 
+                    strata_data = strata_data,
                     yrs = yrs,  
                     boot_hauls = TRUE, 
                     boot_lengths = TRUE, 
@@ -195,18 +186,11 @@ data_goa$lfreq %>%
 data_goa$specimen %>% 
   tidytable::filter(species_code %in% c(21740)) -> .specimen_poll
 
-
-
-
-read_test %>% 
-  tidytable::filter(species_code %in% c(21740)) -> .read_test_poll
-
 surveyISS::srvy_iss_w140(iters = iters, 
                          lfreq_data = .lfreq_poll,
                          specimen_data = .specimen_poll, 
                          cpue_data = .cpue_poll, 
-                         strata_data = strata_data, 
-                         r_t = .read_test_poll, 
+                         strata_data = strata_data,
                          yrs = yrs, 
                          boot_hauls = TRUE, 
                          boot_lengths = TRUE, 
@@ -225,18 +209,11 @@ data_goa$lfreq %>%
 data_goa$specimen %>% 
   tidytable::filter(species_code %in% c(30050, 30051, 30052)) -> .specimen_rebs
 
-
-
-
-read_test %>% 
-  tidytable::filter(species_code %in% c(30050, 30051, 30052)) -> .read_test_rebs
-
 surveyISS::srvy_iss_goa_cmplx(iters = iters, 
                               lfreq_data = .lfreq_rebs, 
                               specimen_data = .specimen_rebs, 
                               cpue_data = .cpue_rebs, 
                               strata_data = strata_data, 
-                              r_t = .read_test_rebs, 
                               yrs = yrs, 
                               boot_hauls = TRUE, 
                               boot_lengths = TRUE, 
@@ -257,18 +234,11 @@ data_goa$lfreq %>%
 data_goa$specimen %>% 
   tidytable::filter(species_code %in% c(30150, 30152)) -> .specimen_dr
 
-
-
-
-read_test %>% 
-  tidytable::filter(species_code %in% c(30150, 30152)) -> .read_test_dr
-
 surveyISS::srvy_iss_goa_cmplx(iters = iters, 
                               lfreq_data = .lfreq_dr, 
                               specimen_data = .specimen_dr, 
                               cpue_data = .cpue_dr, 
                               strata_data = strata_data, 
-                              r_t = .read_test_dr, 
                               yrs = yrs, 
                               boot_hauls = TRUE, 
                               boot_lengths = TRUE, 
@@ -289,17 +259,11 @@ data_goa$lfreq %>%
 data_goa$specimen %>% 
   tidytable::filter(species_code %in% c(10261, 10262)) -> .specimen_nsrs
 
-
-
-read_test %>% 
-  tidytable::filter(species_code %in% c(10261, 10262)) -> .read_test_nsrs
-
 surveyISS::srvy_iss_goa_w_c_e(iters = iters, 
                               lfreq_data = .lfreq_nsrs, 
                               specimen_data = .specimen_nsrs, 
                               cpue_data = .cpue_nsrs, 
-                              strata_data = strata_data,
-                              r_t = .read_test_nsrs, 
+                              strata_data = strata_data, 
                               yrs = yrs,
                               boot_hauls = TRUE,
                               boot_lengths = TRUE,
@@ -318,17 +282,11 @@ data_goa$lfreq %>%
 data_goa$specimen %>% 
   tidytable::filter(species_code %in% c(10200)) -> .specimen_rex
 
-
-
-read_test %>% 
-  tidytable::filter(species_code %in% c(10200)) -> .read_test_rex
-
 surveyISS::srvy_iss_goa_wc_e(iters = iters, 
                              lfreq_data = .lfreq_rex, 
                              specimen_data = .specimen_rex, 
                              cpue_data = .cpue_rex,
-                             strata_data = strata_data,
-                             r_t = .read_test_rex, 
+                             strata_data = strata_data, 
                              yrs = yrs,
                              boot_hauls = TRUE,
                              boot_lengths = TRUE,
@@ -351,15 +309,11 @@ data_ai$specimen %>%
   tidytable::filter(!(species_code %in% c(30050, 30051, 30052, 30420))) -> .specimen
 strata_data <- data_ai$strata
 
-read_test %>% 
-  tidytable::filter(!(species_code %in% c(30050, 30051, 30052, 30420))) -> .read_test
-
 surveyISS::srvy_iss(iters = iters, 
                     lfreq_data = .lfreq,
                     specimen_data = .specimen, 
                     cpue_data = .cpue, 
-                    strata_data = strata_data, 
-                    r_t = .read_test, 
+                    strata_data = strata_data,
                     yrs = yrs, 
                     boot_hauls = TRUE, 
                     boot_lengths = TRUE, 
@@ -370,7 +324,7 @@ surveyISS::srvy_iss(iters = iters,
                     region = 'ai', 
                     save = 'prodtest')
 
-## Run for ai blackspotted-rougheye stock complex ----
+## run for ai blackspotted-rougheye stock complex ----
 data_ai$cpue %>% 
   tidytable::filter(species_code %in% c(30050, 30051, 30052)) -> .cpue_bsre
 data_ai$lfreq %>% 
@@ -378,16 +332,11 @@ data_ai$lfreq %>%
 data_ai$specimen %>% 
   tidytable::filter(species_code %in% c(30050, 30051, 30052)) -> .specimen_bsre
 
-
-data_ai$read_test %>% 
-  tidytable::filter(species_code %in% c(30050, 30051, 30052)) -> .read_test_bsre
-
 surveyISS::srvy_iss_ai_cmplx(iters = iters, 
                              lfreq_data = .lfreq_bsre, 
                              specimen_data = .specimen_bsre, 
                              cpue_data = .cpue_bsre, 
-                             strata_data = strata_data, 
-                             r_t = .read_test_bsre, 
+                             strata_data = strata_data,
                              yrs = yrs,
                              boot_hauls = TRUE, 
                              boot_lengths = TRUE, 
@@ -400,7 +349,7 @@ surveyISS::srvy_iss_ai_cmplx(iters = iters,
                              region = 'ai',  
                              save = 'prodtest')
 
-## Run for ai northern rockfish (subregion expansion) ----
+## run for ai northern rockfish (subregion expansion) ----
 data_ai$cpue %>% 
   tidytable::filter(species_code %in% c(30420)) -> .cpue_nr
 data_ai$lfreq %>% 
@@ -408,18 +357,11 @@ data_ai$lfreq %>%
 data_ai$specimen %>% 
   tidytable::filter(species_code %in% c(30420)) -> .specimen_nr
 
-
-
-
-read_test %>% 
-  tidytable::filter(species_code %in% c(30420)) -> .read_test_nr
-
 surveyISS::srvy_iss_ai_subreg(iters = iters,
                               lfreq_data = .lfreq_nr, 
                               specimen_data = .specimen_nr, 
                               cpue_data = .cpue_nr, 
                               strata_data = strata_data, 
-                              r_t = .read_test_nr, 
                               yrs = yrs,
                               boot_hauls = TRUE,
                               boot_lengths = TRUE,
@@ -433,23 +375,11 @@ surveyISS::srvy_iss_ai_subreg(iters = iters,
 
 # ebs shelf ----
 
-read_test <- vroom::vroom(here::here('data', 'r_t', 'reader_tester.csv')) %>% 
-  dplyr::rename_all(tolower) %>% 
-  tidytable::select(species_code, region, read_age, test_age) %>% 
-  tidytable::rename(age = 'read_age')
-
-
-save(read_test, file = here::here('data', 'read_test.rda'))
-
-readRDS(here::here('data', 'r_t.rda'))
-
-
 surveyISS::srvy_iss(iters = iters, 
                     lfreq_data = data_ebs$lfreq,
                     specimen_data = data_ebs$specimen, 
                     cpue_data = data_ebs$cpue, 
-                    strata_data = data_ebs$strata, 
-                    r_t = read_test, 
+                    strata_data = data_ebs$strata,
                     yrs = yrs,
                     boot_hauls = TRUE, 
                     boot_lengths = TRUE, 
@@ -463,18 +393,11 @@ surveyISS::srvy_iss(iters = iters,
 
 # ebs slope ----
 
-read_test <- vroom::vroom(here::here('data', 'reader_tester.csv')) %>% 
-  dplyr::rename_all(tolower) %>% 
-  tidytable::select(species_code, region, read_age, test_age) %>% 
-  tidytable::rename(age = 'read_age') %>% 
-  tidytable::filter(species_code %in% species)
-
 surveyISS::srvy_iss(iters = iters, 
                     lfreq_data = data_ebss$lfreq,
                     specimen_data = data_ebss$specimen, 
                     cpue_data = data_ebss$cpue, 
-                    strata_data = data_ebss$strata,
-                    r_t = read_test, 
+                    strata_data = data_ebss$strata, 
                     yrs = yrs,
                     boot_hauls = TRUE, 
                     boot_lengths = TRUE, 
@@ -485,20 +408,14 @@ surveyISS::srvy_iss(iters = iters,
                     region = 'ebs_slope', 
                     save = 'prodtest')
 
-# nbs & ebs ----
 
-read_test <- vroom::vroom(here::here('data', 'reader_tester.csv')) %>% 
-  dplyr::rename_all(tolower) %>% 
-  tidytable::select(species_code, region, read_age, test_age) %>% 
-  tidytable::rename(age = 'read_age') %>% 
-  tidytable::filter(species_code %in% species)
+# nbs & ebs ----
 
 surveyISS::srvy_iss(iters = iters, 
                     lfreq_data = data_nebs$lfreq,
                     specimen_data = data_nebs$specimen, 
                     cpue_data = data_nebs$cpue, 
                     strata_data = data_nebs$strata,  
-                    r_t = read_test, 
                     yrs = yrs,
                     boot_hauls = TRUE, 
                     boot_lengths = TRUE, 
@@ -521,14 +438,9 @@ data_goa$cpue %>%
 data_goa$specimen %>% 
   tidytable::filter(species_code %in% species) -> .specimen
 
-
-read_test %>% 
-  tidytable::filter(species_code %in% species) -> .read_test
-
 surveyISS::srvy_iss_caal(iters = iters, 
                          specimen_data = .specimen, 
                          cpue_data = .cpue, 
-                         r_t = .read_test, 
                          yrs = yrs,
                          boot_hauls = TRUE, 
                          boot_ages = TRUE,
