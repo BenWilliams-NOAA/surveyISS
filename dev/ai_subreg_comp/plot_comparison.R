@@ -1,7 +1,42 @@
-library(tidyverse)
-library(dplyr)
-library(Hmisc)
-library(rlang)
+# load surveyISS library ----
+devtools::install_github("BenWilliams-NOAA/surveyISS")
+library(surveyISS)
+
+# run surveyISS to get comps ----
+
+## get data (note, need to be connected to network) ----
+region = 'ai'
+yrs = 1991
+species = c(30420)
+survey = 52
+
+data_ai <- surveyISS::query_data(survey = survey,
+                                 region = region,
+                                 species = species,
+                                 yrs = yrs)
+
+## run for ai northern rockfish (subregion expansion) ----
+surveyISS::srvy_iss_ai_subreg(iters = 2,
+                              lfreq_data = data_ai$lfreq, 
+                              specimen_data = data_ai$specimen, 
+                              cpue_data = data_ai$cpue, 
+                              strata_data = data_ai$strata, 
+                              yrs = yrs,
+                              boot_hauls = TRUE,
+                              boot_lengths = TRUE,
+                              boot_ages = TRUE, 
+                              al_var = TRUE, 
+                              al_var_ann = TRUE, 
+                              age_err = TRUE,
+                              region = 'ai',   
+                              save_stats = TRUE, 
+                              save = 'ai_nr_comp')
+
+
+
+
+
+
 
 # read in comps
 comps <- vroom::vroom(here::here('dev', 'ai_subreg_comp', 'ai_nr_re.csv')) %>% 
