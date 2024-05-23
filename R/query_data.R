@@ -18,10 +18,10 @@ query_data_t3 <- function(query = FALSE) {
   survey = 47
   
   if(isTRUE(query)){
-    data_goa <- surveyISS::query_data(survey = survey,
-                                      region = region,
-                                      species = species,
-                                      yrs = yrs)
+    data_goa <- query_data(survey = survey,
+                           region = region,
+                           species = species,
+                           yrs = yrs)
     
     saveRDS(data_goa, file = here::here('data', region, 'data.RDS'))
   } else{
@@ -35,10 +35,10 @@ query_data_t3 <- function(query = FALSE) {
   survey = 52
   
   if(isTRUE(query)){
-    data_ai <- surveyISS::query_data(survey = survey,
-                                     region = region,
-                                     species = species,
-                                     yrs = yrs)
+    data_ai <- query_data(survey = survey,
+                          region = region,
+                          species = species,
+                          yrs = yrs)
     
     saveRDS(data_ai, file = here::here('data', region, 'data.RDS'))
   } else{
@@ -52,10 +52,10 @@ query_data_t3 <- function(query = FALSE) {
   survey = 78
   
   if(isTRUE(query)){
-    data_ebss <- surveyISS::query_data(survey = survey,
-                                       region = region,
-                                       species = species,
-                                       yrs = yrs)
+    data_ebss <- query_data(survey = survey,
+                            region = region,
+                            species = species,
+                            yrs = yrs)
     
     saveRDS(data_ebss, file = here::here('data', region, 'data.RDS'))
   } else{
@@ -69,10 +69,10 @@ query_data_t3 <- function(query = FALSE) {
   survey = 98
   
   if(isTRUE(query)){
-    data_ebs <- surveyISS::query_data(survey = survey,
-                                      region = region,
-                                      species = species,
-                                      yrs = yrs)
+    data_ebs <- query_data(survey = survey,
+                           region = region,
+                           species = species,
+                           yrs = yrs)
     
     saveRDS(data_ebs, file = here::here('data', region, 'data.RDS'))
   } else{
@@ -87,10 +87,10 @@ query_data_t3 <- function(query = FALSE) {
   survey = 143
   
   if(isTRUE(query)){
-    data_nbs <- surveyISS::query_data(survey = survey,
-                                      region = region,
-                                      species = species,
-                                      yrs = yrs)
+    data_nbs <- query_data(survey = survey,
+                           region = region,
+                           species = species,
+                           yrs = yrs)
     
     saveRDS(data_nbs, file = here::here('data', region, 'data.RDS'))
   } else{
@@ -104,10 +104,10 @@ query_data_t3 <- function(query = FALSE) {
   survey = c(98, 143)
   
   if(isTRUE(query)){
-    data_nebs <- surveyISS::query_data(survey = survey,
-                                       region = region,
-                                       species = species,
-                                       yrs = yrs)
+    data_nebs <- query_data(survey = survey,
+                            region = region,
+                            species = species,
+                            yrs = yrs)
     
     saveRDS(data_nebs, file = here::here('data', region, 'data.RDS'))
   } else{
@@ -142,10 +142,10 @@ query_data <- function(survey,
                        region, 
                        species, 
                        yrs = NULL) {
-
+  
   # create folder
   if (!dir.exists(paste0("data/", region))) {dir.create(paste0("data/", region))}
-
+  
   # year switch
   if (is.null(yrs)) yrs <- 0
   
@@ -155,7 +155,7 @@ query_data <- function(survey,
   conn = afscdata::connect(db)
   
   # length frequency data ----
-
+  
   cat("pulling length frequency...\n")
   
   dplyr::tbl(conn, dplyr::sql('gap_products.akfin_haul')) %>% 
@@ -227,7 +227,7 @@ query_data <- function(survey,
     dplyr::collect() %>% 
     vroom::vroom_write(here::here('data', region, "specimen.csv"), 
                        delim = ',') -> specimen
-
+  
   # cpue data ----
   
   cat("pulling cpue...\n")
@@ -296,7 +296,7 @@ query_data <- function(survey,
                   -net_width_m,
                   survey = survey_definition_id) %>% 
     dplyr::collect() -> cpue_calc
-
+  
   # filling in 0's like gapindex and write cpue data
   tidytable::expand_grid(hauljoin = unique(cpue$hauljoin), species_code = species) %>% 
     tidytable::left_join(cpue %>% 
@@ -362,7 +362,7 @@ query_data <- function(survey,
                   common_name) %>% 
     vroom::vroom_write(here::here('data', region, "species.csv"), 
                        delim = ',') -> species
-
+  
   DBI::dbDisconnect(conn)
   cat("finished.\n")
   list(lfreq = tidytable::as_tidytable(lfreq),
