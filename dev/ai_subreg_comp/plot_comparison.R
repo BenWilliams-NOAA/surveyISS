@@ -1,5 +1,5 @@
 # load surveyISS library ----
-devtools::install_github("BenWilliams-NOAA/surveyISS")
+devtools::install_github("BenWilliams-NOAA/surveyISS", force = TRUE)
 library(surveyISS)
 
 # run surveyISS to get comps ----
@@ -42,6 +42,7 @@ surveyISS::srvy_iss_ai_subreg(iters = 2,
 comps <- vroom::vroom(here::here('dev', 'ai_subreg_comp', 'ai_nr_re.csv')) %>% 
   tidytable::pivot_longer(cols = -year, names_to = 'age', values_to = 'p_comp') %>% 
   tidytable::mutate(age = as.numeric(age)) %>% 
+  spec()
   tidytable::full_join(vroom::vroom(here::here('output', 'ai', 'base_age_ai_subreg.csv')) %>% 
                          tidytable::filter(region == 'ai' & sex != 0) %>% 
                          tidytable::summarise(agepop = sum(agepop), .by = c(year, age)) %>% 

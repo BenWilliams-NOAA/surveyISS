@@ -241,7 +241,10 @@ query_data <- function(survey,
 
   DBI::dbDisconnect(conn)
   cat("finished.\n")
-  list(lfreq = lfreq, specimen = specimen, cpue = cpue, strata = strata)
+  list(lfreq = tidytable::as_tidytable(lfreq),
+       specimen = tidytable::as_tidytable(specimen),
+       cpue = tidytable::as_tidytable(cpue),
+       strata = tidytable::as_tidytable(strata))
 }
 
 
