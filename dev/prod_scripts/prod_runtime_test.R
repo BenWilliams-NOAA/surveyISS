@@ -1,19 +1,9 @@
 # example script to obtain age/length input sample size for production run
 
 # load surveyISS library ----
+devtools::unload('surveyISS')
 devtools::install_github("afsc-assessments/surveyISS", force = TRUE)
 library(surveyISS)
-
-## load/source libraries/functions for testing ----
-# library(purrr)
-# library(tidyverse)
-# library(tidytable)
-# library(psych)
-# library(vroom)
-# library(here)
-# 
-# source_files <- list.files(here::here("R"), "*.R$")
-# map(here::here("R", source_files), source)
 
 # get data ----
 # if query = TRUE then will run data queries, if FALSE will read previously run data
@@ -24,7 +14,6 @@ query = FALSE
 region = 'goa'
 yrs = 1990
 species = c(10110, 10130, 10180, 20510, 21720, 21740, 30060, 30420, 30050, 30051, 30052, 30150, 30152, 10261, 10262, 10200)
-# species = c(21740, 30060) # pollock and pop for testing
 survey = 47
 
 if(isTRUE(query)){

@@ -156,7 +156,7 @@ query_data <- function(survey,
   
   # length frequency data ----
   
-  cat("pulling length frequency...\n")
+  cat(paste0("pulling ", region, " length frequency...\n"))
   
   dplyr::tbl(conn, dplyr::sql('gap_products.akfin_haul')) %>% 
     dplyr::inner_join(dplyr::tbl(conn, dplyr::sql('gap_products.akfin_cruise')),
@@ -193,7 +193,7 @@ query_data <- function(survey,
   
   # specimen data ----
   
-  cat("pulling specimen...\n")
+  cat(paste0("pulling ", region, " specimen...\n"))
   
   dplyr::tbl(conn, dplyr::sql('gap_products.akfin_haul')) %>% 
     dplyr::inner_join(dplyr::tbl(conn, dplyr::sql('gap_products.akfin_cruise')),
@@ -230,7 +230,7 @@ query_data <- function(survey,
   
   # cpue data ----
   
-  cat("pulling cpue...\n")
+  cat(paste0("pulling ", region, " cpue...\n"))
   
   # get gap_products cpue
   dplyr::tbl(conn, dplyr::sql('gap_products.akfin_haul')) %>% 
@@ -310,7 +310,7 @@ query_data <- function(survey,
   
   # strata data ----
   
-  cat("pulling strata...\n")
+  cat(paste0("pulling ", region, " strata...\n"))
   
   # strata with area sizes
   dplyr::tbl(conn, dplyr::sql('gap_products.akfin_area')) %>% 
@@ -352,7 +352,7 @@ query_data <- function(survey,
   
   # species names ----
   
-  cat("pulling species info...\n")
+  cat(paste0("pulling ", region, " species info...\n"))
   
   dplyr::tbl(conn, dplyr::sql('gap_products.akfin_taxonomic_classification')) %>% 
     dplyr::rename_all(tolower) %>% 

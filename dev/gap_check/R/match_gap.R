@@ -85,7 +85,8 @@ match_gap <- function(oga,
 #' wrapper to compare with gap estimates of pop'n at age and length by survey region (from gap_products on akfin)
 #'
 #' @param region survey region
-#' @param query switch to query or just read data
+#' @param query_srvyISS switch to query or just read data for surveyISS package
+#' @param query_gpprod switch to query or just read gap_products data
 #' @param reg_stratum region-wide stratum number
 #' @param survey survey number
 #' @param yrs survey start year
@@ -97,7 +98,8 @@ match_gap <- function(oga,
 #' @examples
 
 reg_match_gapprod <- function(region = 'goa',
-                              query = FALSE,
+                              query_svyISS = FALSE,
+                              query_gpprod = FALSE,
                               reg_stratum = 99903,
                               survey = 47,
                               yrs = 1990){
@@ -106,7 +108,7 @@ reg_match_gapprod <- function(region = 'goa',
   
   ## get data ----
   
-  data <- surveyISS::query_data_t3(query = query)
+  data <- surveyISS::query_data_t3(query = query_svyISS)
   
   if(region == 'goa'){
     data <- data$data_goa
@@ -127,6 +129,7 @@ reg_match_gapprod <- function(region = 'goa',
   # determine species tested
   data$lfreq %>% 
     tidytable::distinct(species_code) -> species
+  species <- species$species_code
   
   ## get original age/length pop'n values ----
   og <- surveyISS::srvy_comps(lfreq_data = data$lfreq, 
@@ -185,10 +188,12 @@ reg_match_gapprod <- function(region = 'goa',
   
   # get gap_products output ----
   
-  if(isTRUE(query)){
+  if(isTRUE(query_gpprod)){
     
-    # create folder
-    if (!dir.exists(paste0("dev/data/", region))) {dir.create(paste0("dev/data/", region))}
+    # create data folder
+    if (!dir.exists(here::here("dev", "gap_check", "data", region))) {
+      dir.create(here::here("dev", "gap_check", "data", region), recursive = TRUE)
+      }
     
     # get connected to akfin
     db = 'akfin'
@@ -198,10 +203,10 @@ reg_match_gapprod <- function(region = 'goa',
     dplyr::tbl(conn, dplyr::sql('gap_products.akfin_sizecomp')) %>% 
       dplyr::rename_all(tolower) %>% 
       dplyr::filter(survey_definition_id %in% survey,
-                    species_code %in% species$species_code,
+                    species_code %in% species,
                     year >= yrs) %>% 
       dplyr::select(survey = survey_definition_id, year, stratum = area_id, species_code, sex, length = length_mm, population_count) %>% 
-      collect() -> gap_lpop_full
+      dplyr::collect() -> gap_lpop_full
     
     vroom::vroom_write(gap_lpop_full, file = here::here("dev", "gap_check", "data", region, paste0("gap_lpop_full_", region, ".csv")), delim = ",")
     
@@ -212,15 +217,15 @@ reg_match_gapprod <- function(region = 'goa',
     dplyr::tbl(conn, dplyr::sql('gap_products.akfin_agecomp')) %>% 
       dplyr::rename_all(tolower) %>% 
       dplyr::filter(survey_definition_id %in% survey,
-                    species_code %in% speceis$species_code,
+                    species_code %in% species,
                     year >= yrs) %>% 
       dplyr::select(survey = survey_definition_id, year, stratum = area_id, species_code, sex, age, population_count) %>% 
-      collect() -> gap_apop_full
+      dplyr::collect() -> gap_apop_full
     
     vroom::vroom_write(gap_apop_full, file = here::here("dev", "gap_check", "data", region, paste0("gap_apop_full_", region, ".csv")), delim = ",")
     
     gap_apop_full %>% 
-      filter(stratum == reg_stratum & age > 0) -> gap_apop
+      tidytable::filter(stratum == reg_stratum & age > 0) -> gap_apop
 
   } else{
     gap_lpop <- vroom::vroom(here::here("dev", "gap_check", "data", region, paste0("gap_lpop_full_", region, ".csv"))) %>% 
@@ -265,7 +270,6 @@ reg_match_gapprod <- function(region = 'goa',
                            tidytable::select(-test_sad_a, gap_st_sad = match_sad_a)) -> sad_a
   
   # create storage location
-  region = tolower(region)
   if(!dir.exists(here::here("dev", "gap_check", 'output', region))){
     dir.create(here::here("dev", "gap_check", 'output', region), recursive = TRUE)
   }
@@ -281,7 +285,8 @@ reg_match_gapprod <- function(region = 'goa',
 #' wrapper to compare with gap estimates of pop'n at age and length by survey region from gapindex
 #'
 #' @param region survey region
-#' @param query switch to query or just read data
+#' @param query_srvyISS switch to query or just read data for surveyISS package
+#' @param query_gpindx switch to query or just read data for gapindex package
 #' @param species species set to query gap data
 #' @param suvey survey number
 #' @param yrs survey start year
@@ -294,7 +299,8 @@ reg_match_gapprod <- function(region = 'goa',
 #' @examples
 
 reg_match_gapindex <- function(region = 'goa',
-                               query = FALSE,
+                               query_svyISS = FALSE,
+                               query_gpindx = FALSE,
                                species = NULL,
                                survey = 47,
                                yrs = 1990,
@@ -305,7 +311,7 @@ reg_match_gapindex <- function(region = 'goa',
   
   ## get data ----
   
-  data <- surveyISS::query_data_t3(query = query)
+  data <- surveyISS::query_data_t3(query = query_svyISS)
   
   if(region == 'goa'){
     data <- data$data_goa
@@ -389,7 +395,7 @@ reg_match_gapindex <- function(region = 'goa',
   # get gapindex output ----
   
   ## get data ----
-  if(isTRUE(query)){
+  if(isTRUE(query_gpindx)){
     year_set = seq(yrs, as.numeric(format(Sys.Date(), '%Y')))
     survey_set = toupper(region)
     spp_codes = species
