@@ -23,112 +23,15 @@ iters = 10
 # get data ----
 # if query = TRUE then will run data queries, if FALSE will read previously run data
 # set = TRUE if first time running, or if data has changed
-query = FALSE
 
-## gulf of alaska ----
-region = 'goa'
-yrs = 1990
-species = c(10110, 10130, 10180, 20510, 21720, 21740, 30060, 30420, 30050, 30051, 30052, 30150, 30152, 10261, 10262, 10200)
-# species = c(21740, 30060) # pollock and pop for testing
-survey = 47
+data <- surveyISS::query_data_t3(query = TRUE)
 
-if(isTRUE(query)){
-  data_goa <- surveyISS::query_data(survey = survey,
-                                    region = region,
-                                    species = species,
-                                    yrs = yrs)
-  
-  saveRDS(data_goa, file = here::here('data', region, 'data.RDS'))
-} else{
-  data_goa <- readRDS(file = here::here('data', region, 'data.RDS'))
-}
-
-## aleutian islands ----
-region = 'ai'
-yrs = 1991
-species = c(10110, 10112, 21720, 21740, 21921, 30060, 30420, 30050, 30051, 30052)
-survey = 52
-
-if(isTRUE(query)){
-  data_ai <- surveyISS::query_data(survey = survey,
-                                   region = region,
-                                   species = species,
-                                   yrs = yrs)
-  
-  saveRDS(data_ai, file = here::here('data', region, 'data.RDS'))
-} else{
-  data_ai <- readRDS(file = here::here('data', region, 'data.RDS'))
-}
-
-## ebs slope ----
-region = 'ebs_slope'
-yrs = 2002
-species = c(10110, 10112, 10115,30060)
-survey = 78
-
-if(isTRUE(query)){
-  data_ebss <- surveyISS::query_data(survey = survey,
-                                     region = region,
-                                     species = species,
-                                     yrs = yrs)
-  
-  saveRDS(data_ebss, file = here::here('data', region, 'data.RDS'))
-} else{
-  data_ebss <- readRDS(file = here::here('data', region, 'data.RDS'))
-}
-
-## ebs ----
-region = 'ebs'
-yrs = 1979
-species = c(10110, 10112, 10115, 10130, 10210, 10261, 10285, 21720, 21740)
-survey = 98
-
-if(isTRUE(query)){
-  data_ebs <- surveyISS::query_data(survey = survey,
-                                    region = region,
-                                    species = species,
-                                    yrs = yrs)
-  
-  saveRDS(data_ebs, file = here::here('data', region, 'data.RDS'))
-} else{
-  data_ebs <- readRDS(file = here::here('data', region, 'data.RDS'))
-}
-
-
-## nbs ----
-region = 'nbs'
-yrs = 1979
-species = c(10110, 10112, 10115, 10130, 10210, 10261, 10285, 21720, 21740)
-survey = 143
-
-if(isTRUE(query)){
-  data_nbs <- surveyISS::query_data(survey = survey,
-                                    region = region,
-                                    species = species,
-                                    yrs = yrs)
-  
-  saveRDS(data_nbs, file = here::here('data', region, 'data.RDS'))
-} else{
-  data_nbs <- readRDS(file = here::here('data', region, 'data.RDS'))
-}
-
-## ebs & nbs ----
-region = 'nebs'
-yrs = 1979
-species = c(10110, 10112, 10115, 10130, 10210, 10261, 10285, 21720, 21740)
-survey = c(98, 143)
-
-if(isTRUE(query)){
-  data_nebs <- surveyISS::query_data(survey = survey,
-                                     region = region,
-                                     species = species,
-                                     yrs = yrs)
-  
-  saveRDS(data_nebs, file = here::here('data', region, 'data.RDS'))
-} else{
-  data_nebs <- readRDS(file = here::here('data', region, 'data.RDS'))
-}
-
+data_goa <- data$data_goa
+data_ai <- data$data_ai
+data_ebs <- data$data_ebs
+data_ebss <- data$data_ebss
+data_nbs <- data$data_nbs
+data_nebs <- data$data_nebs
 
 # for testing run time
 if(iters < 100){

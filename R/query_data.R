@@ -1,3 +1,127 @@
+#' Wrapper function to query data
+#' 
+#' @description
+#' Function that queries data for all Tier 3 and above stock assessments performed by AFSC
+#' 
+#' @param query Boolean. If query = TRUE then will connect to AKFIN and query data, otherwise will read list of previously queried data. (default = FALSE)
+#'
+#' @return a list of necessary data sources, dataframes are also written to csv files within the 'data/region' folder.
+#' 
+#' @export
+#'
+query_data_t3 <- function(query = FALSE) {
+  
+  ## gulf of alaska ----
+  region = 'goa'
+  yrs = 1990
+  species = c(10110, 10130, 10180, 20510, 21720, 21740, 30060, 30420, 30050, 30051, 30052, 30150, 30152, 10261, 10262, 10200)
+  survey = 47
+  
+  if(isTRUE(query)){
+    data_goa <- surveyISS::query_data(survey = survey,
+                                      region = region,
+                                      species = species,
+                                      yrs = yrs)
+    
+    saveRDS(data_goa, file = here::here('data', region, 'data.RDS'))
+  } else{
+    data_goa <- readRDS(file = here::here('data', region, 'data.RDS'))
+  }
+  
+  ## aleutian islands ----
+  region = 'ai'
+  yrs = 1991
+  species = c(10110, 10112, 21720, 21740, 21921, 30060, 30420, 30050, 30051, 30052)
+  survey = 52
+  
+  if(isTRUE(query)){
+    data_ai <- surveyISS::query_data(survey = survey,
+                                     region = region,
+                                     species = species,
+                                     yrs = yrs)
+    
+    saveRDS(data_ai, file = here::here('data', region, 'data.RDS'))
+  } else{
+    data_ai <- readRDS(file = here::here('data', region, 'data.RDS'))
+  }
+  
+  ## ebs slope ----
+  region = 'ebs_slope'
+  yrs = 2002
+  species = c(10110, 10112, 10115,30060)
+  survey = 78
+  
+  if(isTRUE(query)){
+    data_ebss <- surveyISS::query_data(survey = survey,
+                                       region = region,
+                                       species = species,
+                                       yrs = yrs)
+    
+    saveRDS(data_ebss, file = here::here('data', region, 'data.RDS'))
+  } else{
+    data_ebss <- readRDS(file = here::here('data', region, 'data.RDS'))
+  }
+  
+  ## ebs ----
+  region = 'ebs'
+  yrs = 1979
+  species = c(10110, 10112, 10115, 10130, 10210, 10261, 10285, 21720, 21740)
+  survey = 98
+  
+  if(isTRUE(query)){
+    data_ebs <- surveyISS::query_data(survey = survey,
+                                      region = region,
+                                      species = species,
+                                      yrs = yrs)
+    
+    saveRDS(data_ebs, file = here::here('data', region, 'data.RDS'))
+  } else{
+    data_ebs <- readRDS(file = here::here('data', region, 'data.RDS'))
+  }
+  
+  
+  ## nbs ----
+  region = 'nbs'
+  yrs = 1979
+  species = c(10110, 10112, 10115, 10130, 10210, 10261, 10285, 21720, 21740)
+  survey = 143
+  
+  if(isTRUE(query)){
+    data_nbs <- surveyISS::query_data(survey = survey,
+                                      region = region,
+                                      species = species,
+                                      yrs = yrs)
+    
+    saveRDS(data_nbs, file = here::here('data', region, 'data.RDS'))
+  } else{
+    data_nbs <- readRDS(file = here::here('data', region, 'data.RDS'))
+  }
+  
+  ## ebs & nbs ----
+  region = 'nebs'
+  yrs = 1979
+  species = c(10110, 10112, 10115, 10130, 10210, 10261, 10285, 21720, 21740)
+  survey = c(98, 143)
+  
+  if(isTRUE(query)){
+    data_nebs <- surveyISS::query_data(survey = survey,
+                                       region = region,
+                                       species = species,
+                                       yrs = yrs)
+    
+    saveRDS(data_nebs, file = here::here('data', region, 'data.RDS'))
+  } else{
+    data_nebs <- readRDS(file = here::here('data', region, 'data.RDS'))
+  }
+  
+  list(data_goa = data_goa,
+       data_ai = data_ai,
+       data_ebs = data_ebs,
+       data_ebss = data_ebss,
+       data_nbs = data_nbs,
+       data_nebs = data_nebs)
+}
+
 #' Query data to run surveyISS
 #' 
 #' @description

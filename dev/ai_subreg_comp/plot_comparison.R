@@ -33,33 +33,15 @@ surveyISS::srvy_iss_ai_subreg(iters = 2,
                               save = 'ai_nr_comp')
 
 
-
-iters = 2
-lfreq_data = data_ai$lfreq 
-specimen_data = data_ai$specimen 
-cpue_data = data_ai$cpue 
-strata_data = data_ai$strata 
-yrs = yrs
-boot_hauls = TRUE
-boot_lengths = TRUE
-boot_ages = TRUE 
-al_var = TRUE 
-al_var_ann = TRUE 
-age_err = TRUE
-region = 'ai'
-
-
-
-# read in comps
+# set up plot data ----
 comps <- vroom::vroom(here::here('dev', 'ai_subreg_comp', 'ai_nr_re.csv')) %>% 
   tidytable::pivot_longer(cols = -year, names_to = 'age', values_to = 'p_comp') %>% 
   tidytable::mutate(age = as.numeric(age)) %>% 
-  spec()
-  tidytable::full_join(vroom::vroom(here::here('output', 'ai', 'base_age_ai_subreg.csv')) %>% 
+  tidytable::full_join(vroom::vroom(here::here('output', 'ai', 'ai_nr_comp_base_age_ai_subreg.csv')) %>% 
                          tidytable::filter(region == 'ai' & sex != 0) %>% 
                          tidytable::summarise(agepop = sum(agepop), .by = c(year, age)) %>% 
                          tidytable::filter(age < 40) %>% 
-                         tidytable::bind_rows(vroom::vroom(here::here('output', 'ai', 'base_age_ai_subreg.csv')) %>% 
+                         tidytable::bind_rows(vroom::vroom(here::here('output', 'ai', 'ai_nr_comp_base_age_ai_subreg.csv')) %>% 
                                                 tidytable::filter(region == 'ai' & sex != 0) %>% 
                                                 tidytable::summarise(agepop = sum(agepop), .by = c(year, age)) %>% 
                                                 tidytable::filter(age >= 40) %>% 
