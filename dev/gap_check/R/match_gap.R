@@ -198,7 +198,7 @@ reg_match_gapprod <- function(region = 'goa',
     dplyr::tbl(conn, dplyr::sql('gap_products.akfin_sizecomp')) %>% 
       dplyr::rename_all(tolower) %>% 
       dplyr::filter(survey_definition_id %in% survey,
-                    species_code %in% speces$species_code,
+                    species_code %in% species$species_code,
                     year >= yrs) %>% 
       dplyr::select(survey = survey_definition_id, year, stratum = area_id, species_code, sex, length = length_mm, population_count) %>% 
       collect() -> gap_lpop_full
@@ -212,7 +212,7 @@ reg_match_gapprod <- function(region = 'goa',
     dplyr::tbl(conn, dplyr::sql('gap_products.akfin_agecomp')) %>% 
       dplyr::rename_all(tolower) %>% 
       dplyr::filter(survey_definition_id %in% survey,
-                    species_code %in% speces$species_code,
+                    species_code %in% speceis$species_code,
                     year >= yrs) %>% 
       dplyr::select(survey = survey_definition_id, year, stratum = area_id, species_code, sex, age, population_count) %>% 
       collect() -> gap_apop_full
@@ -271,15 +271,12 @@ reg_match_gapprod <- function(region = 'goa',
   }
   
   # Write out results
-  vroom::vroom_write(mapd_l, file = here::here("dev", "gap_check", "output", region, "gapprod_mapd_l_.csv"), delim = ",")
-  vroom::vroom_write(mapd_a, file = here::here("dev", "gap_check", "output", region, "gapprod_mapd_a_.csv"), delim = ",")
-  vroom::vroom_write(sad_l, file = here::here("dev", "gap_check", "output", region, "gapprod_sad_l_.csv"), delim = ",")
-  vroom::vroom_write(sad_a, file = here::here("dev", "gap_check", "output", region, "gapprod_sad_a_.csv"), delim = ",")
+  vroom::vroom_write(mapd_l, file = here::here("dev", "gap_check", "output", region, "gapprod_mapd_len.csv"), delim = ",")
+  vroom::vroom_write(mapd_a, file = here::here("dev", "gap_check", "output", region, "gapprod_mapd_age.csv"), delim = ",")
+  vroom::vroom_write(sad_l, file = here::here("dev", "gap_check", "output", region, "gapprod_sad_len.csv"), delim = ",")
+  vroom::vroom_write(sad_a, file = here::here("dev", "gap_check", "output", region, "gapprod_sad_age.csv"), delim = ",")
 
 }
-
-
-
 
 #' wrapper to compare with gap estimates of pop'n at age and length by survey region from gapindex
 #'
@@ -306,78 +303,92 @@ reg_match_gapindex <- function(region = 'goa',
   
   # get survey ISS output ----
   
-  cpue <- tidytable::as_tidytable(vroom::vroom(here::here('data', paste0('cpue_', region, '.csv')))) %>% 
-    tidytable::filter(species_code %in% species)
-  lfreq <- tidytable::as_tidytable(vroom::vroom(here::here('data', paste0('lfreq_', region, '.csv')))) %>% 
-    tidytable::filter(species_code %in% species)
-  strata <- tidytable::as_tidytable(vroom::vroom(here::here('data', paste0('strata_', region, '.csv'))))
-  specimen <- tidytable::as_tidytable(vroom::vroom(here::here('data', paste0('specimen_', region, '.csv')))) %>% 
-    tidytable::filter(species_code %in% species)
+  ## get data ----
   
-  # get original age/length pop'n values
-  og <- srvy_comps(lfreq_data = lfreq, 
-                   specimen_data = specimen, 
-                   cpue_data = cpue, 
-                   strata_data = strata,
-                   r_t = NULL,
-                   yrs = yrs, 
-                   bin = 1,
-                   boot_hauls = FALSE, 
-                   boot_lengths = FALSE, 
-                   boot_ages = FALSE,
-                   al_var = FALSE,
-                   al_var_ann = FALSE,
-                   age_err = FALSE,
-                   use_gapindex = FALSE,
-                   by_strata = FALSE,
-                   global = global)
+  data <- surveyISS::query_data_t3(query = query)
+  
+  if(region == 'goa'){
+    data <- data$data_goa
+  }
+  if(region == 'ai'){
+    data <- data$data_ai
+  }
+  if(region == 'ebs'){
+    data <- data$data_ebs
+  }
+  if(region == 'ebs_slope'){
+    data <- data$data_ebss
+  }
+  if(region == 'nbs'){
+    data <- data$data_nbs
+  }
+  
+  # filter data to species tested
+  data$lfreq %>% 
+    tidytable::filter(species_code %in% species) -> lfreq_data
+  data$specimen %>% 
+    tidytable::filter(species_code %in% species) -> specimen_data
+  data$cpue %>% 
+    tidytable::filter(species_code %in% species) -> cpue_data
+  
+  ## get original age/length pop'n values ----
+  og <- surveyISS::srvy_comps(lfreq_data, 
+                              specimen_data, 
+                              cpue_data, 
+                              strata_data = data$strata,
+                              r_t = NULL,
+                              yrs = yrs,
+                              boot_hauls = FALSE, 
+                              boot_lengths = FALSE, 
+                              boot_ages = FALSE,
+                              al_var = FALSE,
+                              al_var_ann = FALSE,
+                              age_err = FALSE,
+                              use_gapindex = FALSE)
   
   oga_og <- og$age
   ogl_og <- og$length
   
-  # get age/length pop'n values based on gapindex at region level
-  og_gap <- srvy_comps(lfreq_data = lfreq, 
-                       specimen_data = specimen, 
-                       cpue_data = cpue, 
-                       strata_data = strata,
-                       r_t = NULL,
-                       yrs = yrs, 
-                       bin = 1,
-                       boot_hauls = FALSE, 
-                       boot_lengths = FALSE, 
-                       boot_ages = FALSE,
-                       al_var = FALSE,
-                       al_var_ann = FALSE,
-                       age_err = FALSE,
-                       use_gapindex = TRUE,
-                       by_strata = FALSE,
-                       global = global)
+  ## get age/length pop'n values based on gapindex at region level ----
+  og_gap <- surveyISS::srvy_comps(lfreq_data, 
+                                  specimen_data, 
+                                  cpue_data,
+                                  strata_data = data$strata,
+                                  r_t = NULL,
+                                  yrs = yrs,
+                                  boot_hauls = FALSE, 
+                                  boot_lengths = FALSE, 
+                                  boot_ages = FALSE,
+                                  al_var = FALSE,
+                                  al_var_ann = FALSE,
+                                  age_err = FALSE,
+                                  use_gapindex = TRUE)
   
   oga_gap <- og_gap$age
   ogl_gap <- og_gap$length
   
   # get age/length pop'n values based on gapindex at stratum level
-  og_gap_st <- srvy_comps(lfreq_data = lfreq, 
-                          specimen_data = specimen, 
-                          cpue_data = cpue, 
-                          strata_data = strata,
-                          r_t = NULL,
-                          yrs = yrs, 
-                          bin = 1,
-                          boot_hauls = FALSE, 
-                          boot_lengths = FALSE, 
-                          boot_ages = FALSE,
-                          al_var = FALSE,
-                          al_var_ann = FALSE,
-                          age_err = FALSE,
-                          use_gapindex = TRUE,
-                          by_strata = TRUE,
-                          global = global)
+  og_gap_st <- surveyISS::srvy_comps(lfreq_data, 
+                                     specimen_data, 
+                                     cpue_data, 
+                                     strata_data = data$strata,
+                                     r_t = NULL,
+                                     yrs = yrs,
+                                     boot_hauls = FALSE, 
+                                     boot_lengths = FALSE, 
+                                     boot_ages = FALSE,
+                                     al_var = FALSE,
+                                     al_var_ann = FALSE,
+                                     age_err = FALSE,
+                                     use_gapindex = TRUE,
+                                     by_strata = TRUE)
   
   oga_gap_st <- og_gap_st$age
   ogl_gap_st <- og_gap_st$length
   
   # get gapindex output ----
+  
+  ## get data ----
   if(isTRUE(query)){
     year_set = seq(yrs, as.numeric(format(Sys.Date(), '%Y')))
     survey_set = toupper(region)
@@ -388,9 +399,9 @@ reg_match_gapindex <- function(region = 'goa',
                                   spp_codes = spp_codes,
                                   pull_lengths = TRUE)
     
-    saveRDS(gapdata, here::here('dev', 'gap_check', 'data', paste0('gapdata_', region, '.RDS')))
+    saveRDS(gapdata, here::here('dev', 'gap_check', 'data', region, 'gapdata.RDS'))
   } else{
-    gapdata <- readRDS(here::here('dev', 'gap_check', 'data', paste0('gapdata_', region, '.RDS')))
+    gapdata <- readRDS(here::here('dev', 'gap_check', 'data', region, 'gapdata.RDS'))
   }
   
   # subset data to species desired to be tested
@@ -405,6 +416,7 @@ reg_match_gapindex <- function(region = 'goa',
   gapdata$species %>% 
     tidytable::filter(SPECIES_CODE %in% species) -> gapdata$species
   
+  ## run gapindex ----
   # get cpue
   cpue <- gapindex::calc_cpue(gapdata)
   
@@ -437,7 +449,6 @@ reg_match_gapindex <- function(region = 'goa',
     gap_ac %>% 
       tidytable::filter(AREA_ID == 99901) -> gap_ac
   }
-
 
   # rename and summarise
   gap_lc %>% 
@@ -488,12 +499,18 @@ reg_match_gapindex <- function(region = 'goa',
     tidytable::left_join(gap_st[[4]] %>% 
                            tidytable::select(-test_sad_a, gap_st_sad = match_sad_a)) -> sad_a
   
-  # Write out results
-  vroom::vroom_write(mapd_l, file = here::here("dev", "gap_check", "output", paste0("gapindx_mapd_l_", region, ".csv")), delim = ",")
-  vroom::vroom_write(mapd_a, file = here::here("dev", "gap_check", "output", paste0("gapindx_mapd_a_", region, ".csv")), delim = ",")
-  vroom::vroom_write(sad_l, file = here::here("dev", "gap_check", "output", paste0("gapindx_sad_l_", region, ".csv")), delim = ",")
-  vroom::vroom_write(sad_a, file = here::here("dev", "gap_check", "output", paste0("gapindx_sad_a_", region, ".csv")), delim = ",")
+  # create storage location
+  region = tolower(region)
+  if(!dir.exists(here::here("dev", "gap_check", 'output', region))){
+    dir.create(here::here("dev", "gap_check", 'output', region), recursive = TRUE)
+  }
   
+  # Write out results
+  vroom::vroom_write(mapd_l, file = here::here("dev", "gap_check", "output", region, "gapindx_mapd_len.csv"), delim = ",")
+  vroom::vroom_write(mapd_a, file = here::here("dev", "gap_check", "output", region, "gapindx_mapd_age.csv"), delim = ",")
+  vroom::vroom_write(sad_l, file = here::here("dev", "gap_check", "output", region, "gapindx_sad_len.csv"), delim = ",")
+  vroom::vroom_write(sad_a, file = here::here("dev", "gap_check", "output", region, "gapindx_sad_age.csv"), delim = ",")
+
 }
 
 
