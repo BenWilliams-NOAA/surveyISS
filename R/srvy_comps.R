@@ -19,6 +19,8 @@
 #' @param age_err Boolean. Include ageing error in resampled age data? (default = FALSE)
 #' @param len_samples If set at a value, tests reductions in haul-level length sampling. To test, set this value at some smaller level than current sampling rate, i.e., 25 (default = NULL)
 #' @param age_samples If set at a value, tests reductions (and increases) in survey-level number of ages collected. To test, set at a proportion of ages collected, i.e., 0.8 or 1.2 (default = NULL)
+#' @param plus_len If set at a value, computes length expansion with a plus-length group (default = FALSE)
+#' @param plus_age If set at a value, computes age expansion with a plus-age group (default = FALSE)
 #' @param by_strata Boolean. Should length/age pop'n values be computed at stratum level? (default = FALSE)
 #' @param global Boolean. Fill in missing length bins with global age-lenth key? (default = FALSE)
 #' 
@@ -41,6 +43,8 @@ srvy_comps <- function(lfreq_data,
                        age_err = FALSE,
                        len_samples = NULL,
                        age_samples = NULL,
+                       plus_len = NULL,
+                       plus_age = NULL,
                        by_strata = FALSE,
                        global = FALSE) {
   # globals ----
@@ -159,6 +163,14 @@ srvy_comps <- function(lfreq_data,
       tidytable::select(-length, length = new_length) -> .lfreq_un
   }
   
+  # set lengths > plus-length group to plus-length
+  # note: if custom length bins are used the plus length group will already be populated
+  if(!is.null(plus_len)){
+    .lfreq_un %>% 
+      tidytable::mutate(length = dplyr::case_when(length >= plus_len ~ plus_len,
+                                                  length < plus_len ~ length)) -> .lfreq_un
+  }
+  
   # length population ----
   lpop(.lfreq_un, .cpue, by_strata = by_strata) -> .lpop
   
@@ -209,6 +221,21 @@ srvy_comps <- function(lfreq_data,
       tidytable::select(-length, length = new_length) -> .agedat
   }
   
+  # set lengths > plus-length group to plus-length
+  # note: if custom length bins are used the plus length group will already be populated
+  if(!is.null(plus_len)){
+    .agedat %>% 
+      tidytable::mutate(length = dplyr::case_when(length >= plus_len ~ plus_len,
+                                                  length < plus_len ~ length)) -> .agedat
+  }
+  
+  # set age > plus-age group to plus-age
+  if(!is.null(plus_age)){
+    .agedat %>% 
+      tidytable::mutate(age = dplyr::case_when(age >= plus_age ~ plus_age,
+                                               age < plus_age ~ age)) -> .agedat
+  }
+
   # age population ----
   apop(.lpop, .agedat, .lngs, by_strata = by_strata, global = global) -> .apop
   
@@ -244,6 +271,8 @@ srvy_comps <- function(lfreq_data,
 #' @param age_err Boolean. Include ageing error in resampled age data? (default = FALSE)
 #' @param len_samples If set at a value, tests reductions in haul-level length sampling. To test, set this value at some smaller level than current sampling rate, i.e., 25 (default = NULL)
 #' @param age_samples If set at a value, tests reductions (and increases) in survey-level number of ages collected. To test, set at a proportion of ages collected, i.e., 0.8 or 1.2 (default = NULL)
+#' @param plus_len If set at a value, computes length expansion with a plus-length group (default = FALSE)
+#' @param plus_age If set at a value, computes age expansion with a plus-age group (default = FALSE)
 #' @param cmplx_code Numeric value to replace the individual species codes with a complex code shared across species. (default = 3005012)
 #' @param by_strata Boolean. Should length/age pop'n values be computed at stratum level? (default = FALSE)
 #' @param global Boolean. Fill in missing length bins with global age-lenth key? (default = FALSE)
@@ -267,6 +296,8 @@ srvy_comps_ai_cmplx <- function(lfreq_data,
                                 age_err = FALSE,
                                 len_samples = NULL,
                                 age_samples = NULL,
+                                plus_len = NULL,
+                                plus_age = NULL,
                                 cmplx_code = NULL,
                                 by_strata = FALSE,
                                 global = FALSE) {
@@ -389,6 +420,14 @@ srvy_comps_ai_cmplx <- function(lfreq_data,
       tidytable::select(-length, length = new_length) -> .lfreq_un
   }
   
+  # set lengths > plus-length group to plus-length
+  # note: if custom length bins are used the plus length group will already be populated
+  if(!is.null(plus_len)){
+    .lfreq_un %>% 
+      tidytable::mutate(length = dplyr::case_when(length >= plus_len ~ plus_len,
+                                                  length < plus_len ~ length)) -> .lfreq_un
+  }
+  
   # length population ----
   lpop(.lfreq_un, .cpue, by_strata = by_strata) %>% 
     tidytable::summarise(abund = sum(abund), .by = c(year, length, sex)) %>% 
@@ -453,6 +492,21 @@ srvy_comps_ai_cmplx <- function(lfreq_data,
       tidytable::select(-length, length = new_length) -> .agedat
   }
   
+  # set lengths > plus-length group to plus-length
+  # note: if custom length bins are used the plus length group will already be populated
+  if(!is.null(plus_len)){
+    .agedat %>% 
+      tidytable::mutate(length = dplyr::case_when(length >= plus_len ~ plus_len,
+                                                  length < plus_len ~ length)) -> .agedat
+  }
+  
+  # set age > plus-age group to plus-age
+  if(!is.null(plus_age)){
+    .agedat %>% 
+      tidytable::mutate(age = dplyr::case_when(age >= plus_age ~ plus_age,
+                                               age < plus_age ~ age)) -> .agedat
+  }
+  
   # age population ----
   apop(.lpop, .agedat, .lngs, by_strata = by_strata, global = global) -> .apop
   
@@ -477,6 +531,8 @@ srvy_comps_ai_cmplx <- function(lfreq_data,
 #' @param al_var_ann Boolean. Resample age-length variability annually or pooled across years? (default = FALSE)
 #' @param age_err Boolean. Include ageing error in resampled age data? (default = FALSE)
 #' @param age_samples If set at a value, tests reductions (and increases) in survey-level number of ages collected. To test, set at a proportion of ages collected, i.e., 0.8 or 1.2 (default = NULL)
+#' @param plus_len If set at a value, computes length expansion with a plus-length group (default = FALSE)
+#' @param plus_age If set at a value, computes age expansion with a plus-age group (default = FALSE)
 #' 
 #' @return List with dataframe of conditional age-at-length (.caal).
 #' 
@@ -492,7 +548,9 @@ srvy_comps_caal <- function(specimen_data,
                             al_var = FALSE,
                             al_var_ann = FALSE,
                             age_err = FALSE,
-                            age_samples = NULL) {
+                            age_samples = NULL,
+                            plus_len = NULL,
+                            plus_age = NULL) {
   # globals ----
   # year switch
   if (is.null(yrs)) yrs <- 0
@@ -575,6 +633,20 @@ srvy_comps_caal <- function(specimen_data,
       tidytable::select(-length, length = new_length) -> .agedat
   }
   
+  # set lengths > plus-length group to plus-length
+  # note: if custom length bins are used the plus length group will already be populated
+  if(!is.null(plus_len)){
+    .agedat %>% 
+      tidytable::mutate(length = dplyr::case_when(length >= plus_len ~ plus_len,
+                                                  length < plus_len ~ length)) -> .agedat
+  }
+  
+  # set age > plus-age group to plus-age
+  if(!is.null(plus_age)){
+    .agedat %>% 
+      tidytable::mutate(age = dplyr::case_when(age >= plus_age ~ plus_age,
+                                               age < plus_age ~ age)) -> .agedat
+  }
   
   # caal ----
   apop_caal(.agedat) -> .caal
