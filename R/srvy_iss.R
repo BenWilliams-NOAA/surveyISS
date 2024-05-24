@@ -1480,6 +1480,7 @@ srvy_iss_ai_subreg <- function(iters = 1,
 #' @param al_var_ann Boolean. Resample age-length variability annually or pooled across years? (default = FALSE)
 #' @param age_err Boolean. Include ageing error in resampled age data? (default = FALSE)
 #' @param age_samples If set at a value, tests reductions (and increases) in survey-level number of ages collected. To test, set at a proportion of ages collected, i.e., 0.8 or 1.2 (default = NULL)
+#' @param plus_len If set at a value, computes length expansion with a plus-length group (default = FALSE)
 #' @param plus_age If set at a value, computes age expansion with a plus-age group (default = FALSE)
 #' @param region Region will create a folder and place results in said folder. (default = NULL)
 #' @param save_interm Boolean. Save the intermediate results: resampled age/length comps and realized sample size per iteration? (default = FALSE)
@@ -1504,6 +1505,7 @@ srvy_iss_caal <- function(iters = 1,
                           al_var_ann = FALSE, 
                           age_err = FALSE,
                           age_samples = NULL,
+                          plus_len = NULL,
                           plus_age = NULL,
                           region = NULL, 
                           save_interm = FALSE, 
@@ -1521,7 +1523,7 @@ srvy_iss_caal <- function(iters = 1,
   cpue_data <- tidytable::as_tidytable(cpue_data) 
   
   # filter reader-tester data to species
-  lfreq_data %>% 
+  specimen_data %>% 
     tidytable::distinct(species_code) -> species
   surveyISS::read_test %>% 
     tidytable::filter(species_code %in% species$species_code) -> r_t
@@ -1538,6 +1540,7 @@ srvy_iss_caal <- function(iters = 1,
                         al_var_ann = FALSE,
                         age_err = FALSE,
                         age_samples = NULL,
+                        plus_len = plus_len,
                         plus_age = plus_age)
   ogcaal <- og$caal
   
@@ -1553,6 +1556,7 @@ srvy_iss_caal <- function(iters = 1,
                                               al_var_ann = al_var_ann,
                                               age_err = age_err,
                                               age_samples = age_samples,
+                                              plus_len = plus_len,
                                               plus_age = plus_age))
   
   r_caal <- do.call(mapply, c(list, rr, SIMPLIFY = FALSE))$caal %>%
