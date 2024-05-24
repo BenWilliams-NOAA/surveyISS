@@ -18,7 +18,7 @@ srvy_iss_caal(
   age_samples = NULL,
   plus_len = NULL,
   plus_age = NULL,
-  region = NULL,
+  region = "goa",
   save_interm = FALSE,
   save_stats = FALSE,
   save
@@ -51,7 +51,7 @@ srvy_iss_caal(
 
 \item{plus_age}{If set at a value, computes age expansion with a plus-age group (default = FALSE)}
 
-\item{region}{Region will create a folder and place results in said folder. (default = NULL)}
+\item{region}{Region will create a folder and place results in said folder. (default = 'goa')}
 
 \item{save_interm}{Boolean. Save the intermediate results: resampled age/length comps and realized sample size per iteration? (default = FALSE)}
 

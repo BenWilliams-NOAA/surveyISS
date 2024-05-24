@@ -1,6 +1,6 @@
 # surveyISS
 
-An R package for esimating input sample size for composition data provided by the AFSC bottom trawl surveys
+An R package for esimating input sample size for composition data provided by the AFSC bottom trawl surveys.
 *Note that this package is only useful when you have access to the AKFIN network and permissions to access the databases.*  
 
 ## Welcome 
@@ -54,7 +54,7 @@ Finally, in the 'output/goa' folder you will see two output files, one with ISS 
 
 There are a number of flexibilities built in the the surveyISS::srvy_iss() function (for example, setting plus age or length group, testing changes in age or length sample sizes, setting which output files you'd like to have), please see the function description for the various inputs to this function. 
 There are also a number of special cases that have been developed, for example, spatially-explicit cases and stock complex cases (for both the AI and GOA), as well as being able to get ISS for conditional age-at-length data.
-While the surveyISS package will produce estimates of age and length population that are also produced by GAP, we recommend (unless you're using a special case function) to get the age and length population estimates that are then used for age/length composition in your stock assessment from teh GAP_PRODUCTS tables hosted on AKFIN.
+While the surveyISS package will produce estimates of age and length population that are also produced by GAP, we recommend (unless you're using a special case function) to get the age and length population estimates that are then used for age/length composition in your stock assessment from the GAP_PRODUCTS tables hosted on AKFIN.
 
 
 ### NOAA README

@@ -24,7 +24,7 @@ srvy_iss(
   plus_age = NULL,
   by_strata = FALSE,
   global = FALSE,
-  region = NULL,
+  region = "goa",
   save_interm = FALSE,
   save_stats = FALSE,
   save
@@ -69,7 +69,7 @@ srvy_iss(
 
 \item{global}{Boolean. Fill in missing length bins with global age-lenth key? (default = FALSE)}
 
-\item{region}{Region will create a folder and place results in said folder. (default = NULL)}
+\item{region}{Region will create a folder and place results in said folder. (default = 'goa')}
 
 \item{save_interm}{Boolean. Save the intermediate results: resampled age/length comps and realized sample size per iteration? (default = FALSE)}
 
