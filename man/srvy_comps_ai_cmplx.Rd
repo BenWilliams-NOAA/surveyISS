@@ -21,7 +21,6 @@ srvy_comps_ai_cmplx(
   len_samples = NULL,
   age_samples = NULL,
   cmplx_code = NULL,
-  use_gapindex = TRUE,
   by_strata = FALSE,
   global = FALSE
 )
@@ -59,11 +58,9 @@ srvy_comps_ai_cmplx(
 
 \item{cmplx_code}{Numeric value to replace the individual species codes with a complex code shared across species. (default = 3005012)}
 
-\item{use_gapindex}{Boolean. Use functions derived from gapindex package? (default = TRUE)}
+\item{by_strata}{Boolean. Should length/age pop'n values be computed at stratum level? (default = FALSE)}
 
-\item{by_strata}{Boolean. Should length/age pop'n values be computed at stratum level in gap fcns? (default = FALSE)}
-
-\item{global}{Boolean. Fill in missing length bins with global age-lenth key in gap fcns? (default = FALSE)}
+\item{global}{Boolean. Fill in missing length bins with global age-lenth key? (default = FALSE)}
 }
 \value{
 List with dataframes of population numbers at length (.lpop) and age (.apop).

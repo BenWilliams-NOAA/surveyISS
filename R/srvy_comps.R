@@ -19,9 +19,8 @@
 #' @param age_err Boolean. Include ageing error in resampled age data? (default = FALSE)
 #' @param len_samples If set at a value, tests reductions in haul-level length sampling. To test, set this value at some smaller level than current sampling rate, i.e., 25 (default = NULL)
 #' @param age_samples If set at a value, tests reductions (and increases) in survey-level number of ages collected. To test, set at a proportion of ages collected, i.e., 0.8 or 1.2 (default = NULL)
-#' @param use_gapindex Boolean. Use functions derived from gapindex package? (default = TRUE)
-#' @param by_strata Boolean. Should length/age pop'n values be computed at stratum level in gap fcns? (default = FALSE)
-#' @param global Boolean. Fill in missing length bins with global age-lenth key in gap fcns? (default = FALSE)
+#' @param by_strata Boolean. Should length/age pop'n values be computed at stratum level? (default = FALSE)
+#' @param global Boolean. Fill in missing length bins with global age-lenth key? (default = FALSE)
 #' 
 #' @return List with dataframes of population numbers at length (.lpop) and age (.apop).
 #' 
@@ -42,7 +41,6 @@ srvy_comps <- function(lfreq_data,
                        age_err = FALSE,
                        len_samples = NULL,
                        age_samples = NULL,
-                       use_gapindex = TRUE,
                        by_strata = FALSE,
                        global = FALSE) {
   # globals ----
@@ -50,49 +48,39 @@ srvy_comps <- function(lfreq_data,
   if (is.null(yrs)) yrs <- 0
   
   # prep data ----
-  if(isTRUE(use_gapindex)){
-    # complete cases by year/length/sex/strata for all years (following gapindex)
-    tidytable::expand_grid(year = unique(lfreq_data$year),
-                           species_code = unique(specimen_data$species_code),
-                           sex = unique(specimen_data$sex),
-                           length = seq(from = min(lfreq_data$length, na.rm = TRUE), 
-                                        to = max(lfreq_data$length, na.rm = TRUE), 
-                                        by = 10),
-                           age = seq(from = min(specimen_data$age, na.rm = TRUE), 
-                                     to = max(specimen_data$age, na.rm = TRUE),
-                                     by = 1)) -> .lngs
-    # bin by cm blocks
-    if(length(bin) == 1){
-      .lngs %>% 
-        tidytable::mutate(length = 10 * (bin * ceiling((length / 10) / bin))) %>% 
-        tidytable::distinct(year, species_code, sex, length, age) -> .lngs
-    }
-    # custom length bins
-    else{
-      # set up bin bounds
-      c(0, bin) %>% 
-        tidytable::bind_cols(c(bin, bin[length(bin)] + 1)) %>% 
-        tidytable::rename(lwr = '...1', upr = '...2') -> bin_bnds
-      # determine which bin length is in, and define new length as upper bin
-      # note, plus bin is denoted as max length bin + 1
-      .lngs %>% 
-        tidytable::distinct(length) %>% 
-        tidytable::mutate(new_length = bin_bnds$upr[max(which(bin_bnds$lwr < length / 10))], 
-                          .by = c(length)) -> new_lengths
-      # replace lengths in length frequency data with new binned lengths
-      .lngs %>% 
-        tidytable::left_join(new_lengths) %>% 
-        tidytable::select(-length, length = new_length) %>% 
-        tidytable::distinct(year, species_code, sex, length, age) -> .lngs
-    }
-  } else{
-    # complete cases by length/sex/strata for all years (original)
-    lfreq_data %>%
-      tidytable::filter(year >= yrs) %>% 
-      tidytable::distinct(year, species_code, length) %>% 
-      tidytable::expand(year, length, .by = species_code) -> .lngs
+  # complete cases by year/length/sex/strata for all years (following gapindex)
+  tidytable::expand_grid(year = unique(lfreq_data$year),
+                         species_code = unique(specimen_data$species_code),
+                         sex = unique(specimen_data$sex),
+                         length = seq(from = min(lfreq_data$length, na.rm = TRUE), 
+                                      to = max(lfreq_data$length, na.rm = TRUE), 
+                                      by = 10),
+                         age = seq(from = min(specimen_data$age, na.rm = TRUE), 
+                                   to = max(specimen_data$age, na.rm = TRUE),
+                                   by = 1)) -> .lngs
+  # bin by cm blocks
+  if(length(bin) == 1){
+    .lngs %>% 
+      tidytable::mutate(length = 10 * (bin * ceiling((length / 10) / bin))) %>% 
+      tidytable::distinct(year, species_code, sex, length, age) -> .lngs
+  } else{ # custom length bins
+    # set up bin bounds
+    c(0, bin) %>% 
+      tidytable::bind_cols(c(bin, bin[length(bin)] + 1)) %>% 
+      tidytable::rename(lwr = '...1', upr = '...2') -> bin_bnds
+    # determine which bin length is in, and define new length as upper bin
+    # note, plus bin is denoted as max length bin + 1
+    .lngs %>% 
+      tidytable::distinct(length) %>% 
+      tidytable::mutate(new_length = bin_bnds$upr[max(which(bin_bnds$lwr < length / 10))], 
+                        .by = c(length)) -> new_lengths
+    # replace lengths in length frequency data with new binned lengths
+    .lngs %>% 
+      tidytable::left_join(new_lengths) %>% 
+      tidytable::select(-length, length = new_length) %>% 
+      tidytable::distinct(year, species_code, sex, length, age) -> .lngs
   }
-
+  
   # first pass of filtering
   data.table::setDT(cpue_data) %>%
     tidytable::filter(year >= yrs) %>% 
@@ -154,9 +142,7 @@ srvy_comps <- function(lfreq_data,
   if(length(bin) == 1){
     .lfreq_un %>% 
       tidytable::mutate(length = 10 * (bin * ceiling((length / 10) / bin))) -> .lfreq_un
-  }
-  # custom length bins
-  else{
+  } else{ # custom length bins
     # set up bin bounds
     c(0, bin) %>% 
       tidytable::bind_cols(c(bin, bin[length(bin)] + 1)) %>% 
@@ -174,12 +160,8 @@ srvy_comps <- function(lfreq_data,
   }
   
   # length population ----
-  if(isTRUE(use_gapindex)){
-    lpop_gap(.lfreq_un, .cpue, by_strata = by_strata) -> .lpop
-  } else{
-    lcomp(.lfreq_un) -> .lcomp
-    lpop(.lcomp, .cpue, .lngs) -> .lpop
-  }
+  lpop(.lfreq_un, .cpue, by_strata = by_strata) -> .lpop
+  
   
   # randomize age  (and add sex = 0 for sex-combined (total) comp calculations) ----
   if(isTRUE(boot_ages)) {
@@ -210,9 +192,7 @@ srvy_comps <- function(lfreq_data,
   if(length(bin) == 1){
     .agedat %>% 
       tidytable::mutate(length = 10 * (bin * ceiling((length / 10) / bin))) -> .agedat
-  }
-  # custom length bins
-  else{
+  } else{ # custom length bins
     # set up bin bounds
     c(0, bin) %>% 
       tidytable::bind_cols(c(bin, bin[length(bin)] + 1)) %>% 
@@ -230,11 +210,7 @@ srvy_comps <- function(lfreq_data,
   }
   
   # age population ----
-  if(isTRUE(use_gapindex)){
-    apop_gap(.lpop, .agedat, .lngs, by_strata = by_strata, global = global) -> .apop
-  } else{
-    apop(.lpop, .agedat) -> .apop
-  }
+  apop(.lpop, .agedat, .lngs, by_strata = by_strata, global = global) -> .apop
   
   # return age and length pop'n estimates
   if(isTRUE(by_strata)){
@@ -243,7 +219,7 @@ srvy_comps <- function(lfreq_data,
   }
   
   list(age = .apop, length = .lpop)
-
+  
 }
 
 #' Resample data and compute length and age population expansion
@@ -269,9 +245,8 @@ srvy_comps <- function(lfreq_data,
 #' @param len_samples If set at a value, tests reductions in haul-level length sampling. To test, set this value at some smaller level than current sampling rate, i.e., 25 (default = NULL)
 #' @param age_samples If set at a value, tests reductions (and increases) in survey-level number of ages collected. To test, set at a proportion of ages collected, i.e., 0.8 or 1.2 (default = NULL)
 #' @param cmplx_code Numeric value to replace the individual species codes with a complex code shared across species. (default = 3005012)
-#' @param use_gapindex Boolean. Use functions derived from gapindex package? (default = TRUE)
-#' @param by_strata Boolean. Should length/age pop'n values be computed at stratum level in gap fcns? (default = FALSE)
-#' @param global Boolean. Fill in missing length bins with global age-lenth key in gap fcns? (default = FALSE)
+#' @param by_strata Boolean. Should length/age pop'n values be computed at stratum level? (default = FALSE)
+#' @param global Boolean. Fill in missing length bins with global age-lenth key? (default = FALSE)
 #' 
 #' @return List with dataframes of population numbers at length (.lpop) and age (.apop).
 #' 
@@ -293,7 +268,6 @@ srvy_comps_ai_cmplx <- function(lfreq_data,
                                 len_samples = NULL,
                                 age_samples = NULL,
                                 cmplx_code = NULL,
-                                use_gapindex = TRUE,
                                 by_strata = FALSE,
                                 global = FALSE) {
   # globals ----
@@ -301,47 +275,37 @@ srvy_comps_ai_cmplx <- function(lfreq_data,
   if (is.null(yrs)) yrs <- 0
   
   # prep data ----
-  if(isTRUE(use_gapindex)){
-    # complete cases by year/length/sex/strata for all years (following gapindex)
-    tidytable::expand_grid(year = unique(lfreq_data$year),
-                           species_code = unique(specimen_data$species_code),
-                           sex = unique(specimen_data$sex),
-                           length = seq(from = min(lfreq_data$length, na.rm = TRUE), 
-                                        to = max(lfreq_data$length, na.rm = TRUE), 
-                                        by = 10),
-                           age = seq(from = min(specimen_data$age, na.rm = TRUE), 
-                                     to = max(specimen_data$age, na.rm = TRUE),
-                                     by = 1)) -> .lngs
-    # bin by cm blocks
-    if(length(bin) == 1){
-      .lngs %>% 
-        tidytable::mutate(length = 10 * (bin * ceiling((length / 10) / bin))) %>% 
-        tidytable::distinct(year, species_code, sex, length, age) -> .lngs
-    }
-    # custom length bins
-    else{
-      # set up bin bounds
-      c(0, bin) %>% 
-        tidytable::bind_cols(c(bin, bin[length(bin)] + 1)) %>% 
-        tidytable::rename(lwr = '...1', upr = '...2') -> bin_bnds
-      # determine which bin length is in, and define new length as upper bin
-      # note, plus bin is denoted as max length bin + 1
-      .lngs %>% 
-        tidytable::distinct(length) %>% 
-        tidytable::mutate(new_length = bin_bnds$upr[max(which(bin_bnds$lwr < length / 10))], 
-                          .by = c(length)) -> new_lengths
-      # replace lengths in length frequency data with new binned lengths
-      .lngs %>% 
-        tidytable::left_join(new_lengths) %>% 
-        tidytable::select(-length, length = new_length) %>% 
-        tidytable::distinct(year, species_code, sex, length, age) -> .lngs
-    }
-  } else{
-    # complete cases by length/sex/strata for all years (original)
-    lfreq_data %>%
-      tidytable::filter(year >= yrs) %>% 
-      tidytable::distinct(year, species_code, length) %>% 
-      tidytable::expand(year, length, .by = species_code) -> .lngs
+  # complete cases by year/length/sex/strata for all years (following gapindex)
+  tidytable::expand_grid(year = unique(lfreq_data$year),
+                         species_code = unique(specimen_data$species_code),
+                         sex = unique(specimen_data$sex),
+                         length = seq(from = min(lfreq_data$length, na.rm = TRUE), 
+                                      to = max(lfreq_data$length, na.rm = TRUE), 
+                                      by = 10),
+                         age = seq(from = min(specimen_data$age, na.rm = TRUE), 
+                                   to = max(specimen_data$age, na.rm = TRUE),
+                                   by = 1)) -> .lngs
+  # bin by cm blocks
+  if(length(bin) == 1){
+    .lngs %>% 
+      tidytable::mutate(length = 10 * (bin * ceiling((length / 10) / bin))) %>% 
+      tidytable::distinct(year, species_code, sex, length, age) -> .lngs
+  } else{ # custom length bins
+    # set up bin bounds
+    c(0, bin) %>% 
+      tidytable::bind_cols(c(bin, bin[length(bin)] + 1)) %>% 
+      tidytable::rename(lwr = '...1', upr = '...2') -> bin_bnds
+    # determine which bin length is in, and define new length as upper bin
+    # note, plus bin is denoted as max length bin + 1
+    .lngs %>% 
+      tidytable::distinct(length) %>% 
+      tidytable::mutate(new_length = bin_bnds$upr[max(which(bin_bnds$lwr < length / 10))], 
+                        .by = c(length)) -> new_lengths
+    # replace lengths in length frequency data with new binned lengths
+    .lngs %>% 
+      tidytable::left_join(new_lengths) %>% 
+      tidytable::select(-length, length = new_length) %>% 
+      tidytable::distinct(year, species_code, sex, length, age) -> .lngs
   }
   
   # first pass of filtering
@@ -409,9 +373,7 @@ srvy_comps_ai_cmplx <- function(lfreq_data,
   if(length(bin) == 1){
     .lfreq_un %>% 
       tidytable::mutate(length = 10 * (bin * ceiling((length / 10) / bin))) -> .lfreq_un
-  }
-  # custom length bins
-  else{
+  } else{ # custom length bins
     # set up bin bounds
     c(0, bin) %>% 
       tidytable::bind_cols(c(bin, bin[length(bin)] + 1)) %>% 
@@ -429,16 +391,9 @@ srvy_comps_ai_cmplx <- function(lfreq_data,
   }
   
   # length population ----
-  if(isTRUE(use_gapindex)){
-    lpop_gap(.lfreq_un, .cpue, by_strata = by_strata) %>% 
-      tidytable::summarise(abund = sum(abund), .by = c(year, length, sex)) %>% 
-      tidytable::mutate(species_code = cmplx_code) -> .lpop
-  } else{
-    lcomp(.lfreq_un) -> .lcomp
-    lpop(.lcomp, .cpue, .lngs) %>% 
-      tidytable::summarise(abund = sum(abund), .by = c(year, length, sex)) %>% 
-      tidytable::mutate(species_code = cmplx_code) -> .lpop
-  }
+  lpop(.lfreq_un, .cpue, by_strata = by_strata) %>% 
+    tidytable::summarise(abund = sum(abund), .by = c(year, length, sex)) %>% 
+    tidytable::mutate(species_code = cmplx_code) -> .lpop
   
   # randomize age  (and add sex = 0 for sex-combined (total) comp calculations) ----
   if(isTRUE(boot_ages)) {
@@ -478,9 +433,7 @@ srvy_comps_ai_cmplx <- function(lfreq_data,
   if(length(bin) == 1){
     .agedat %>% 
       tidytable::mutate(length = 10 * (bin * ceiling((length / 10) / bin))) -> .agedat
-  }
-  # custom length bins
-  else{
+  } else{ # custom length bins
     # set up bin bounds
     c(0, bin) %>% 
       tidytable::bind_cols(c(bin, bin[length(bin)] + 1)) %>% 
@@ -498,12 +451,8 @@ srvy_comps_ai_cmplx <- function(lfreq_data,
   }
   
   # age population ----
-  if(isTRUE(use_gapindex)){
-    apop_gap(.lpop, .agedat, .lngs, by_strata = by_strata, global = global) -> .apop
-  } else{
-    apop(.lpop, .agedat) -> .apop
-  }
-
+  apop(.lpop, .agedat, .lngs, by_strata = by_strata, global = global) -> .apop
+  
   list(age = .apop, length = .lpop)
   
 }
@@ -600,15 +549,13 @@ srvy_comps_caal <- function(specimen_data,
   if(!is.null(age_samples)) {
     adj_age_samples(.agedat, rate = age_samples) -> .agedat
   }
-
+  
   # bin lengths in age data, note that this automatically converts from mm to cm
   # bin by cm blocks
   if(length(bin) == 1){
     .agedat %>% 
       tidytable::mutate(length = 10 * (bin * ceiling((length / 10) / bin))) -> .agedat
-  }
-  # custom length bins
-  else{
+  } else{ # custom length bins
     # set up bin bounds
     c(0, bin) %>% 
       tidytable::bind_cols(c(bin, bin[length(bin)] + 1)) %>% 

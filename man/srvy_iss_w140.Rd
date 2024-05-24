@@ -20,7 +20,6 @@ srvy_iss_w140(
   age_err = FALSE,
   len_samples = NULL,
   age_samples = NULL,
-  use_gapindex = TRUE,
   by_strata = FALSE,
   global = FALSE,
   region = NULL,
@@ -60,11 +59,9 @@ srvy_iss_w140(
 
 \item{age_samples}{If set at a value, tests reductions (and increases) in survey-level number of ages collected. To test, set at a proportion of ages collected, i.e., 0.8 or 1.2 (default = NULL)}
 
-\item{use_gapindex}{Boolean. Use functions derived from gapindex package? (default = TRUE)}
+\item{by_strata}{Boolean. Should length/age pop'n values be computed at stratum level? (default = FALSE)}
 
-\item{by_strata}{Boolean. Should length/age pop'n values be computed at stratum level in gap fcns? (default = FALSE)}
-
-\item{global}{Boolean. Fill in missing length bins with global age-lenth key in gap fcns? (default = FALSE)}
+\item{global}{Boolean. Fill in missing length bins with global age-lenth key? (default = FALSE)}
 
 \item{region}{Region will create a folder and place results in said folder. (default = NULL)}
 

@@ -2,17 +2,20 @@
 % Please edit documentation in R/lpop.R
 \name{lpop}
 \alias{lpop}
-\title{population at length}
+\title{Compute population at length}
 \usage{
-lpop(lcomp, cpue, lngs)
+lpop(lfreq_un, cpue_data, by_strata = FALSE)
 }
 \arguments{
-\item{lcomp}{length comp}
+\item{lfreq_un}{expanded length frequency data (one row per sample) input dataframe}
 
-\item{cpue}{cpue data}
+\item{cpue_data}{catch-per-unit effort input dataframe}
 
-\item{lngs}{complete lengths by year}
+\item{by_strata}{Boolean. Are the results to be given at strata level, or summed to region level (default = FALSE)}
+}
+\value{
+dataframe of population at length by year and species
 }
 \description{
-population at length
+Function to expand length frequency data to population at length aligned with gapindex package.
 }

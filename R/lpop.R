@@ -1,61 +1,3 @@
-#' population at length
-#'
-#' @param lcomp length comp
-#' @param cpue cpue data
-#' @param lngs complete lengths by year
-#'
-#' @export lpop
-#'
-lpop <- function(lcomp, 
-                 cpue, 
-                 lngs) {
-  lcomp %>%
-    tidytable::summarise(comp = sum(comp) / mean(nhauls), 
-                         .by = c(year, species_code, stratum, sex, length)) -> .unk
-  
-  # id hauls without lengths
-  # see issue #35 for reasoning 
-  cpue %>%
-    tidytable::filter(numcpue > 0) %>%
-    tidytable::distinct(hauljoin, species_code)  %>% 
-    tidytable::anti_join(lcomp %>%
-                           tidytable::summarise(hauljoin = unique(hauljoin),
-                                                .by = c(species_code, stratum))) %>% 
-    tidytable::left_join(cpue) -> .no_length
-  
-  # compute population est by year, species, strata
-  cpue %>%
-    tidytable::mutate(st_num = mean(numcpue) * area,
-                      tot = sum(numcpue), 
-                      .by = c(year, species_code, stratum)) %>%
-    tidytable::summarise(abund = mean(numcpue) / tot * st_num,
-                         .by = c(year, species_code, stratum, hauljoin)) -> .pop
-  
-  # if there are any samples w/o lengths rejoin them
-  if(nrow(.no_length) == 0){
-    lcomp %>%
-      tidytable::left_join(.pop) %>%
-      tidytable::mutate(sz_pop = round(comp * abund, 0)) %>% 
-      tidytable::filter(!is.na(sex)) -> .temp
-  } else {
-    .no_length %>%
-      tidytable::left_join(.unk) %>%
-      tidytable::select(year, species_code, stratum, hauljoin, sex, length, comp) %>%
-      tidytable::bind_rows(lcomp) %>%
-      tidytable::left_join(.pop) %>%
-      tidytable::mutate(sz_pop = round(comp * abund, 0)) %>% 
-      tidytable::filter(!is.na(sex)) -> .temp
-  }
-  
-  # get annual pop'n @ length
-  .temp %>%
-    tidytable::summarise(abund = sum(sz_pop, na.rm = T), 
-                         .by = c(year, species_code, length, sex)) %>%
-    tidytable::left_join(lngs, .) %>%
-    tidytable::drop_na()
-  
-}
-
 #' Compute population at length
 #' 
 #' @description
@@ -69,9 +11,9 @@ lpop <- function(lcomp,
 #' 
 #' @export
 #'
-lpop_gap <- function(lfreq_un, 
-                     cpue_data,
-                     by_strata = FALSE) {
+lpop <- function(lfreq_un, 
+                 cpue_data,
+                 by_strata = FALSE) {
   
   # remove ebs strata 82 & 90 (to match results of gapindex)
   if(length(unique(cpue_data$survey)) == 1 && unique(cpue_data$survey) %in% c(98)){

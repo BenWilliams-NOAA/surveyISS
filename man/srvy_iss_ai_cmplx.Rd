@@ -21,7 +21,6 @@ srvy_iss_ai_cmplx(
   len_samples = NULL,
   age_samples = NULL,
   cmplx_code = 3005012,
-  use_gapindex = TRUE,
   by_strata = FALSE,
   global = FALSE,
   cmplx = "bsre",
@@ -64,11 +63,9 @@ srvy_iss_ai_cmplx(
 
 \item{cmplx_code}{Numeric value to replace the individual species codes with a complex code shared across species. (default = 3005012)}
 
-\item{use_gapindex}{Boolean. Use functions derived from gapindex package? (default = TRUE)}
+\item{by_strata}{Boolean. Should length/age pop'n values be computed at stratum level? (default = FALSE)}
 
-\item{by_strata}{Boolean. Should length/age pop'n values be computed at stratum level in gap fcns? (default = FALSE)}
-
-\item{global}{Boolean. Fill in missing length bins with global age-lenth key in gap fcns? (default = FALSE)}
+\item{global}{Boolean. Fill in missing length bins with global age-lenth key? (default = FALSE)}
 
 \item{cmplx}{Complex name for saving results. (default = 'bsre')}
 
