@@ -20,6 +20,8 @@ srvy_iss(
   age_err = FALSE,
   len_samples = NULL,
   age_samples = NULL,
+  plus_len = NULL,
+  plus_age = NULL,
   by_strata = FALSE,
   global = FALSE,
   region = NULL,
@@ -58,6 +60,10 @@ srvy_iss(
 \item{len_samples}{If set at a value, tests reductions in haul-level length sampling. To test, set this value at some smaller level than current sampling rate, i.e., 25 (default = NULL)}
 
 \item{age_samples}{If set at a value, tests reductions (and increases) in survey-level number of ages collected. To test, set at a proportion of ages collected, i.e., 0.8 or 1.2 (default = NULL)}
+
+\item{plus_len}{If set at a value, computes length expansion with a plus-length group (default = FALSE)}
+
+\item{plus_age}{If set at a value, computes age expansion with a plus-age group (default = FALSE)}
 
 \item{by_strata}{Boolean. Should length/age pop'n values be computed at stratum level? (default = FALSE)}
 

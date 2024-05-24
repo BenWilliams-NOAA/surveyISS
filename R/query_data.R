@@ -129,7 +129,7 @@ query_data_t3 <- function(query = FALSE) {
 #' length frequency (lfreq), age-length specimen (specimen), survey strata (strata), and species information (species)
 #' data from the GAP_PRODUCTS tables
 #' 
-#' @param survey survey number for gap_products survey_definition_id (ai = 52, goa = 47, ebs = 98, nbs = 143, ebs slope = 78)
+#' @param survey survey number for gap_products survey_definition_id (ai = 52, goa = 47, ebs = 98, nbs = 143, ebs slope = 78, ebs & nbs = c(98, 143))
 #' @param region region description for output data file (i.e., 'goa')
 #' @param species species_codes, i.e., c(10110, 21740)
 #' @param yrs minimum survey year to consider (default = NULL)

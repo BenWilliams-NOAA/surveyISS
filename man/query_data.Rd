@@ -7,7 +7,7 @@
 query_data(survey, region, species, yrs = NULL)
 }
 \arguments{
-\item{survey}{survey number for gap_products survey_definition_id (ai = 52, goa = 47, ebs = 98, nbs = 143, ebs slope = 78)}
+\item{survey}{survey number for gap_products survey_definition_id (ai = 52, goa = 47, ebs = 98, nbs = 143, ebs slope = 78, ebs & nbs = c(98, 143))}
 
 \item{region}{region description for output data file (i.e., 'goa')}
 

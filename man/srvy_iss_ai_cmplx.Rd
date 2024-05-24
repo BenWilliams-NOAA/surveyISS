@@ -20,6 +20,8 @@ srvy_iss_ai_cmplx(
   age_err = FALSE,
   len_samples = NULL,
   age_samples = NULL,
+  plus_len = NULL,
+  plus_age = NULL,
   cmplx_code = 3005012,
   by_strata = FALSE,
   global = FALSE,

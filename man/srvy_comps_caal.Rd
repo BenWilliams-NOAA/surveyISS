@@ -15,7 +15,9 @@ srvy_comps_caal(
   al_var = FALSE,
   al_var_ann = FALSE,
   age_err = FALSE,
-  age_samples = NULL
+  age_samples = NULL,
+  plus_len = NULL,
+  plus_age = NULL
 )
 }
 \arguments{
@@ -40,6 +42,10 @@ srvy_comps_caal(
 \item{age_err}{Boolean. Include ageing error in resampled age data? (default = FALSE)}
 
 \item{age_samples}{If set at a value, tests reductions (and increases) in survey-level number of ages collected. To test, set at a proportion of ages collected, i.e., 0.8 or 1.2 (default = NULL)}
+
+\item{plus_len}{If set at a value, computes length expansion with a plus-length group (default = FALSE)}
+
+\item{plus_age}{If set at a value, computes age expansion with a plus-age group (default = FALSE)}
 }
 \value{
 List with dataframe of conditional age-at-length (.caal).
