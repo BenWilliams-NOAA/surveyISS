@@ -277,7 +277,7 @@ srvy_comps_ai_cmplx <- function(lfreq_data,
   # prep data ----
   # complete cases by year/length/sex/strata for all years (following gapindex)
   tidytable::expand_grid(year = unique(lfreq_data$year),
-                         species_code = unique(specimen_data$species_code),
+                         species_code = cmplx_code,
                          sex = unique(specimen_data$sex),
                          length = seq(from = min(lfreq_data$length, na.rm = TRUE), 
                                       to = max(lfreq_data$length, na.rm = TRUE), 
@@ -322,8 +322,7 @@ srvy_comps_ai_cmplx <- function(lfreq_data,
   
   data.table::setDT(specimen_data) %>%
     tidytable::filter(year >= yrs) %>% 
-    tidytable::drop_na() %>%
-    tidytable::mutate(species_code = cmplx_code) -> .agedat
+    tidytable::drop_na() -> .agedat
   
   data.table::setDT(r_t) %>%
     tidytable::mutate(species_code = cmplx_code) -> r_t
@@ -396,6 +395,10 @@ srvy_comps_ai_cmplx <- function(lfreq_data,
     tidytable::mutate(species_code = cmplx_code) -> .lpop
   
   # randomize age  (and add sex = 0 for sex-combined (total) comp calculations) ----
+  # set species_code to cmplx_code
+  .agedat %>%
+    tidytable::mutate(species_code = cmplx_code) -> .agedat
+  
   if(isTRUE(boot_ages)) {
     boot_age(.agedat) -> .agedat
   } else{
