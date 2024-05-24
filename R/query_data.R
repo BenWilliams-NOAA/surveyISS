@@ -144,7 +144,7 @@ query_data <- function(survey,
                        yrs = NULL) {
   
   # create folder
-  if (!dir.exists(paste0("data/", region))) {dir.create(paste0("data/", region))}
+  if (!dir.exists(here::here("data", region))) {dir.create(here::here("data", region), recursive = TRUE)}
   
   # year switch
   if (is.null(yrs)) yrs <- 0
