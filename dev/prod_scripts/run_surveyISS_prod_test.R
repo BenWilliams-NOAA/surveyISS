@@ -25,7 +25,7 @@ iters = 10
 # if query = TRUE then will run data queries, if FALSE will read previously run data
 # set = TRUE if first time running, or if data has changed
 
-data <- surveyISS::query_data_t3(query = TRUE)
+data <- surveyISS::query_data_t3(query = FALSE)
 
 data_goa <- data$data_goa
 data_ai <- data$data_ai

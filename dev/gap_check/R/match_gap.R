@@ -131,26 +131,8 @@ reg_match_gapprod <- function(region = 'goa',
     tidytable::distinct(species_code) -> species
   species <- species$species_code
   
-  ## get original age/length pop'n values ----
-  og <- surveyISS::srvy_comps(lfreq_data = data$lfreq, 
-                              specimen_data = data$specimen, 
-                              cpue_data = data$cpue, 
-                              strata_data = data$strata,
-                              r_t = NULL,
-                              yrs = yrs,
-                              boot_hauls = FALSE, 
-                              boot_lengths = FALSE, 
-                              boot_ages = FALSE,
-                              al_var = FALSE,
-                              al_var_ann = FALSE,
-                              age_err = FALSE,
-                              use_gapindex = FALSE)
-  
-  oga_og <- og$age
-  ogl_og <- og$length
-  
-  ## get age/length pop'n values based on gapindex at region level ----
-  og_gap <- surveyISS::srvy_comps(lfreq_data = data$lfreq, 
+  ## get age/length pop'n values at region level ----
+  og_reg <- surveyISS::srvy_comps(lfreq_data = data$lfreq, 
                                   specimen_data = data$specimen, 
                                   cpue_data = data$cpue, 
                                   strata_data = data$strata,
@@ -161,30 +143,28 @@ reg_match_gapprod <- function(region = 'goa',
                                   boot_ages = FALSE,
                                   al_var = FALSE,
                                   al_var_ann = FALSE,
-                                  age_err = FALSE,
-                                  use_gapindex = TRUE)
+                                  age_err = FALSE)
   
-  oga_gap <- og_gap$age
-  ogl_gap <- og_gap$length
+  oga_reg <- og_reg$age
+  ogl_reg <- og_reg$length
   
-  # get age/length pop'n values based on gapindex at stratum level
-  og_gap_st <- surveyISS::srvy_comps(lfreq_data = data$lfreq, 
-                                     specimen_data = data$specimen, 
-                                     cpue_data = data$cpue, 
-                                     strata_data = data$strata,
-                                     r_t = NULL,
-                                     yrs = yrs,
-                                     boot_hauls = FALSE, 
-                                     boot_lengths = FALSE, 
-                                     boot_ages = FALSE,
-                                     al_var = FALSE,
-                                     al_var_ann = FALSE,
-                                     age_err = FALSE,
-                                     use_gapindex = TRUE,
-                                     by_strata = TRUE)
+  ## get age/length pop'n values at stratum level ----
+  og_st <- surveyISS::srvy_comps(lfreq_data = data$lfreq, 
+                                 specimen_data = data$specimen, 
+                                 cpue_data = data$cpue, 
+                                 strata_data = data$strata,
+                                 r_t = NULL,
+                                 yrs = yrs,
+                                 boot_hauls = FALSE, 
+                                 boot_lengths = FALSE, 
+                                 boot_ages = FALSE,
+                                 al_var = FALSE,
+                                 al_var_ann = FALSE,
+                                 age_err = FALSE,
+                                 by_strata = TRUE)
   
-  oga_gap_st <- og_gap_st$age
-  ogl_gap_st <- og_gap_st$length
+  oga_st <- og_st$age
+  ogl_st <- og_st$length
   
   # get gap_products output ----
   
@@ -235,39 +215,30 @@ reg_match_gapprod <- function(region = 'goa',
   }
   
   # match with gap ----
-  og <- match_gap(oga_og, ogl_og, gap_apop, gap_lpop)
-  gap <- match_gap(oga_gap, ogl_gap, gap_apop, gap_lpop)
-  gap_st <- match_gap(oga_gap_st, ogl_gap_st, gap_apop, gap_lpop)
+  reg <- match_gap(oga_reg, ogl_reg, gap_apop, gap_lpop)
+  st <- match_gap(oga_st, ogl_st, gap_apop, gap_lpop)
   
   # get/write results ----
   # length mapd
-  og[[1]] %>% 
-    tidytable::select(-test_mapd_l, og_mapd = match_mapd_l) %>% 
-    tidytable::left_join(gap[[1]] %>% 
-                           tidytable::select(-test_mapd_l, gap_mapd = match_mapd_l)) %>% 
-    tidytable::left_join(gap_st[[1]] %>% 
-                           tidytable::select(-test_mapd_l, gap_st_mapd = match_mapd_l)) -> mapd_l
+  reg[[1]] %>% 
+    tidytable::select(-test_mapd_l, reg_mapd = match_mapd_l) %>% 
+    tidytable::left_join(st[[1]] %>% 
+                           tidytable::select(-test_mapd_l, st_mapd = match_mapd_l)) -> mapd_l
   # age mapd
-  og[[2]] %>% 
-    tidytable::select(-test_mapd_a, og_mapd = match_mapd_a) %>% 
-    tidytable::left_join(gap[[2]] %>% 
-                           tidytable::select(-test_mapd_a, gap_mapd = match_mapd_a)) %>% 
-    tidytable::left_join(gap_st[[2]] %>% 
-                           tidytable::select(-test_mapd_a, gap_st_mapd = match_mapd_a)) -> mapd_a
+  reg[[2]] %>% 
+    tidytable::select(-test_mapd_a, reg_mapd = match_mapd_a) %>% 
+    tidytable::left_join(st[[2]] %>% 
+                           tidytable::select(-test_mapd_a, st_mapd = match_mapd_a)) -> mapd_a
   # length sad
-  og[[3]] %>% 
-    tidytable::select(-test_sad_l, og_sad = match_sad_l) %>% 
-    tidytable::left_join(gap[[3]] %>% 
-                           tidytable::select(-test_sad_l, gap_sad = match_sad_l)) %>% 
-    tidytable::left_join(gap_st[[3]] %>% 
-                           tidytable::select(-test_sad_l, gap_st_sad = match_sad_l)) -> sad_l
+  reg[[3]] %>% 
+    tidytable::select(-test_sad_l, reg_sad = match_sad_l) %>% 
+    tidytable::left_join(st[[3]] %>% 
+                           tidytable::select(-test_sad_l, st_sad = match_sad_l)) -> sad_l
   # age sad
-  og[[4]] %>% 
-    tidytable::select(-test_sad_a, og_sad = match_sad_a) %>% 
-    tidytable::left_join(gap[[4]] %>% 
-                           tidytable::select(-test_sad_a, gap_sad = match_sad_a)) %>% 
-    tidytable::left_join(gap_st[[4]] %>% 
-                           tidytable::select(-test_sad_a, gap_st_sad = match_sad_a)) -> sad_a
+  reg[[4]] %>% 
+    tidytable::select(-test_sad_a, reg_sad = match_sad_a) %>% 
+    tidytable::left_join(st[[4]] %>% 
+                           tidytable::select(-test_sad_a, st_sad = match_sad_a)) -> sad_a
   
   # create storage location
   if(!dir.exists(here::here("dev", "gap_check", 'output', region))){
@@ -337,28 +308,10 @@ reg_match_gapindex <- function(region = 'goa',
   data$cpue %>% 
     tidytable::filter(species_code %in% species) -> cpue_data
   
-  ## get original age/length pop'n values ----
-  og <- surveyISS::srvy_comps(lfreq_data, 
-                              specimen_data, 
-                              cpue_data, 
-                              strata_data = data$strata,
-                              r_t = NULL,
-                              yrs = yrs,
-                              boot_hauls = FALSE, 
-                              boot_lengths = FALSE, 
-                              boot_ages = FALSE,
-                              al_var = FALSE,
-                              al_var_ann = FALSE,
-                              age_err = FALSE,
-                              use_gapindex = FALSE)
-  
-  oga_og <- og$age
-  ogl_og <- og$length
-  
-  ## get age/length pop'n values based on gapindex at region level ----
-  og_gap <- surveyISS::srvy_comps(lfreq_data, 
-                                  specimen_data, 
-                                  cpue_data,
+  ## get age/length pop'n values at region level ----
+  og_reg <- surveyISS::srvy_comps(lfreq_data = data$lfreq, 
+                                  specimen_data = data$specimen, 
+                                  cpue_data = data$cpue, 
                                   strata_data = data$strata,
                                   r_t = NULL,
                                   yrs = yrs,
@@ -367,37 +320,39 @@ reg_match_gapindex <- function(region = 'goa',
                                   boot_ages = FALSE,
                                   al_var = FALSE,
                                   al_var_ann = FALSE,
-                                  age_err = FALSE,
-                                  use_gapindex = TRUE)
+                                  age_err = FALSE)
   
-  oga_gap <- og_gap$age
-  ogl_gap <- og_gap$length
+  oga_reg <- og_reg$age
+  ogl_reg <- og_reg$length
   
-  # get age/length pop'n values based on gapindex at stratum level
-  og_gap_st <- surveyISS::srvy_comps(lfreq_data, 
-                                     specimen_data, 
-                                     cpue_data, 
-                                     strata_data = data$strata,
-                                     r_t = NULL,
-                                     yrs = yrs,
-                                     boot_hauls = FALSE, 
-                                     boot_lengths = FALSE, 
-                                     boot_ages = FALSE,
-                                     al_var = FALSE,
-                                     al_var_ann = FALSE,
-                                     age_err = FALSE,
-                                     use_gapindex = TRUE,
-                                     by_strata = TRUE)
+  ## get age/length pop'n values at stratum level ----
+  og_st <- surveyISS::srvy_comps(lfreq_data = data$lfreq, 
+                                 specimen_data = data$specimen, 
+                                 cpue_data = data$cpue, 
+                                 strata_data = data$strata,
+                                 r_t = NULL,
+                                 yrs = yrs,
+                                 boot_hauls = FALSE, 
+                                 boot_lengths = FALSE, 
+                                 boot_ages = FALSE,
+                                 al_var = FALSE,
+                                 al_var_ann = FALSE,
+                                 age_err = FALSE,
+                                 by_strata = TRUE)
   
-  oga_gap_st <- og_gap_st$age
-  ogl_gap_st <- og_gap_st$length
+  oga_st <- og_st$age
+  ogl_st <- og_st$length
   
   # get gapindex output ----
   
   ## get data ----
   if(isTRUE(query_gpindx)){
     year_set = seq(yrs, as.numeric(format(Sys.Date(), '%Y')))
-    survey_set = toupper(region)
+    if(region == 'ebs_slope'){
+      survey_set = 'BSS'
+    } else{
+      survey_set = toupper(region)
+    }
     spp_codes = species
     
     gapdata <- gapindex::get_data(year_set = year_set,
@@ -471,39 +426,30 @@ reg_match_gapindex <- function(region = 'goa',
     tidytable::mutate(stratum = 1) -> gap_apop
   
   # match with gap ----
-  og <- match_gap(oga_og, ogl_og, gap_apop, gap_lpop)
-  gap <- match_gap(oga_gap, ogl_gap, gap_apop, gap_lpop)
-  gap_st <- match_gap(oga_gap_st, ogl_gap_st, gap_apop, gap_lpop)
+  reg <- match_gap(oga_reg, ogl_reg, gap_apop, gap_lpop)
+  st <- match_gap(oga_st, ogl_st, gap_apop, gap_lpop)
   
   # get/write results ----
   # length mapd
-  og[[1]] %>% 
-    tidytable::select(-test_mapd_l, og_mapd = match_mapd_l) %>% 
-    tidytable::left_join(gap[[1]] %>% 
-                           tidytable::select(-test_mapd_l, gap_mapd = match_mapd_l)) %>% 
-    tidytable::left_join(gap_st[[1]] %>% 
-                           tidytable::select(-test_mapd_l, gap_st_mapd = match_mapd_l)) -> mapd_l
+  reg[[1]] %>% 
+    tidytable::select(-test_mapd_l, reg_mapd = match_mapd_l) %>% 
+    tidytable::left_join(st[[1]] %>% 
+                           tidytable::select(-test_mapd_l, st_mapd = match_mapd_l)) -> mapd_l
   # age mapd
-  og[[2]] %>% 
-    tidytable::select(-test_mapd_a, og_mapd = match_mapd_a) %>% 
-    tidytable::left_join(gap[[2]] %>% 
-                           tidytable::select(-test_mapd_a, gap_mapd = match_mapd_a)) %>% 
-    tidytable::left_join(gap_st[[2]] %>% 
-                           tidytable::select(-test_mapd_a, gap_st_mapd = match_mapd_a)) -> mapd_a
+  reg[[2]] %>% 
+    tidytable::select(-test_mapd_a, reg_mapd = match_mapd_a) %>% 
+    tidytable::left_join(st[[2]] %>% 
+                           tidytable::select(-test_mapd_a, st_mapd = match_mapd_a)) -> mapd_a
   # length sad
-  og[[3]] %>% 
-    tidytable::select(-test_sad_l, og_sad = match_sad_l) %>% 
-    tidytable::left_join(gap[[3]] %>% 
-                           tidytable::select(-test_sad_l, gap_sad = match_sad_l)) %>% 
-    tidytable::left_join(gap_st[[3]] %>% 
-                           tidytable::select(-test_sad_l, gap_st_sad = match_sad_l)) -> sad_l
+  reg[[3]] %>% 
+    tidytable::select(-test_sad_l, reg_sad = match_sad_l) %>% 
+    tidytable::left_join(st[[3]] %>% 
+                           tidytable::select(-test_sad_l, st_sad = match_sad_l)) -> sad_l
   # age sad
-  og[[4]] %>% 
-    tidytable::select(-test_sad_a, og_sad = match_sad_a) %>% 
-    tidytable::left_join(gap[[4]] %>% 
-                           tidytable::select(-test_sad_a, gap_sad = match_sad_a)) %>% 
-    tidytable::left_join(gap_st[[4]] %>% 
-                           tidytable::select(-test_sad_a, gap_st_sad = match_sad_a)) -> sad_a
+  reg[[4]] %>% 
+    tidytable::select(-test_sad_a, reg_sad = match_sad_a) %>% 
+    tidytable::left_join(st[[4]] %>% 
+                           tidytable::select(-test_sad_a, st_sad = match_sad_a)) -> sad_a
   
   # create storage location
   region = tolower(region)

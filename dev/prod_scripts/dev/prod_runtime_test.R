@@ -1,9 +1,29 @@
-# example script to obtain age/length input sample size for production run
+#' the following was to test run times when gapindex functionality was incorporated into the
+#' surveyISS package, and includes options for running with original age/length expansion
+#' functions. note that these switches are now deprecated and this script will throw errors if attempted.
+#' the final test run times for 10 iterations were:
+#' 3.03 mins for original method
+#' 2.18 mins for gap methods at regional level
+#' 2.47 mins for gap methods at strata level
+
+
+
+
+
+
+
+
+
 
 # load surveyISS library ----
-devtools::unload('surveyISS')
-devtools::install_github("afsc-assessments/surveyISS", force = TRUE)
+# devtools::unload('surveyISS')
+# devtools::install_github("BenWilliams-NOAA/surveyISS", force = TRUE)
 library(surveyISS)
+
+# set iterations ----
+# set number of desired bootstrap iterations (suggested here: 10 for testing, 500 for running)
+# iters = 500
+iters = 10
 
 # get data ----
 # if query = TRUE then will run data queries, if FALSE will read previously run data
