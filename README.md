@@ -4,9 +4,7 @@
 <!-- badges: end -->
 
 
-An R package for data extraction of AFSC fishery data  
-*Note that this package is only useful when you have access to the AFSC network and permissions to access the databases.*  
-An R package for esimating input sample size for composition data provided by the AFSC bottom trawl surveys.
+An R package for estimating input sample size for composition data provided by the AFSC bottom trawl surveys  
 *Note that this package is only useful when you have access to the AKFIN network and permissions to access the databases.*  
 
 ## Welcome 
