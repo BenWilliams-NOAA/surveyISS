@@ -17,7 +17,7 @@ License: MIT + file LICENSE
 Encoding: UTF-8
 RoxygenNote: 7.3.1
 Remotes: 
-    git::https://github.com/BenWilliams-NOAA/surveyISS
+    git::https://github.com/afsc-assessments/afscdata
 Imports: 
     magrittr,
     psych,
