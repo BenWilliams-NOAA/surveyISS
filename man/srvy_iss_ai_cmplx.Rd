@@ -63,6 +63,10 @@ srvy_iss_ai_cmplx(
 
 \item{age_samples}{If set at a value, tests reductions (and increases) in survey-level number of ages collected. To test, set at a proportion of ages collected, i.e., 0.8 or 1.2 (default = NULL)}
 
+\item{plus_len}{If set at a value, computes length expansion with a plus-length group (default = FALSE)}
+
+\item{plus_age}{If set at a value, computes age expansion with a plus-age group (default = FALSE)}
+
 \item{cmplx_code}{Numeric value to replace the individual species codes with a complex code shared across species. (default = 3005012)}
 
 \item{by_strata}{Boolean. Should length/age pop'n values be computed at stratum level? (default = FALSE)}

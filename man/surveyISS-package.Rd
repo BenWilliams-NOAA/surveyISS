@@ -8,6 +8,15 @@
 \description{
 Produce bootstrap estimates of input sample sizes for use in statistical catch at age fishery assessments
 }
+\seealso{
+Useful links:
+\itemize{
+  \item \url{https://github.com/BenWilliams-NOAA/surveyISS/}
+  \item \url{https://benwilliams-noaa.github.io/surveyISS/}
+  \item Report bugs at \url{https://github.com/BenWilliams-NOAA/surveyISS/issues}
+}
+
+}
 \author{
 \strong{Maintainer}: Ben Williams \email{ben.williams@noaa.gov} (\href{https://orcid.org/000-0001-7295-2076}{ORCID})
 
