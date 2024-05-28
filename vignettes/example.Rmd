@@ -10,10 +10,49 @@ vignette: >
 ```{r, include = FALSE}
 knitr::opts_chunk$set(
   collapse = TRUE,
-  comment = "#>"
+  comment = "#>",
+  eval = FALSE
 )
 ```
+
+
+
+### Example Workflow:
+
+The following is an example workflow to compute input sample size for a standard stock assessment. This example is provided for Gulf of Alaska Pacific cod.
+
+First, after installing, load surveyISS package:
 
 ```{r setup}
 library(surveyISS)
 ```
+
+Second, query data:
+```
+data <- surveyISS::query_data(survey = 47, 
+                              region = 'goa', 
+                              species = 21720, 
+                              yrs = 1990)
+```
+Third, run `srvy_iss()` to get your ISS (for test run of 10 iterations):
+```
+surveyISS::srvy_iss(iters = 10, 
+                    lfreq_data = data$lfreq,
+                    specimen_data = data$specimen, 
+                    cpue_data = data$cpue, 
+                    strata_data = data$strata,
+                    yrs = 1990,  
+                    boot_hauls = TRUE, 
+                    boot_lengths = TRUE, 
+                    boot_ages = TRUE, 
+                    al_var = TRUE, 
+                    al_var_ann = TRUE, 
+                    age_err = TRUE,
+                    region = 'goa', 
+                    save = 'test')
+```
+Finally, in the `output/goa` folder you will see two output files, one with ISS for age composition, another for length composition.
+
+There are a number of flexibilities built in the the `surveyISS::srvy_iss()` function (for example, setting plus age or length group, testing changes in age or length sample sizes, setting which output files you'd like to have), please see the function description for the various inputs to this function. 
+There are also a number of special cases that have been developed, for example, spatially-explicit cases and stock complex cases (for both the AI and GOA), as well as being able to get ISS for conditional age-at-length data.
+While the `surveyISS` package will produce estimates of age and length population that are also produced by GAP, we recommend (unless you're using a special case function) to get the age and length population estimates that are then used for age/length composition in your stock assessment from the `GAP_PRODUCTS` tables hosted on AKFIN.

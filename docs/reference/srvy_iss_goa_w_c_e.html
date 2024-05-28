@@ -26,7 +26,23 @@ for computation of input sample size by western, central and eastern GOA subregi
       <ul class="nav navbar-nav"><li>
   <a href="../reference/index.html">Reference</a>
 </li>
-      </ul><ul class="nav navbar-nav navbar-right"></ul></div><!--/.nav-collapse -->
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+    Articles
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu"><li>
+      <a href="../articles/example.html">example</a>
+    </li>
+  </ul></li>
+      </ul><ul class="nav navbar-nav navbar-right"><li>
+  <a href="https://github.com/BenWilliams-NOAA/surveyISS/" class="external-link">
+    <span class="fab fa-github fa-lg"></span>
+     
+  </a>
+</li>
+      </ul></div><!--/.nav-collapse -->
   </div><!--/.container -->
 </div><!--/.navbar -->
 
@@ -36,7 +52,7 @@ for computation of input sample size by western, central and eastern GOA subregi
   <div class="col-md-9 contents">
     <div class="page-header">
     <h1>Spatially-explicit survey input sample size function</h1>
-    
+    <small class="dont-index">Source: <a href="https://github.com/BenWilliams-NOAA/surveyISS/blob/HEAD/R/srvy_iss.R" class="external-link"><code>R/srvy_iss.R</code></a></small>
     <div class="hidden name"><code>srvy_iss_goa_w_c_e.Rd</code></div>
     </div>
 
@@ -52,7 +68,6 @@ for computation of input sample size by western, central and eastern GOA subregi
 <span>  <span class="va">specimen_data</span>,</span>
 <span>  <span class="va">cpue_data</span>,</span>
 <span>  <span class="va">strata_data</span>,</span>
-<span>  <span class="va">r_t</span>,</span>
 <span>  yrs <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  bin <span class="op">=</span> <span class="fl">1</span>,</span>
 <span>  boot_hauls <span class="op">=</span> <span class="cn">FALSE</span>,</span>
@@ -63,10 +78,11 @@ for computation of input sample size by western, central and eastern GOA subregi
 <span>  age_err <span class="op">=</span> <span class="cn">FALSE</span>,</span>
 <span>  len_samples <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  age_samples <span class="op">=</span> <span class="cn">NULL</span>,</span>
-<span>  use_gapindex <span class="op">=</span> <span class="cn">TRUE</span>,</span>
+<span>  plus_len <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  plus_age <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  by_strata <span class="op">=</span> <span class="cn">FALSE</span>,</span>
 <span>  global <span class="op">=</span> <span class="cn">FALSE</span>,</span>
-<span>  region <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  region <span class="op">=</span> <span class="st">"goa"</span>,</span>
 <span>  save_interm <span class="op">=</span> <span class="cn">FALSE</span>,</span>
 <span>  save_stats <span class="op">=</span> <span class="cn">FALSE</span>,</span>
 <span>  <span class="va">save</span></span>
@@ -93,10 +109,6 @@ for computation of input sample size by western, central and eastern GOA subregi
 
 <dt>strata_data</dt>
 <dd><p>strata id and area size input dataframe</p></dd>
-
-
-<dt>r_t</dt>
-<dd><p>age reader-tester input dataframe</p></dd>
 
 
 <dt>yrs</dt>
@@ -139,20 +151,24 @@ for computation of input sample size by western, central and eastern GOA subregi
 <dd><p>If set at a value, tests reductions (and increases) in survey-level number of ages collected. To test, set at a proportion of ages collected, i.e., 0.8 or 1.2 (default = NULL)</p></dd>
 
 
-<dt>use_gapindex</dt>
-<dd><p>Boolean. Use functions derived from gapindex package? (default = TRUE)</p></dd>
+<dt>plus_len</dt>
+<dd><p>If set at a value, computes length expansion with a plus-length group (default = FALSE)</p></dd>
+
+
+<dt>plus_age</dt>
+<dd><p>If set at a value, computes age expansion with a plus-age group (default = FALSE)</p></dd>
 
 
 <dt>by_strata</dt>
-<dd><p>Boolean. Should length/age pop'n values be computed at stratum level in gap fcns? (default = FALSE)</p></dd>
+<dd><p>Boolean. Should length/age pop'n values be computed at stratum level? (default = FALSE)</p></dd>
 
 
 <dt>global</dt>
-<dd><p>Boolean. Fill in missing length bins with global age-lenth key in gap fcns? (default = FALSE)</p></dd>
+<dd><p>Boolean. Fill in missing length bins with global age-lenth key? (default = FALSE)</p></dd>
 
 
 <dt>region</dt>
-<dd><p>Region will create a folder and place results in said folder. (default = NULL)</p></dd>
+<dd><p>Region will create a folder and place results in said folder. (default = 'goa')</p></dd>
 
 
 <dt>save_interm</dt>

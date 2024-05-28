@@ -4,10 +4,22 @@
     <loc>/404.html</loc>
   </url>
   <url>
+    <loc>/articles/example.html</loc>
+  </url>
+  <url>
+    <loc>/articles/index.html</loc>
+  </url>
+  <url>
     <loc>/authors.html</loc>
   </url>
   <url>
     <loc>/index.html</loc>
+  </url>
+  <url>
+    <loc>/LICENSE-text.html</loc>
+  </url>
+  <url>
+    <loc>/LICENSE.html</loc>
   </url>
   <url>
     <loc>/reference/adj_age_samples.html</loc>
@@ -52,15 +64,6 @@
     <loc>/reference/comp_stats_caal.html</loc>
   </url>
   <url>
-    <loc>/reference/ess_age.html</loc>
-  </url>
-  <url>
-    <loc>/reference/ess_caal.html</loc>
-  </url>
-  <url>
-    <loc>/reference/ess_size.html</loc>
-  </url>
-  <url>
     <loc>/reference/grwth_stats.html</loc>
   </url>
   <url>
@@ -85,16 +88,16 @@
     <loc>/reference/lpop_gap.html</loc>
   </url>
   <url>
-    <loc>/reference/match_gap.html</loc>
-  </url>
-  <url>
-    <loc>/reference/match_gap_bs.html</loc>
-  </url>
-  <url>
     <loc>/reference/pipe.html</loc>
   </url>
   <url>
     <loc>/reference/query_data.html</loc>
+  </url>
+  <url>
+    <loc>/reference/query_data_t3.html</loc>
+  </url>
+  <url>
+    <loc>/reference/read_test.html</loc>
   </url>
   <url>
     <loc>/reference/reduce_samples.html</loc>
@@ -112,16 +115,10 @@
     <loc>/reference/rss_length.html</loc>
   </url>
   <url>
-    <loc>/reference/sample.html</loc>
-  </url>
-  <url>
     <loc>/reference/srvy_comps.html</loc>
   </url>
   <url>
     <loc>/reference/srvy_comps_ai_cmplx.html</loc>
-  </url>
-  <url>
-    <loc>/reference/srvy_comps_ai_rebs.html</loc>
   </url>
   <url>
     <loc>/reference/srvy_comps_caal.html</loc>
@@ -133,25 +130,13 @@
     <loc>/reference/srvy_iss_ai_cmplx.html</loc>
   </url>
   <url>
-    <loc>/reference/srvy_iss_ai_rebs.html</loc>
-  </url>
-  <url>
     <loc>/reference/srvy_iss_ai_subreg.html</loc>
   </url>
   <url>
     <loc>/reference/srvy_iss_caal.html</loc>
   </url>
   <url>
-    <loc>/reference/srvy_iss_exp.html</loc>
-  </url>
-  <url>
     <loc>/reference/srvy_iss_goa_cmplx.html</loc>
-  </url>
-  <url>
-    <loc>/reference/srvy_iss_goa_dr.html</loc>
-  </url>
-  <url>
-    <loc>/reference/srvy_iss_goa_rebs.html</loc>
   </url>
   <url>
     <loc>/reference/srvy_iss_goa_wc_e.html</loc>
@@ -161,5 +146,8 @@
   </url>
   <url>
     <loc>/reference/srvy_iss_w140.html</loc>
+  </url>
+  <url>
+    <loc>/reference/surveyISS-package.html</loc>
   </url>
 </urlset>

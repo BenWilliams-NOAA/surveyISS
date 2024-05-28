@@ -27,7 +27,23 @@ level, but age specimen data are combined and population at age are expanded at 
       <ul class="nav navbar-nav"><li>
   <a href="../reference/index.html">Reference</a>
 </li>
-      </ul><ul class="nav navbar-nav navbar-right"></ul></div><!--/.nav-collapse -->
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+    Articles
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu"><li>
+      <a href="../articles/example.html">example</a>
+    </li>
+  </ul></li>
+      </ul><ul class="nav navbar-nav navbar-right"><li>
+  <a href="https://github.com/BenWilliams-NOAA/surveyISS/" class="external-link">
+    <span class="fab fa-github fa-lg"></span>
+     
+  </a>
+</li>
+      </ul></div><!--/.nav-collapse -->
   </div><!--/.container -->
 </div><!--/.navbar -->
 
@@ -37,7 +53,7 @@ level, but age specimen data are combined and population at age are expanded at 
   <div class="col-md-9 contents">
     <div class="page-header">
     <h1>Resample data and compute length and age population expansion</h1>
-    
+    <small class="dont-index">Source: <a href="https://github.com/BenWilliams-NOAA/surveyISS/blob/HEAD/R/srvy_comps.R" class="external-link"><code>R/srvy_comps.R</code></a></small>
     <div class="hidden name"><code>srvy_comps_ai_cmplx.Rd</code></div>
     </div>
 
@@ -64,8 +80,9 @@ level, but age specimen data are combined and population at age are expanded at 
 <span>  age_err <span class="op">=</span> <span class="cn">FALSE</span>,</span>
 <span>  len_samples <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  age_samples <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  plus_len <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  plus_age <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  cmplx_code <span class="op">=</span> <span class="cn">NULL</span>,</span>
-<span>  use_gapindex <span class="op">=</span> <span class="cn">TRUE</span>,</span>
 <span>  by_strata <span class="op">=</span> <span class="cn">FALSE</span>,</span>
 <span>  global <span class="op">=</span> <span class="cn">FALSE</span></span>
 <span><span class="op">)</span></span></code></pre></div>
@@ -90,7 +107,7 @@ level, but age specimen data are combined and population at age are expanded at 
 
 
 <dt>r_t</dt>
-<dd><p>age reader-tester input dataframe</p></dd>
+<dd><p>age reader-tester input dataframe, included in surveyISS package data</p></dd>
 
 
 <dt>yrs</dt>
@@ -133,20 +150,24 @@ level, but age specimen data are combined and population at age are expanded at 
 <dd><p>If set at a value, tests reductions (and increases) in survey-level number of ages collected. To test, set at a proportion of ages collected, i.e., 0.8 or 1.2 (default = NULL)</p></dd>
 
 
+<dt>plus_len</dt>
+<dd><p>If set at a value, computes length expansion with a plus-length group (default = FALSE)</p></dd>
+
+
+<dt>plus_age</dt>
+<dd><p>If set at a value, computes age expansion with a plus-age group (default = FALSE)</p></dd>
+
+
 <dt>cmplx_code</dt>
 <dd><p>Numeric value to replace the individual species codes with a complex code shared across species. (default = 3005012)</p></dd>
 
 
-<dt>use_gapindex</dt>
-<dd><p>Boolean. Use functions derived from gapindex package? (default = TRUE)</p></dd>
-
-
 <dt>by_strata</dt>
-<dd><p>Boolean. Should length/age pop'n values be computed at stratum level in gap fcns? (default = FALSE)</p></dd>
+<dd><p>Boolean. Should length/age pop'n values be computed at stratum level? (default = FALSE)</p></dd>
 
 
 <dt>global</dt>
-<dd><p>Boolean. Fill in missing length bins with global age-lenth key in gap fcns? (default = FALSE)</p></dd>
+<dd><p>Boolean. Fill in missing length bins with global age-lenth key? (default = FALSE)</p></dd>
 
 </dl></div>
     <div id="value">

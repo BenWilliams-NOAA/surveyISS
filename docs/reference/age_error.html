@@ -25,7 +25,23 @@
       <ul class="nav navbar-nav"><li>
   <a href="../reference/index.html">Reference</a>
 </li>
-      </ul><ul class="nav navbar-nav navbar-right"></ul></div><!--/.nav-collapse -->
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+    Articles
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu"><li>
+      <a href="../articles/example.html">example</a>
+    </li>
+  </ul></li>
+      </ul><ul class="nav navbar-nav navbar-right"><li>
+  <a href="https://github.com/BenWilliams-NOAA/surveyISS/" class="external-link">
+    <span class="fab fa-github fa-lg"></span>
+     
+  </a>
+</li>
+      </ul></div><!--/.nav-collapse -->
   </div><!--/.container -->
 </div><!--/.navbar -->
 
@@ -35,7 +51,7 @@
   <div class="col-md-9 contents">
     <div class="page-header">
     <h1>Resample reader/tester data to implement ageing error.</h1>
-    
+    <small class="dont-index">Source: <a href="https://github.com/BenWilliams-NOAA/surveyISS/blob/HEAD/R/age_error.R" class="external-link"><code>R/age_error.R</code></a></small>
     <div class="hidden name"><code>age_error.Rd</code></div>
     </div>
 
@@ -44,7 +60,7 @@
     </div>
 
     <div id="ref-usage">
-    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">age_error</span><span class="op">(</span><span class="va">age_dat</span>, <span class="va">r_t</span>, nonpar <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span></code></pre></div>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">age_error</span><span class="op">(</span><span class="va">age_dat</span>, <span class="va">r_t</span><span class="op">)</span></span></code></pre></div>
     </div>
 
     <div id="arguments">
@@ -55,10 +71,6 @@
 
 <dt>r_t</dt>
 <dd><p>reader/tester agreement data</p></dd>
-
-
-<dt>nonpar</dt>
-<dd><p>Boolean. Use either sampling w/replacement (nonparameteric) or multinomial (parameteric) for reader-tester data (default = FALSE)</p></dd>
 
 </dl></div>
 
