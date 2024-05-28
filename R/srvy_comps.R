@@ -65,7 +65,7 @@ srvy_comps <- function(lfreq_data,
   # bin by cm blocks
   if(length(bin) == 1){
     .lngs %>% 
-      tidytable::mutate(length = 10 * (bin * ceiling((length / 10) / bin))) %>% 
+      tidytable::mutate(length = bin * ceiling((length / 10) / bin)) %>% 
       tidytable::distinct(year, species_code, sex, length, age) -> .lngs
   } else{ # custom length bins
     # set up bin bounds
@@ -145,7 +145,7 @@ srvy_comps <- function(lfreq_data,
   # bin by cm blocks
   if(length(bin) == 1){
     .lfreq_un %>% 
-      tidytable::mutate(length = 10 * (bin * ceiling((length / 10) / bin))) -> .lfreq_un
+      tidytable::mutate(length = bin * ceiling((length / 10) / bin)) -> .lfreq_un
   } else{ # custom length bins
     # set up bin bounds
     c(0, bin) %>% 
@@ -203,7 +203,7 @@ srvy_comps <- function(lfreq_data,
   # bin by cm blocks
   if(length(bin) == 1){
     .agedat %>% 
-      tidytable::mutate(length = 10 * (bin * ceiling((length / 10) / bin))) -> .agedat
+      tidytable::mutate(length = bin * ceiling((length / 10) / bin)) -> .agedat
   } else{ # custom length bins
     # set up bin bounds
     c(0, bin) %>% 
@@ -319,7 +319,7 @@ srvy_comps_ai_cmplx <- function(lfreq_data,
   # bin by cm blocks
   if(length(bin) == 1){
     .lngs %>% 
-      tidytable::mutate(length = 10 * (bin * ceiling((length / 10) / bin))) %>% 
+      tidytable::mutate(length = bin * ceiling((length / 10) / bin)) %>% 
       tidytable::distinct(year, species_code, sex, length, age) -> .lngs
   } else{ # custom length bins
     # set up bin bounds
@@ -402,7 +402,7 @@ srvy_comps_ai_cmplx <- function(lfreq_data,
   # bin by cm blocks
   if(length(bin) == 1){
     .lfreq_un %>% 
-      tidytable::mutate(length = 10 * (bin * ceiling((length / 10) / bin))) -> .lfreq_un
+      tidytable::mutate(length = bin * ceiling((length / 10) / bin)) -> .lfreq_un
   } else{ # custom length bins
     # set up bin bounds
     c(0, bin) %>% 
@@ -474,7 +474,7 @@ srvy_comps_ai_cmplx <- function(lfreq_data,
   # bin by cm blocks
   if(length(bin) == 1){
     .agedat %>% 
-      tidytable::mutate(length = 10 * (bin * ceiling((length / 10) / bin))) -> .agedat
+      tidytable::mutate(length = bin * ceiling((length / 10) / bin)) -> .agedat
   } else{ # custom length bins
     # set up bin bounds
     c(0, bin) %>% 
@@ -615,7 +615,7 @@ srvy_comps_caal <- function(specimen_data,
   # bin by cm blocks
   if(length(bin) == 1){
     .agedat %>% 
-      tidytable::mutate(length = 10 * (bin * ceiling((length / 10) / bin))) -> .agedat
+      tidytable::mutate(length = bin * ceiling((length / 10) / bin)) -> .agedat
   } else{ # custom length bins
     # set up bin bounds
     c(0, bin) %>% 
