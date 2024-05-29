@@ -22,7 +22,7 @@ library(devtools)
 devtools::install_github("BenWilliams-NOAA/surveyISS")
 ```
 
-### Website: [afscdata](https://benwilliams-noaa.github.io/surveyISS/)
+### Website: [surveyISS](https://benwilliams-noaa.github.io/surveyISS/)
 
 ### NOAA README
 
