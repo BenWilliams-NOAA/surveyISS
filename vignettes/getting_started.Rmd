@@ -1,8 +1,8 @@
 ---
-title: "getting_started"
+title: "Getting started"
 output: rmarkdown::html_vignette
 vignette: >
-  %\VignetteIndexEntry{getting_started}
+  %\VignetteIndexEntry{Getting started}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 ---
@@ -32,7 +32,8 @@ devtools::install_github("BenWilliams-NOAA/surveyISS")
 library(surveyISS)
 ```
 
-*Step 4.* Query the data for your stock (the following is an example for GOA Pacific cod):
+*Step 4.* Query the data for your stock. 
+The following is an example for GOA Pacific cod:
 
 ```
 data <- surveyISS::query_data(survey = 47, 
@@ -43,7 +44,8 @@ data <- surveyISS::query_data(survey = 47,
 
 There are a couple of special cases that can be integrated within the `surveyISS::query_data()` function that should be noted.
 
-First, for stock complexes, data for multiple species can be pulled at once (the following is an example for the AI Blackspotted-Rougheye rockfish complex):
+First, for stock complexes, data for multiple species can be pulled at once.
+The following is an example for the AI Blackspotted-Rougheye rockfish complex:
 
 ```
 data <- surveyISS::query_data(survey = 52, 
@@ -52,7 +54,8 @@ data <- surveyISS::query_data(survey = 52,
                               yrs = 1991)
 ```
 
-Second, the `surveyISS::query_data()` function can pull multiple survey regions and combine the data into a single dataframe (the following is an example for Walleye pollock sampled in the NBS and EBS survey regions):
+Second, the `surveyISS::query_data()` function can pull multiple survey regions and combine the data into a single dataframe.
+The following is an example for Walleye pollock sampled in the NBS and EBS survey regions:
 
 ```
 data <- surveyISS::query_data(survey = c(98, 143), 
@@ -62,8 +65,10 @@ data <- surveyISS::query_data(survey = c(98, 143),
 ```
 
 For further details on the `surveyISS::query_data()` function, including the data that are pulled and description of the arguments please see the R Documentation.
+The data that is pulled will be saved as csv files within a subfolder of the `data` folder which is defined as whatever you specified `region` to be in the `surveyISS::query_data()` function (e.g., for the GOA Pacific cod example the data would be written to the `data\goa` folder).
 
-*Step 5.* Run the `surveyISS::srvy_iss()` function to obtain ISS for your stock (the following is an example for standard age and length composition ISS using the GOA Pacific cod example in *Step 4*, with 10 iterations as a test):
+*Step 5.* Run the `surveyISS::srvy_iss()` function to obtain ISS for your stock.
+The following is an example for standard age and length composition ISS using the GOA Pacific cod example in *Step 4* (with 10 iterations as a test):
 
 ```
 surveyISS::srvy_iss(iters = 10, 
@@ -94,25 +99,27 @@ For the standard `surveyISS::srvy_iss()` example in *Step 5* (and for most speci
 1. *save*_iss_age.csv is the ISS for age composition data (where *save* is whatever text string you defined the argument `save` as in the `surveyISS::srvy_iss()` run in *Step 5*), and,
 2. *save*_iss_ln.csv is the ISS for length composition data
 
-These two files will be written to a subfolder within the `output` folder that is defined as whatever text string you used to define the `region` argument in the `surveyISS::srvy_iss()` run in *Step 5*.
+These two files will be written to a subfolder within the `output` folder that is defined as whatever text string you used to define the `region` argument in the `surveyISS::srvy_iss()` run in *Step 5* (similar to how the queried data is saved, for this example for GOA Pacific cod the output will be stored in the `output\goa` folder).
+
 The following is a description of the columns that are included in the age and length composition ISS output:
 
-| Column Name | Description |
-| ---- | ---- |
+| Column | Description |
+| ---- | ---------------------------------- |
 | year | The year for which the ISS has been computed for the age/length composition data |
 | species_code | The RACE species code for you stock (e.g., 21720 for Pacific cod) |
 | sex | The sex category for which the age/length composition ISS has been computed. The following is a description for each numerical value: |
-| | 0 - combined sex, where the length frequency and specimen data have been combined to a single sex prior to design-based expansion |
-| | 1 - male |
-| | 2 - female |
+| | 0 - combined sex age/length composition, where the length frequency and specimen data have been combined to a single sex prior to design-based expansion |
+| | 1 - male age/length composition |
+| | 2 - female age/length composition |
 | | 12 - male-female age/length composition where the composition data sum to 1 across both sexes (rather than sum to one for each individual sex as for categories 1 or 2) |
-| | 4 - combined sex, where the age/length design-based population estimates are summed post-expansion and then age/length composition is computed (this has been the status quo for single-sex stock assessments) |
+| | 4 - combined sex age/length composition, where the age/length design-based population estimates are summed post-expansion and then age/length composition is computed (this has been the status quo for single-sex stock assessments) |
 | sex_desc | Text string with short description of sex category |
 | iss | Input sample size |
 | nss | Nominal sample size (the number of lengths collected or ages read) |
 | nhls | The number of hauls from which samples were collected |
 
 Within the `surveyISS::srvy_iss()` there are two arguments for additional output that can be created if you so desire (currently default = FALSE, and thus aren't included in the example provided in *Step 5*).
+
 The first is the `save_interm` argument, which saves the intermediate results.
 These include:
 
@@ -126,3 +133,6 @@ These include:
 2. *save*_bias_length.csv and *save*_bias_age.csv which are the bias in the bootstrapped age/length composition, computed as the mean bias in the bootstrap replicated age/length compositions (where the bias is computed as the difference between the replicated age/length composition and the mean age/length composition across the bootstrap replicates). 
 3. *save*_mean_length.csv which is the mean length-at-age, computed following the method used in the `gapindex` package. In addition to the mean and SD in length-at-age computed without any bootstrap resampling (which is the standard output provided in the GAP_PRODUCTS.AKFIN_AGECOMP table) you are also provided the mean and SD in length-at-age across the bootstrap replicates (which, if desired would include ageing error and growth varaibility)
 
+*Step 7.* Filter the ISS to your desired sex category and implement within your stock assessment. Best of luck!
+
+Of course, if there are any questions please reach out.

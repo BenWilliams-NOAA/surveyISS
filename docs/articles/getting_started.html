@@ -5,13 +5,13 @@
 <meta charset="utf-8">
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>getting_started • surveyISS</title>
+<title>Getting started • surveyISS</title>
 <!-- jquery --><script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.1/jquery.min.js" integrity="sha512-v2CJ7UaYy4JwqLDIrZUI/4hqeoQieOmAZNXBeQyjo21dadnwR+8ZaIJVT8EE2iyI61OV8e6M8PP2/4hpQINQ/g==" crossorigin="anonymous" referrerpolicy="no-referrer"></script><!-- Bootstrap --><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.4.1/css/bootstrap.min.css" integrity="sha256-bZLfwXAP04zRMK2BjiO8iu9pf4FbLqX6zitd+tIvLhE=" crossorigin="anonymous">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.4.1/js/bootstrap.min.js" integrity="sha256-nuL8/2cJ5NDSSwnKD8VqreErSWHtnEP9E7AySL+1ev4=" crossorigin="anonymous"></script><!-- bootstrap-toc --><link rel="stylesheet" href="../bootstrap-toc.css">
 <script src="../bootstrap-toc.js"></script><!-- Font Awesome icons --><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.12.1/css/all.min.css" integrity="sha256-mmgLkCYLUQbXn0B1SRqzHar6dCnv9oZFPEC1g1cwlkk=" crossorigin="anonymous">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.12.1/css/v4-shims.min.css" integrity="sha256-wZjR52fzng1pJHwx4aV2AO3yyTOXrcDW7jBpJtTwVxw=" crossorigin="anonymous">
 <!-- clipboard.js --><script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.6/clipboard.min.js" integrity="sha256-inc5kl9MA1hkeYUt+EC3BhlIgyp/2jDIyBLS6k3UxPI=" crossorigin="anonymous"></script><!-- headroom.js --><script src="https://cdnjs.cloudflare.com/ajax/libs/headroom/0.11.0/headroom.min.js" integrity="sha256-AsUX4SJE1+yuDu5+mAVzJbuYNPHj/WroHuZ8Ir/CkE0=" crossorigin="anonymous"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/headroom/0.11.0/jQuery.headroom.min.js" integrity="sha256-ZX/yNShbjqsohH1k95liqY9Gd8uOiE1S4vZc+9KQ1K4=" crossorigin="anonymous"></script><!-- pkgdown --><link href="../pkgdown.css" rel="stylesheet">
-<script src="../pkgdown.js"></script><meta property="og:title" content="getting_started">
+<script src="../pkgdown.js"></script><meta property="og:title" content="Getting started">
 <meta property="og:description" content="surveyISS">
 <!-- mathjax --><script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js" integrity="sha256-nvJJv9wWKEm88qvoQl9ekL2J+k/RWIsaSScxxlsrv8k=" crossorigin="anonymous"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/config/TeX-AMS-MML_HTMLorMML.js" integrity="sha256-84DKXVJXs0/F8OTMzX4UR909+jtl4G7SPypPavF+GfA=" crossorigin="anonymous"></script><!--[if lt IE 9]>
 <script src="https://oss.maxcdn.com/html5shiv/3.7.3/html5shiv.min.js"></script>
@@ -50,7 +50,7 @@
   </a>
   <ul class="dropdown-menu" role="menu">
 <li>
-      <a href="../articles/getting_started.html">getting_started</a>
+      <a href="../articles/getting_started.html">Getting started</a>
     </li>
   </ul>
 </li>
@@ -75,7 +75,7 @@
       </header><div class="row">
   <div class="col-md-9 contents">
     <div class="page-header toc-ignore">
-      <h1 data-toc-skip>getting_started</h1>
+      <h1 data-toc-skip>Getting started</h1>
             
       
       <small class="dont-index">Source: <a href="https://github.com/BenWilliams-NOAA/surveyISS/blob/HEAD/vignettes/getting_started.Rmd" class="external-link"><code>vignettes/getting_started.Rmd</code></a></small>
@@ -97,8 +97,8 @@ installed).</p>
 <p><em>Step 3.</em> Load the <code>surveyISS</code> library.</p>
 <div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/BenWilliams-NOAA/surveyISS/" class="external-link">surveyISS</a></span><span class="op">)</span></span></code></pre></div>
-<p><em>Step 4.</em> Query the data for your stock (the following is an
-example for GOA Pacific cod):</p>
+<p><em>Step 4.</em> Query the data for your stock. The following is an
+example for GOA Pacific cod:</p>
 <pre><code><span><span class="va">data</span> <span class="op">&lt;-</span> <span class="fu">surveyISS</span><span class="fu">::</span><span class="fu"><a href="../reference/query_data.html">query_data</a></span><span class="op">(</span>survey <span class="op">=</span> <span class="fl">47</span>, </span>
 <span>                              region <span class="op">=</span> <span class="st">'goa'</span>, </span>
 <span>                              species <span class="op">=</span> <span class="fl">21720</span>, </span>
@@ -106,27 +106,32 @@ example for GOA Pacific cod):</p>
 <p>There are a couple of special cases that can be integrated within the
 <code><a href="../reference/query_data.html">surveyISS::query_data()</a></code> function that should be noted.</p>
 <p>First, for stock complexes, data for multiple species can be pulled
-at once (the following is an example for the AI Blackspotted-Rougheye
-rockfish complex):</p>
+at once. The following is an example for the AI Blackspotted-Rougheye
+rockfish complex:</p>
 <pre><code><span><span class="va">data</span> <span class="op">&lt;-</span> <span class="fu">surveyISS</span><span class="fu">::</span><span class="fu"><a href="../reference/query_data.html">query_data</a></span><span class="op">(</span>survey <span class="op">=</span> <span class="fl">52</span>, </span>
 <span>                              region <span class="op">=</span> <span class="st">'ai'</span>, </span>
 <span>                              species <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">30050</span>, <span class="fl">30051</span>, <span class="fl">30052</span><span class="op">)</span>, </span>
 <span>                              yrs <span class="op">=</span> <span class="fl">1991</span><span class="op">)</span></span></code></pre>
 <p>Second, the <code><a href="../reference/query_data.html">surveyISS::query_data()</a></code> function can pull
-multiple survey regions and combine the data into a single dataframe
-(the following is an example for Walleye pollock sampled in the NBS and
-EBS survey regions):</p>
+multiple survey regions and combine the data into a single dataframe.
+The following is an example for Walleye pollock sampled in the NBS and
+EBS survey regions:</p>
 <pre><code><span><span class="va">data</span> <span class="op">&lt;-</span> <span class="fu">surveyISS</span><span class="fu">::</span><span class="fu"><a href="../reference/query_data.html">query_data</a></span><span class="op">(</span>survey <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">98</span>, <span class="fl">143</span><span class="op">)</span>, </span>
 <span>                              region <span class="op">=</span> <span class="st">'nebs'</span>, </span>
 <span>                              species <span class="op">=</span> <span class="fl">21740</span>, </span>
 <span>                              yrs <span class="op">=</span> <span class="fl">1982</span><span class="op">)</span></span></code></pre>
 <p>For further details on the <code><a href="../reference/query_data.html">surveyISS::query_data()</a></code>
 function, including the data that are pulled and description of the
-arguments please see the R Documentation.</p>
+arguments please see the R Documentation. The data that is pulled will
+be saved as csv files within a subfolder of the <code>data</code> folder
+which is defined as whatever you specified <code>region</code> to be in
+the <code><a href="../reference/query_data.html">surveyISS::query_data()</a></code> function (e.g., for the GOA
+Pacific cod example the data would be written to the
+<code>data\goa</code> folder).</p>
 <p><em>Step 5.</em> Run the <code><a href="../reference/srvy_iss.html">surveyISS::srvy_iss()</a></code> function
-to obtain ISS for your stock (the following is an example for standard
+to obtain ISS for your stock. The following is an example for standard
 age and length composition ISS using the GOA Pacific cod example in
-<em>Step 4</em>, with 10 iterations as a test):</p>
+<em>Step 4</em> (with 10 iterations as a test):</p>
 <pre><code><span><span class="fu">surveyISS</span><span class="fu">::</span><span class="fu"><a href="../reference/srvy_iss.html">srvy_iss</a></span><span class="op">(</span>iters <span class="op">=</span> <span class="fl">10</span>, </span>
 <span>                    lfreq_data <span class="op">=</span> <span class="va">data</span><span class="op">$</span><span class="va">lfreq</span>,</span>
 <span>                    specimen_data <span class="op">=</span> <span class="va">data</span><span class="op">$</span><span class="va">specimen</span>, </span>
@@ -166,16 +171,18 @@ age-at-length) there will be two output files:</p>
 <p>These two files will be written to a subfolder within the
 <code>output</code> folder that is defined as whatever text string you
 used to define the <code>region</code> argument in the
-<code><a href="../reference/srvy_iss.html">surveyISS::srvy_iss()</a></code> run in <em>Step 5</em>. The following
-is a description of the columns that are included in the age and length
-composition ISS output:</p>
+<code><a href="../reference/srvy_iss.html">surveyISS::srvy_iss()</a></code> run in <em>Step 5</em> (similar to
+how the queried data is saved, for this example for GOA Pacific cod the
+output will be stored in the <code>output\goa</code> folder).</p>
+<p>The following is a description of the columns that are included in
+the age and length composition ISS output:</p>
 <table class="table">
 <colgroup>
-<col width="50%">
-<col width="50%">
+<col width="10%">
+<col width="89%">
 </colgroup>
 <thead><tr class="header">
-<th>Column Name</th>
+<th>Column</th>
 <th>Description</th>
 </tr></thead>
 <tbody>
@@ -196,16 +203,17 @@ computed. The following is a description for each numerical value:</td>
 </tr>
 <tr class="even">
 <td></td>
-<td>0 - combined sex, where the length frequency and specimen data have
-been combined to a single sex prior to design-based expansion</td>
+<td>0 - combined sex age/length composition, where the length frequency
+and specimen data have been combined to a single sex prior to
+design-based expansion</td>
 </tr>
 <tr class="odd">
 <td></td>
-<td>1 - male</td>
+<td>1 - male age/length composition</td>
 </tr>
 <tr class="even">
 <td></td>
-<td>2 - female</td>
+<td>2 - female age/length composition</td>
 </tr>
 <tr class="odd">
 <td></td>
@@ -215,10 +223,10 @@ sex as for categories 1 or 2)</td>
 </tr>
 <tr class="even">
 <td></td>
-<td>4 - combined sex, where the age/length design-based population
-estimates are summed post-expansion and then age/length composition is
-computed (this has been the status quo for single-sex stock
-assessments)</td>
+<td>4 - combined sex age/length composition, where the age/length
+design-based population estimates are summed post-expansion and then
+age/length composition is computed (this has been the status quo for
+single-sex stock assessments)</td>
 </tr>
 <tr class="odd">
 <td>sex_desc</td>
@@ -242,8 +250,9 @@ read)</td>
 <p>Within the <code><a href="../reference/srvy_iss.html">surveyISS::srvy_iss()</a></code> there are two arguments
 for additional output that can be created if you so desire (currently
 default = FALSE, and thus aren’t included in the example provided in
-<em>Step 5</em>). The first is the <code>save_interm</code> argument,
-which saves the intermediate results. These include:</p>
+<em>Step 5</em>).</p>
+<p>The first is the <code>save_interm</code> argument, which saves the
+intermediate results. These include:</p>
 <ol style="list-style-type: decimal">
 <li>
 <em>save</em>_resampled_length.csv and
@@ -285,7 +294,10 @@ GAP_PRODUCTS.AKFIN_AGECOMP table) you are also provided the mean and SD
 in length-at-age across the bootstrap replicates (which, if desired
 would include ageing error and growth varaibility)</li>
 </ol>
-</div>
+<p><em>Step 7.</em> Filter the ISS to your desired sex category and
+implement within your stock assessment. Best of luck!</p>
+<p>Of course, if there are any questions please reach out.</p>
+  </div>
 
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
 
