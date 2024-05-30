@@ -88,6 +88,7 @@ surveyISS::srvy_iss(iters = 10,
 ```
 
 Please see the R Documentation for description of the arguments used in the `surveyISS::srvy_iss()` function (including several that aren't defined in this example).
+While we set the number of iterations here at 10 as a test, we recommend at least 500 iterations be performed when running the `surveyISS::srvy_iss()` function to obtain ISS (this recommendation is based upon tests for when the ISS stabilized across the replicates).
 
 We note that there are several special cases that were developed based upon the `surveyISS::srvy_iss()` function; these special cases include stock complex, spatially-explicit, and conditional age-at-length cases.
 Please see the associated vignettes for examples of using the `surveyISS` package and description of the specific output for these cases.
@@ -134,5 +135,3 @@ These include:
 3. *save*_mean_length.csv which is the mean length-at-age, computed following the method used in the `gapindex` package. In addition to the mean and SD in length-at-age computed without any bootstrap resampling (which is the standard output provided in the GAP_PRODUCTS.AKFIN_AGECOMP table) you are also provided the mean and SD in length-at-age across the bootstrap replicates (which, if desired would include ageing error and growth varaibility)
 
 *Step 7.* Filter the ISS to your desired sex category and implement within your stock assessment. Best of luck!
-
-Of course, if there are any questions please reach out.

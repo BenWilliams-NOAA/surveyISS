@@ -1,0 +1,47 @@
+---
+title: "SC: Spatially-explicit ISS"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{SC: Spatially-explicit ISS}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>",
+  eval = FALSE
+)
+```
+
+The following describes the workflow to obtain spatially-explicit input sample size (ISS) for composition data provided by bottom trawl surveys that occur in the GOA and AI.
+Please see the 'Getting started' vignette for installing and loading the `surveyISS` package, as well as querying data.
+To obtain spatially-explicit ISS you will follow the same steps outlined in the 'Getting started' vignette from *Step 1* through *Step 4*, here we provide instructions on how to run the spatially-explicit cases to obtain ISS that would be conducted in *Step 5*.
+
+There are four spatially-explicit functions that have been developed, three for the GOA, and one for the AI.
+The same generic workflow is followed in each of these cases, they are simply applied to different spatial subregions.
+First, based upon the bottom trawl survey strata definitions (locations) the data are aggregated into the defined subregions.
+Second, this subregion data is resampled within the bootstrap simulation.
+Third, for each bootstrap replicate, length/age populations numbers are expanded within each of these subregions.
+Finally, the ISS is computed across the bootstrap replicates in the standard way.
+
+The four spatially-explicit cases run in *Step 5* of the workflow described in the 'Getting started' vignette are as follows (where the function arguments are the same as in the standard `surveyISS::srvy_iss()` exampled provided, and are not repeated here).
+
+*Case 1.* This case was developed using the GOA rex sole stock assessment as an example, and provides spatially-explicit ISS that combines the western and central GOA separate from the eastern GOA. The function for this case is `surveyISS::srvy_iss_goa_wc_e()`.
+
+*Case 2.* This case was developed using the GOA northern/southern rock sole stock assessment as an example, and provides spatially-explicit ISS for western, central, and eastern GOA separately. The function for this case is `surveyISS::srvy_iss_goa_w_c_e()`.
+
+*Case 3.* This case was developed using the GOA walleye pollock stock assessment as an example, and provides spatially-explicit ISS for the GOA west of 140$^\circ$. The function for this case is `surveyISS::srvy_iss_w140()`.
+
+*Case 4.* This case was developed using the AI northern rockfish stock assessment as an example, and provides spatially-explicit ISS for the western AI, central AI, eastern AI, and southern BS subregions within the AI bottom trawl survey. The function for this case is `surveyISS::srvy_iss_ai_subreg()`.
+
+The output of these cases are in many ways similar to the output provided by the standard `surveyISS::srvy_iss()` function, with several nuanced differences.
+First, similar to the standard output, there will be two output files, one for length composition ISS (denoted by `iss_ln` in the file name) and the other for age composition ISS (denoted by `iss_ag` in the file name).
+The start of the file name will be whatever you have defined the `save` argument in the function, and the end of the file name will denote which spatially-explicit function the output has been provided by (for example, if you have run the `surveyISS::srvy_iss_goa_wc_e()` function, the end of the output file name will be `wc_egoa`).
+Second, all the columns in the output are identical to the standard `surveyISS::srvy_iss()` function output (and we refer you to the 'Getting started' vignette for column descriptions) with an additional column `region`.
+The `region` column denotes which region the specific ISS has been computed for.
+For example, using the `surveyISS::srvy_iss_goa_wc_e()` function there will be `wcgoa` and `egoa` regions within the `region` column, or, for the `surveyISS::srvy_iss_goa_w_c_e()` function there will be `wgoa`, `cgoa` and `egoa` regions within the `region` column.
+Within this output we have also computed the survey-wide region ISS, which is a result of summing the length/age population numbers across the subregions to the survey-wide region (we computed this in order to compare the ISS as provided by subregions to the standard method were data is pooled across the entire survey region).
+Thus, within the `region` column there is an additional region defined as either `goa` or `ai`, depending on which spatially-explicit function that has been used.
+We note that for the `surveyISS::srvy_iss_w140()` function there is no `region` column, as the ISS provided is just for the GOA west of 140$^\circ$ and the output is formatted identically to that provided by the standard `surveyISS::srvy_iss()` function.

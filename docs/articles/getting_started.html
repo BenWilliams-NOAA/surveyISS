@@ -52,6 +52,9 @@
 <li>
       <a href="../articles/getting_started.html">Getting started</a>
     </li>
+    <li>
+      <a href="../articles/spatial_iss.html">SC: Spatially-explicit ISS</a>
+    </li>
   </ul>
 </li>
       </ul>
@@ -148,7 +151,11 @@ age and length composition ISS using the GOA Pacific cod example in
 <span>                    save <span class="op">=</span> <span class="st">'test'</span><span class="op">)</span></span></code></pre>
 <p>Please see the R Documentation for description of the arguments used
 in the <code><a href="../reference/srvy_iss.html">surveyISS::srvy_iss()</a></code> function (including several
-that aren’t defined in this example).</p>
+that aren’t defined in this example). While we set the number of
+iterations here at 10 as a test, we recommend at least 500 iterations be
+performed when running the <code><a href="../reference/srvy_iss.html">surveyISS::srvy_iss()</a></code> function
+to obtain ISS (this recommendation is based upon tests for when the ISS
+stabilized across the replicates).</p>
 <p>We note that there are several special cases that were developed
 based upon the <code><a href="../reference/srvy_iss.html">surveyISS::srvy_iss()</a></code> function; these
 special cases include stock complex, spatially-explicit, and conditional
@@ -296,7 +303,6 @@ would include ageing error and growth varaibility)</li>
 </ol>
 <p><em>Step 7.</em> Filter the ISS to your desired sex category and
 implement within your stock assessment. Best of luck!</p>
-<p>Of course, if there are any questions please reach out.</p>
   </div>
 
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
