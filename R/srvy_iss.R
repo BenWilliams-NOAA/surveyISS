@@ -1560,14 +1560,14 @@ srvy_iss_caal <- function(iters = 1,
   # if desired, write out additional statistics
   if(isTRUE(save_stats)){
     # base conditional age-at-length
-    vroom::vroom_write(ogcaal, file = here::here("output", region, "base_caal.csv"), delim = ",")
+    vroom::vroom_write(ogcaal, file = here::here("output", region, paste0(save, "_base_caal.csv")), delim = ",")
     # bootstrap bias in conditional age-at-length
-    vroom::vroom_write(out_stats$bias_caal, file = here::here("output", region, "base_caal.csv"), delim = ",")
+    vroom::vroom_write(out_stats$bias_caal, file = here::here("output", region, paste0(save, "_bias_caal.csv")), delim = ",")
   }
   
   # if desired, write out bootstrapped conditional age-at-length and realized sample sizes
   if(isTRUE(save_interm)) {
-    vroom::vroom_write(r_caal, here::here("output", region, "resampled_caal.csv"), delim = ",")
+    vroom::vroom_write(r_caal, here::here("output", region, paste0(save, "_resampled_caal.csv")), delim = ",")
     vroom::vroom_write(out_stats$rss_caal, here::here("output", region, paste0(save, "_iter_rss_caal.csv")), delim = ",")
   }
 }
