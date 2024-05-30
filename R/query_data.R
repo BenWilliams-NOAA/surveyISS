@@ -360,6 +360,7 @@ query_data <- function(survey,
     dplyr::select(species_code,
                   species_name,
                   common_name) %>% 
+    dplyr::collect() %>% 
     vroom::vroom_write(here::here('data', region, "species.csv"), 
                        delim = ',') -> species
   
