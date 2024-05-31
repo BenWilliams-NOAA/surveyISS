@@ -1,0 +1,78 @@
+---
+title: "SC: Stock complex ISS"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{SC: Stock complex ISS}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>",
+  eval = FALSE
+)
+```
+
+The following describes the workflow to obtain stock complex input sample size (ISS) for composition data provided by bottom trawl surveys that occur in the GOA and AI.
+Please see the 'Getting started' vignette for installing and loading the `surveyISS` package, as well as querying data.
+To obtain stock complex ISS you will follow the same steps outlined in the 'Getting started' vignette from *Step 1* through *Step 4*, here we provide instructions on how to run the stock complex cases to obtain ISS that would be conducted in *Step 5*.
+
+There are two stock complex cases that have been developed that follow the historical methods that have been used for GOA (e.g., rougheye-blackpotted rockfish) and AI (e.g., blackspotted-rougheye rockfish) stock complex assessments.
+We note that the stock complex function for the GOA is also used for the GOA dusky rockfish age/length composition, as the RACE species codes for dusky rockfish have changed over time and in some years overlap.
+These functions can be used for any combination of species for which a stock complex assessment may be desired.
+
+The primary difference between the GOA and the AI methods are at what step the species information is combined within the stock complex.
+In the GOA, the historical method has been to use the design-based expansion methods to obtain age and length population numbers for each individual species, and then combine them post-expansion (by summing the population numbers at age or length).
+In the AI, the historical method has been to use the design-based expansion methods to obtain the length population numbers, but then to combine the specimen data for the species within the stock complex when computing the age-length key that then is used to obtain the age population numbers.
+In other words, in the AI length population numbers are computed for each individual species, but age population numbers are computed for the species combined.
+We note that while the function names for these methods are defined by survey region, the functions can be used interchangeably for any survey region (e.g., one can use GOA data within the AI function, and visa versa, and data from the EBS survey can be used in either of these functions).
+
+There are two additional arguments within the stock complex functions as compared to the arguments within the `surveyISS::srvy_iss()` function; these are the `cmplx_code` and `cmplx` arguments. 
+The `cmplx_code` argument defines the new species code that will be applied to the stock complex.
+This numeric string can be whatever you choose, in our runs we have used a complex code that is a mash-up of the species_codes for each species.
+For example, for rougheye and blackspotted rockfish there are three species_codes that have been used by RACE: 30050, 30051, and 30052; for the rougheye-blackspotted stock complex we have defined the species code as `3005012`.
+The `cmplx` argument is a character string that will be used in the output file names, we have used either `rebs` or `bsre` depending on which survey region the ISS is being computed for.
+
+The following is an example to run the GOA stock complex function:
+
+```
+surveyISS::srvy_iss_goa_cmplx(iters = 10, 
+                              lfreq_data = data$lfreq, 
+                              specimen_data = data$specimen, 
+                              cpue_data = data$cpue, 
+                              strata_data = data$strata, 
+                              yrs = 1990, 
+                              boot_hauls = TRUE, 
+                              boot_lengths = TRUE, 
+                              boot_ages = TRUE, 
+                              al_var = TRUE, 
+                              al_var_ann = TRUE, 
+                              age_err = TRUE,
+                              cmplx_code = 3005012,
+                              cmplx = 'rebs',
+                              region = 'goa', 
+                              save = 'test')
+```
+
+And the following is an example to run the AI stock complex function:
+
+```
+surveyISS::srvy_iss_ai_cmplx(iters = 10, 
+                             lfreq_data = data$lfreq, 
+                             specimen_data = data$specimen, 
+                             cpue_data = data$cpue, 
+                             strata_data = data$strata,
+                             yrs = 1991,
+                             boot_hauls = TRUE, 
+                             boot_lengths = TRUE, 
+                             boot_ages = TRUE, 
+                             al_var = TRUE, 
+                             al_var_ann = TRUE, 
+                             age_err = TRUE,
+                             cmplx_code = 3005012,
+                             cmplx = 'bsre',
+                             region = 'ai',  
+                             save = 'test')
+```
