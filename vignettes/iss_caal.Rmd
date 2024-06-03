@@ -1,0 +1,46 @@
+---
+title: "SC: Conditional Age-At-Length ISS"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{SC: Conditional Age-At-Length ISS}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>",
+  eval = FALSE
+)
+```
+
+The following describes the workflow to obtain conditional-age-at length (CAAL) input sample size (ISS) for data provided by AFSC bottom trawl surveys.
+Please see the 'Getting started' vignette for installing and loading the `surveyISS` package, as well as querying data.
+To obtain CAAL ISS you will follow the same steps outlined in the 'Getting started' vignette from *Step 1* through *Step 4*, here we provide instructions on how to run the CAAL function to obtain ISS that would be conducted in *Step 5*.
+
+The primary difference when running the `surveyISS::srvy_iss_caal()` as compared to the `surveyISS::srvy_iss()` function is fewer arguments that need to be defined (as length frequency data is not being expanded to population numbers at length).
+To obtain standard, 1 cm length bin CAAL ISS, the following is provided as an example for GOA stocks:
+
+```
+surveyISS::srvy_iss_caal(iters = 10, 
+                         specimen_data = data$specimen, 
+                         cpue_data = data$cpue, 
+                         yrs = 1990,
+                         boot_hauls = TRUE, 
+                         boot_ages = TRUE,
+                         al_var = TRUE, 
+                         al_var_ann = TRUE, 
+                         age_err = TRUE,
+                         region = 'goa', 
+                         save = 'test')
+```
+
+As with the other functions included in the `surveyISS` package there are several additional arguments that can be included, and we refer you to the package R documentation for the `surveyISS::srvy_iss_caal()` function.
+The output of the `surveyISS::srvy_iss_caal()` function is in many ways similar to the output provided by the standard `surveyISS::srvy_iss()` function, with several nuanced differences.
+First, there will only be one output file for CAAL ISS, and will be denoted by `caal` at the end of the file name.
+The start of the file name will be whatever you have defined the `save` argument in the function.
+And second, within the CAAL ISS output file there will be an additional column named `length` that will denote for which length bin the computed ISS is provided.
+All the other columns will be the same as the `surveyISS::srvy_iss()` function (including the sex category identification and descriptions), and note that the `nss` and `nhl` columns denote the sample size and number of sampled hauls for that year-species_code-sex-length bin combination.
+
+
