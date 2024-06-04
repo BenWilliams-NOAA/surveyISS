@@ -80,7 +80,7 @@ surveyISS::srvy_iss(iters = iters,
                     al_var_ann = TRUE, 
                     age_err = TRUE,
                     region = 'goa', 
-                    save = 'prodtest')
+                    save = 'prod')
 
 ## run for goa pollock (west of 140) ----
 data_goa$cpue %>% 
@@ -103,7 +103,7 @@ surveyISS::srvy_iss_w140(iters = iters,
                          al_var_ann = TRUE, 
                          age_err = TRUE,
                          region = 'goa', 
-                         save = 'prodtest')
+                         save = 'prod')
 
 ## run for goa rougheye-blackspotted stock complex ----
 data_goa$cpue %>% 
@@ -128,7 +128,7 @@ surveyISS::srvy_iss_goa_cmplx(iters = iters,
                               cmplx_code = 3005012,
                               cmplx = 'rebs',
                               region = 'goa', 
-                              save = 'prodtest')
+                              save = 'prod')
 
 ## run for goa dusky stock (has different historical species codes) ----
 data_goa$cpue %>% 
@@ -153,7 +153,7 @@ surveyISS::srvy_iss_goa_cmplx(iters = iters,
                               cmplx_code = 301502,
                               cmplx = 'dr',
                               region = 'goa',  
-                              save = 'prodtest')
+                              save = 'prod')
 
 ## run for goa northern/southern rock sole ----
 data_goa$cpue %>% 
@@ -176,7 +176,7 @@ surveyISS::srvy_iss_goa_w_c_e(iters = iters,
                               al_var_ann = TRUE,
                               age_err = TRUE,
                               region = 'goa',
-                              save = 'prodtest')
+                              save = 'prod')
 
 ## run for goa rex sole ----
 data_goa$cpue %>% 
@@ -199,7 +199,7 @@ surveyISS::srvy_iss_goa_wc_e(iters = iters,
                              al_var_ann = TRUE,
                              age_err = TRUE,
                              region = 'goa',
-                             save = 'prodtest')
+                             save = 'prod')
 
 
 # aleutian islands ----
@@ -226,7 +226,7 @@ surveyISS::srvy_iss(iters = iters,
                     al_var_ann = TRUE, 
                     age_err = TRUE,
                     region = 'ai', 
-                    save = 'prodtest')
+                    save = 'prod')
 
 ## run for ai blackspotted-rougheye stock complex ----
 data_ai$cpue %>% 
@@ -251,7 +251,7 @@ surveyISS::srvy_iss_ai_cmplx(iters = iters,
                              cmplx_code = 3005012,
                              cmplx = 'bsre',
                              region = 'ai',  
-                             save = 'prodtest')
+                             save = 'prod')
 
 ## run for ai northern rockfish (subregion expansion) ----
 data_ai$cpue %>% 
@@ -274,7 +274,7 @@ surveyISS::srvy_iss_ai_subreg(iters = iters,
                               al_var_ann = TRUE, 
                               age_err = TRUE,
                               region = 'ai',  
-                              save = 'prodtest')
+                              save = 'prod')
 
 
 # ebs shelf ----
@@ -292,7 +292,7 @@ surveyISS::srvy_iss(iters = iters,
                     al_var_ann = TRUE, 
                     age_err = TRUE,
                     region = 'ebs', 
-                    save = 'prodtest')
+                    save = 'prod')
 
 
 # ebs slope ----
@@ -310,7 +310,7 @@ surveyISS::srvy_iss(iters = iters,
                     al_var_ann = TRUE, 
                     age_err = TRUE,
                     region = 'ebs_slope', 
-                    save = 'prodtest')
+                    save = 'prod')
 
 
 # nbs & ebs ----
@@ -328,7 +328,7 @@ surveyISS::srvy_iss(iters = iters,
                     al_var_ann = TRUE, 
                     age_err = TRUE,
                     region = 'nebs',  
-                    save = 'prodtest')
+                    save = 'prod')
 
 # caal ----
 
@@ -352,7 +352,7 @@ surveyISS::srvy_iss_caal(iters = iters,
                          al_var_ann = TRUE, 
                          age_err = TRUE,
                          region = region, 
-                         save = 'prodtest')
+                         save = 'prod')
 
 
 # For testing run time of 500 iterations ----
