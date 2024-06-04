@@ -164,8 +164,8 @@ srvy_iss <- function(iters = 1,
   # set age > plus-age group to plus-age
   if(!is.null(plus_age)){
     specimen_data %>% 
-      tidytable::mutate(length = dplyr::case_when(length >= plus_len ~ plus_len,
-                                                  length < plus_len ~ length)) -> .specimen_data
+      tidytable::mutate(age = dplyr::case_when(age >= plus_age ~ plus_age,
+                                               age < plus_age ~ age)) -> .specimen_data
   } else{
     .specimen_data <- specimen_data
   }
@@ -373,8 +373,8 @@ srvy_iss_ai_cmplx <- function(iters = 1,
   # set age > plus-age group to plus-age
   if(!is.null(plus_age)){
     specimen_data %>% 
-      tidytable::mutate(length = dplyr::case_when(length >= plus_len ~ plus_len,
-                                                  length < plus_len ~ length)) -> .specimen_data
+      tidytable::mutate(age = dplyr::case_when(age >= plus_age ~ plus_age,
+                                               age < plus_age ~ age)) -> .specimen_data
   } else{
     .specimen_data <- specimen_data
   }
@@ -600,8 +600,8 @@ srvy_iss_goa_cmplx <- function(iters = 1,
   # set age > plus-age group to plus-age
   if(!is.null(plus_age)){
     specimen_data %>% 
-      tidytable::mutate(length = dplyr::case_when(length >= plus_len ~ plus_len,
-                                                  length < plus_len ~ length)) -> .specimen_data
+      tidytable::mutate(age = dplyr::case_when(age >= plus_age ~ plus_age,
+                                               age < plus_age ~ age)) -> .specimen_data
   } else{
     .specimen_data <- specimen_data
   }
@@ -882,8 +882,8 @@ srvy_iss_goa_w_c_e <- function(iters = 1,
   # set age > plus-age group to plus-age
   if(!is.null(plus_age)){
     .specimen_data %>% 
-      tidytable::mutate(length = dplyr::case_when(length >= plus_len ~ plus_len,
-                                                  length < plus_len ~ length)) -> .specimen_data
+      tidytable::mutate(age = dplyr::case_when(age >= plus_age ~ plus_age,
+                                               age < plus_age ~ age)) -> .specimen_data
   }
   
   ## now get statistics ----
@@ -1153,8 +1153,8 @@ srvy_iss_goa_wc_e <- function(iters = 1,
   # set age > plus-age group to plus-age
   if(!is.null(plus_age)){
     .specimen_data %>% 
-      tidytable::mutate(length = dplyr::case_when(length >= plus_len ~ plus_len,
-                                                  length < plus_len ~ length)) -> .specimen_data
+      tidytable::mutate(age = dplyr::case_when(age >= plus_age ~ plus_age,
+                                               age < plus_age ~ age)) -> .specimen_data
   }
   
   ## now get statistics ----
@@ -1384,8 +1384,8 @@ srvy_iss_w140 <- function(iters = 1,
   # set age > plus-age group to plus-age
   if(!is.null(plus_age)){
     specimen_data %>% 
-      tidytable::mutate(length = dplyr::case_when(length >= plus_len ~ plus_len,
-                                                  length < plus_len ~ length)) -> .specimen_data
+      tidytable::mutate(age = dplyr::case_when(age >= plus_age ~ plus_age,
+                                               age < plus_age ~ age)) -> .specimen_data
   } else{
     .specimen_data <- specimen_data
   }
@@ -1685,8 +1685,8 @@ srvy_iss_ai_subreg <- function(iters = 1,
   # set age > plus-age group to plus-age
   if(!is.null(plus_age)){
     .specimen_data %>% 
-      tidytable::mutate(length = dplyr::case_when(length >= plus_len ~ plus_len,
-                                                  length < plus_len ~ length)) -> .specimen_data
+      tidytable::mutate(age = dplyr::case_when(age >= plus_age ~ plus_age,
+                                               age < plus_age ~ age)) -> .specimen_data
   }
   
   ## now get statistics ----
@@ -1838,6 +1838,14 @@ srvy_iss_caal <- function(iters = 1,
     specimen_data %>% 
       tidytable::left_join(new_lengths) %>% 
       tidytable::select(-length, length = new_length) -> .specimen_data
+  }
+  ## second deal with plus groups ----
+  # set lengths > plus-length group to plus-length
+  # note: if custom length bins are used the plus length group will already be populated
+  if(!is.null(plus_len)){
+    .specimen_data %>% 
+      tidytable::mutate(length = dplyr::case_when(length >= plus_len ~ plus_len,
+                                                  length < plus_len ~ length)) -> .specimen_data
   }
   
   ## now get statistics ----
