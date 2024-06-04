@@ -132,7 +132,46 @@ srvy_iss <- function(iters = 1,
     tidytable::map_df(., ~as.data.frame(.x), .id = "sim")
   
   # compute statistics ----
-  out_stats <- comp_stats(r_age, oga, r_length, ogl, specimen_data, lfreq_data)
+  ## first re-bin length freq data ----
+  # bin by cm blocks
+  if(length(bin) == 1){
+    lfreq_data %>% 
+      tidytable::mutate(length = bin * ceiling((length / 10) / bin)) -> .lfreq_data
+  } else{ # custom length bins
+    # set up bin bounds
+    c(0, bin) %>% 
+      tidytable::bind_cols(c(bin, bin[length(bin)] + 1)) %>% 
+      tidytable::rename(lwr = '...1', upr = '...2') -> bin_bnds
+    # determine which bin length is in, and define new length as upper bin
+    # note, plus bin is denoted as max length bin + 1
+    lfreq_data %>% 
+      tidytable::distinct(length) %>% 
+      tidytable::mutate(new_length = bin_bnds$upr[max(which(bin_bnds$lwr < length / 10))], 
+                        .by = c(length)) -> new_lengths
+    # replace lengths in length frequency data with new binned lengths
+    lfreq_data %>% 
+      tidytable::left_join(new_lengths) %>% 
+      tidytable::select(-length, length = new_length) -> .lfreq_data
+  }
+  ## second deal with plus groups ----
+  # set lengths > plus-length group to plus-length
+  # note: if custom length bins are used the plus length group will already be populated
+  if(!is.null(plus_len)){
+    .lfreq_data %>% 
+      tidytable::mutate(length = dplyr::case_when(length >= plus_len ~ plus_len,
+                                                  length < plus_len ~ length)) -> .lfreq_data
+  }
+  # set age > plus-age group to plus-age
+  if(!is.null(plus_age)){
+    specimen_data %>% 
+      tidytable::mutate(length = dplyr::case_when(length >= plus_len ~ plus_len,
+                                                  length < plus_len ~ length)) -> .specimen_data
+  } else{
+    .specimen_data <- specimen_data
+  }
+
+  ## now get statistics ----
+  out_stats <- comp_stats(r_age, oga, r_length, ogl, .specimen_data, .lfreq_data)
   
   # write results ----
   # input sample size
@@ -302,12 +341,51 @@ srvy_iss_ai_cmplx <- function(iters = 1,
     tidytable::map_df(., ~as.data.frame(.x), .id = "sim")
   
   # compute statistics ----
-  out_stats <- comp_stats(r_age, oga, r_length, ogl, 
-                          specimen_data %>% 
-                            tidytable::mutate(species_code = cmplx_code), 
-                          lfreq_data %>% 
-                            tidytable::mutate(species_code = cmplx_code))
+  ## first re-bin length freq data ----
+  # bin by cm blocks
+  if(length(bin) == 1){
+    lfreq_data %>% 
+      tidytable::mutate(length = bin * ceiling((length / 10) / bin)) -> .lfreq_data
+  } else{ # custom length bins
+    # set up bin bounds
+    c(0, bin) %>% 
+      tidytable::bind_cols(c(bin, bin[length(bin)] + 1)) %>% 
+      tidytable::rename(lwr = '...1', upr = '...2') -> bin_bnds
+    # determine which bin length is in, and define new length as upper bin
+    # note, plus bin is denoted as max length bin + 1
+    lfreq_data %>% 
+      tidytable::distinct(length) %>% 
+      tidytable::mutate(new_length = bin_bnds$upr[max(which(bin_bnds$lwr < length / 10))], 
+                        .by = c(length)) -> new_lengths
+    # replace lengths in length frequency data with new binned lengths
+    lfreq_data %>% 
+      tidytable::left_join(new_lengths) %>% 
+      tidytable::select(-length, length = new_length) -> .lfreq_data
+  }
+  ## second deal with plus groups ----
+  # set lengths > plus-length group to plus-length
+  # note: if custom length bins are used the plus length group will already be populated
+  if(!is.null(plus_len)){
+    .lfreq_data %>% 
+      tidytable::mutate(length = dplyr::case_when(length >= plus_len ~ plus_len,
+                                                  length < plus_len ~ length)) -> .lfreq_data
+  }
+  # set age > plus-age group to plus-age
+  if(!is.null(plus_age)){
+    specimen_data %>% 
+      tidytable::mutate(length = dplyr::case_when(length >= plus_len ~ plus_len,
+                                                  length < plus_len ~ length)) -> .specimen_data
+  } else{
+    .specimen_data <- specimen_data
+  }
   
+  ## now get statistics ----
+  out_stats <- comp_stats(r_age, oga, r_length, ogl, 
+                          .specimen_data %>% 
+                            tidytable::mutate(species_code = cmplx_code), 
+                          .lfreq_data %>% 
+                            tidytable::mutate(species_code = cmplx_code))
+
   # write results ----
   # input sample size
   vroom::vroom_write(out_stats$iss_length, here::here("output", region, paste0(save, "_iss_ln_", cmplx, ".csv")), delim = ",")    
@@ -490,10 +568,49 @@ srvy_iss_goa_cmplx <- function(iters = 1,
     tidytable::mutate(species_code = cmplx_code)
   
   # compute statistics ----
+  ## first re-bin length freq data ----
+  # bin by cm blocks
+  if(length(bin) == 1){
+    lfreq_data %>% 
+      tidytable::mutate(length = bin * ceiling((length / 10) / bin)) -> .lfreq_data
+  } else{ # custom length bins
+    # set up bin bounds
+    c(0, bin) %>% 
+      tidytable::bind_cols(c(bin, bin[length(bin)] + 1)) %>% 
+      tidytable::rename(lwr = '...1', upr = '...2') -> bin_bnds
+    # determine which bin length is in, and define new length as upper bin
+    # note, plus bin is denoted as max length bin + 1
+    lfreq_data %>% 
+      tidytable::distinct(length) %>% 
+      tidytable::mutate(new_length = bin_bnds$upr[max(which(bin_bnds$lwr < length / 10))], 
+                        .by = c(length)) -> new_lengths
+    # replace lengths in length frequency data with new binned lengths
+    lfreq_data %>% 
+      tidytable::left_join(new_lengths) %>% 
+      tidytable::select(-length, length = new_length) -> .lfreq_data
+  }
+  ## second deal with plus groups ----
+  # set lengths > plus-length group to plus-length
+  # note: if custom length bins are used the plus length group will already be populated
+  if(!is.null(plus_len)){
+    .lfreq_data %>% 
+      tidytable::mutate(length = dplyr::case_when(length >= plus_len ~ plus_len,
+                                                  length < plus_len ~ length)) -> .lfreq_data
+  }
+  # set age > plus-age group to plus-age
+  if(!is.null(plus_age)){
+    specimen_data %>% 
+      tidytable::mutate(length = dplyr::case_when(length >= plus_len ~ plus_len,
+                                                  length < plus_len ~ length)) -> .specimen_data
+  } else{
+    .specimen_data <- specimen_data
+  }
+  
+  ## now get statistics ----
   out_stats <- comp_stats(r_age, oga, r_length, ogl, 
-                          specimen_data %>% 
+                          .specimen_data %>% 
                             tidytable::mutate(species_code = cmplx_code), 
-                          lfreq_data %>% 
+                          .lfreq_data %>% 
                             tidytable::mutate(species_code = cmplx_code))
   
   # write results ----
@@ -733,8 +850,45 @@ srvy_iss_goa_w_c_e <- function(iters = 1,
                            tidytable::mutate(region = 'goa')) 
   
   # compute statistics ----
-  out_stats <- comp_stats(r_age, oga, r_length, ogl, .specimen_data, .lfreq_data, region)
+  ## first re-bin length freq data ----
+  # bin by cm blocks
+  if(length(bin) == 1){
+    .lfreq_data %>% 
+      tidytable::mutate(length = bin * ceiling((length / 10) / bin)) -> .lfreq_data
+  } else{ # custom length bins
+    # set up bin bounds
+    c(0, bin) %>% 
+      tidytable::bind_cols(c(bin, bin[length(bin)] + 1)) %>% 
+      tidytable::rename(lwr = '...1', upr = '...2') -> bin_bnds
+    # determine which bin length is in, and define new length as upper bin
+    # note, plus bin is denoted as max length bin + 1
+    .lfreq_data %>% 
+      tidytable::distinct(length) %>% 
+      tidytable::mutate(new_length = bin_bnds$upr[max(which(bin_bnds$lwr < length / 10))], 
+                        .by = c(length)) -> new_lengths
+    # replace lengths in length frequency data with new binned lengths
+    .lfreq_data %>% 
+      tidytable::left_join(new_lengths) %>% 
+      tidytable::select(-length, length = new_length) -> .lfreq_data
+  }
+  ## second deal with plus groups ----
+  # set lengths > plus-length group to plus-length
+  # note: if custom length bins are used the plus length group will already be populated
+  if(!is.null(plus_len)){
+    .lfreq_data %>% 
+      tidytable::mutate(length = dplyr::case_when(length >= plus_len ~ plus_len,
+                                                  length < plus_len ~ length)) -> .lfreq_data
+  }
+  # set age > plus-age group to plus-age
+  if(!is.null(plus_age)){
+    .specimen_data %>% 
+      tidytable::mutate(length = dplyr::case_when(length >= plus_len ~ plus_len,
+                                                  length < plus_len ~ length)) -> .specimen_data
+  }
   
+  ## now get statistics ----
+  out_stats <- comp_stats(r_age, oga, r_length, ogl, .specimen_data, .lfreq_data, region)
+
   # write results ----
   # input sample size
   vroom::vroom_write(out_stats$iss_length, here::here("output", region, paste0(save, "_iss_ln_w_c_egoa.csv")), delim = ",")    
@@ -967,8 +1121,45 @@ srvy_iss_goa_wc_e <- function(iters = 1,
                            tidytable::mutate(region = 'goa')) 
   
   # compute statistics ----
-  out_stats <- comp_stats(r_age, oga, r_length, ogl, .specimen_data, .lfreq_data, region)
+  ## first re-bin length freq data ----
+  # bin by cm blocks
+  if(length(bin) == 1){
+    .lfreq_data %>% 
+      tidytable::mutate(length = bin * ceiling((length / 10) / bin)) -> .lfreq_data
+  } else{ # custom length bins
+    # set up bin bounds
+    c(0, bin) %>% 
+      tidytable::bind_cols(c(bin, bin[length(bin)] + 1)) %>% 
+      tidytable::rename(lwr = '...1', upr = '...2') -> bin_bnds
+    # determine which bin length is in, and define new length as upper bin
+    # note, plus bin is denoted as max length bin + 1
+    .lfreq_data %>% 
+      tidytable::distinct(length) %>% 
+      tidytable::mutate(new_length = bin_bnds$upr[max(which(bin_bnds$lwr < length / 10))], 
+                        .by = c(length)) -> new_lengths
+    # replace lengths in length frequency data with new binned lengths
+    .lfreq_data %>% 
+      tidytable::left_join(new_lengths) %>% 
+      tidytable::select(-length, length = new_length) -> .lfreq_data
+  }
+  ## second deal with plus groups ----
+  # set lengths > plus-length group to plus-length
+  # note: if custom length bins are used the plus length group will already be populated
+  if(!is.null(plus_len)){
+    .lfreq_data %>% 
+      tidytable::mutate(length = dplyr::case_when(length >= plus_len ~ plus_len,
+                                                  length < plus_len ~ length)) -> .lfreq_data
+  }
+  # set age > plus-age group to plus-age
+  if(!is.null(plus_age)){
+    .specimen_data %>% 
+      tidytable::mutate(length = dplyr::case_when(length >= plus_len ~ plus_len,
+                                                  length < plus_len ~ length)) -> .specimen_data
+  }
   
+  ## now get statistics ----
+  out_stats <- comp_stats(r_age, oga, r_length, ogl, .specimen_data, .lfreq_data, region)
+
   # write results ----
   # input sample size
   vroom::vroom_write(out_stats$iss_length, here::here("output", region, paste0(save, "_iss_ln_wc_egoa.csv")), delim = ",")    
@@ -1161,8 +1352,47 @@ srvy_iss_w140 <- function(iters = 1,
     tidytable::map_df(., ~as.data.frame(.x), .id = "sim")
   
   # compute statistics ----
-  out_stats <- comp_stats(r_age, oga, r_length, ogl, specimen_data, lfreq_data)
+  ## first re-bin length freq data ----
+  # bin by cm blocks
+  if(length(bin) == 1){
+    lfreq_data %>% 
+      tidytable::mutate(length = bin * ceiling((length / 10) / bin)) -> .lfreq_data
+  } else{ # custom length bins
+    # set up bin bounds
+    c(0, bin) %>% 
+      tidytable::bind_cols(c(bin, bin[length(bin)] + 1)) %>% 
+      tidytable::rename(lwr = '...1', upr = '...2') -> bin_bnds
+    # determine which bin length is in, and define new length as upper bin
+    # note, plus bin is denoted as max length bin + 1
+    lfreq_data %>% 
+      tidytable::distinct(length) %>% 
+      tidytable::mutate(new_length = bin_bnds$upr[max(which(bin_bnds$lwr < length / 10))], 
+                        .by = c(length)) -> new_lengths
+    # replace lengths in length frequency data with new binned lengths
+    lfreq_data %>% 
+      tidytable::left_join(new_lengths) %>% 
+      tidytable::select(-length, length = new_length) -> .lfreq_data
+  }
+  ## second deal with plus groups ----
+  # set lengths > plus-length group to plus-length
+  # note: if custom length bins are used the plus length group will already be populated
+  if(!is.null(plus_len)){
+    .lfreq_data %>% 
+      tidytable::mutate(length = dplyr::case_when(length >= plus_len ~ plus_len,
+                                                  length < plus_len ~ length)) -> .lfreq_data
+  }
+  # set age > plus-age group to plus-age
+  if(!is.null(plus_age)){
+    specimen_data %>% 
+      tidytable::mutate(length = dplyr::case_when(length >= plus_len ~ plus_len,
+                                                  length < plus_len ~ length)) -> .specimen_data
+  } else{
+    .specimen_data <- specimen_data
+  }
   
+  ## now get statistics ----
+  out_stats <- comp_stats(r_age, oga, r_length, ogl, .specimen_data, .lfreq_data)
+
   # write results ----
   # input sample size
   vroom::vroom_write(out_stats$iss_length, here::here("output", region, paste0(save, "_iss_ln_w140.csv")), delim = ",")    
@@ -1423,8 +1653,45 @@ srvy_iss_ai_subreg <- function(iters = 1,
                            tidytable::mutate(region = 'ai')) 
   
   # compute statistics ----
-  out_stats <- comp_stats(r_age, oga, r_length, ogl, .specimen_data, .lfreq_data, region)
+  ## first re-bin length freq data ----
+  # bin by cm blocks
+  if(length(bin) == 1){
+    .lfreq_data %>% 
+      tidytable::mutate(length = bin * ceiling((length / 10) / bin)) -> .lfreq_data
+  } else{ # custom length bins
+    # set up bin bounds
+    c(0, bin) %>% 
+      tidytable::bind_cols(c(bin, bin[length(bin)] + 1)) %>% 
+      tidytable::rename(lwr = '...1', upr = '...2') -> bin_bnds
+    # determine which bin length is in, and define new length as upper bin
+    # note, plus bin is denoted as max length bin + 1
+    .lfreq_data %>% 
+      tidytable::distinct(length) %>% 
+      tidytable::mutate(new_length = bin_bnds$upr[max(which(bin_bnds$lwr < length / 10))], 
+                        .by = c(length)) -> new_lengths
+    # replace lengths in length frequency data with new binned lengths
+    .lfreq_data %>% 
+      tidytable::left_join(new_lengths) %>% 
+      tidytable::select(-length, length = new_length) -> .lfreq_data
+  }
+  ## second deal with plus groups ----
+  # set lengths > plus-length group to plus-length
+  # note: if custom length bins are used the plus length group will already be populated
+  if(!is.null(plus_len)){
+    .lfreq_data %>% 
+      tidytable::mutate(length = dplyr::case_when(length >= plus_len ~ plus_len,
+                                                  length < plus_len ~ length)) -> .lfreq_data
+  }
+  # set age > plus-age group to plus-age
+  if(!is.null(plus_age)){
+    .specimen_data %>% 
+      tidytable::mutate(length = dplyr::case_when(length >= plus_len ~ plus_len,
+                                                  length < plus_len ~ length)) -> .specimen_data
+  }
   
+  ## now get statistics ----
+  out_stats <- comp_stats(r_age, oga, r_length, ogl, .specimen_data, .lfreq_data, region)
+
   # write results ----
   # input sample size
   vroom::vroom_write(out_stats$iss_length, here::here("output", region, paste0(save, "_iss_ln_ai_subreg.csv")), delim = ",")    
@@ -1551,7 +1818,30 @@ srvy_iss_caal <- function(iters = 1,
     tidytable::map_df(., ~as.data.frame(.x), .id = "sim")
   
   # compute statistics ----
-  out_stats <- comp_stats_caal(r_caal, ogcaal, specimen_data)
+  ## first re-bin specimen data ----
+  # bin by cm blocks
+  if(length(bin) == 1){
+    specimen_data %>% 
+      tidytable::mutate(length = bin * ceiling((length / 10) / bin)) -> .specimen_data
+  } else{ # custom length bins
+    # set up bin bounds
+    c(0, bin) %>% 
+      tidytable::bind_cols(c(bin, bin[length(bin)] + 1)) %>% 
+      tidytable::rename(lwr = '...1', upr = '...2') -> bin_bnds
+    # determine which bin length is in, and define new length as upper bin
+    # note, plus bin is denoted as max length bin + 1
+    specimen_data %>% 
+      tidytable::distinct(length) %>% 
+      tidytable::mutate(new_length = bin_bnds$upr[max(which(bin_bnds$lwr < length / 10))], 
+                        .by = c(length)) -> new_lengths
+    # replace lengths in length frequency data with new binned lengths
+    specimen_data %>% 
+      tidytable::left_join(new_lengths) %>% 
+      tidytable::select(-length, length = new_length) -> .specimen_data
+  }
+  
+  ## now get statistics ----
+  out_stats <- comp_stats_caal(r_caal, ogcaal, .specimen_data)
   
   # write results ----
   # input sample size   

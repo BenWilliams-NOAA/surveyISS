@@ -509,6 +509,23 @@ iss_caal <- function(rss_caal,
                                                   tidytable::drop_na(age) %>% 
                                                   tidytable::filter(sex != 3) %>% 
                                                   tidytable::summarise(nss = .N, .by = c(year, species_code, length)) %>% 
+                                                  tidytable::mutate(sex = 12))) %>% 
+    tidytable::left_join(specimen_data %>% 
+                           tidytable::drop_na(age) %>% 
+                           tidytable::filter(sex != 3) %>% 
+                           tidytable::summarize(nhl = length(unique(hauljoin)), .by = c(year, species_code, sex, length)) %>% 
+                           tidytable::bind_rows(specimen_data %>% 
+                                                  tidytable::drop_na(age) %>% 
+                                                  tidytable::summarize(nhl = length(unique(hauljoin)), .by = c(year, species_code, sex, length)) %>% 
+                                                  tidytable::mutate(sex = 0)) %>% 
+                           tidytable::bind_rows(specimen_data %>% 
+                                                  tidytable::drop_na(age) %>% 
+                                                  tidytable::summarize(nhl = length(unique(hauljoin)), .by = c(year, species_code, sex, length)) %>% 
+                                                  tidytable::mutate(sex = 4)) %>% 
+                           tidytable::bind_rows(specimen_data %>% 
+                                                  tidytable::drop_na(age) %>% 
+                                                  tidytable::filter(sex != 3) %>% 
+                                                  tidytable::summarize(nhl = length(unique(hauljoin)), .by = c(year, species_code, sex, length)) %>% 
                                                   tidytable::mutate(sex = 12)))
   
 }
