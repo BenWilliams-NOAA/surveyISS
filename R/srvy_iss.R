@@ -105,7 +105,7 @@ srvy_iss <- function(iters = 1,
   oga <- og$age %>% 
     tidytable::bind_rows(og$age %>%
                            tidytable::filter(sex != 0) %>% 
-                           tidytable::summarise(apop = sum(apop, na.rm = TRUE),
+                           tidytable::summarise(agepop = sum(agepop, na.rm = TRUE)),
                                                 mean_length = sum(agepop * mean_length, na.rm = TRUE) / sum(agepop, na.rm = TRUE),
                                                 sd_length = sum(agepop * sd_length, na.rm = TRUE) / sum(agepop, na.rm = TRUE),
                                                 .by = c(year, species_code, age)) %>% 
@@ -327,7 +327,7 @@ srvy_iss_ai_cmplx <- function(iters = 1,
   oga <- og$age %>% 
     tidytable::bind_rows(og$age %>%
                            tidytable::filter(sex != 0) %>% 
-                           tidytable::summarise(apop = sum(apop, na.rm = TRUE),
+                           tidytable::summarise(agepop = sum(agepop, na.rm = TRUE),
                                                 mean_length = sum(agepop * mean_length, na.rm = TRUE) / sum(agepop, na.rm = TRUE),
                                                 sd_length = sum(agepop * sd_length, na.rm = TRUE) / sum(agepop, na.rm = TRUE),
                                                 .by = c(year, species_code, age)) %>% 
@@ -560,7 +560,7 @@ srvy_iss_goa_cmplx <- function(iters = 1,
   oga <- .oga %>% 
     tidytable::bind_rows(.oga %>%
                            tidytable::filter(sex != 0) %>% 
-                           tidytable::summarise(apop = sum(apop, na.rm = TRUE),
+                           tidytable::summarise(agepop = sum(agepop, na.rm = TRUE),
                                                 mean_length = sum(agepop * mean_length, na.rm = TRUE) / sum(agepop, na.rm = TRUE),
                                                 sd_length = sum(agepop * sd_length, na.rm = TRUE) / sum(agepop, na.rm = TRUE),
                                                 .by = c(year, species_code, age)) %>% 
@@ -829,7 +829,7 @@ srvy_iss_goa_w_c_e <- function(iters = 1,
   oga <- .oga %>% 
     tidytable::bind_rows(.oga %>%
                            tidytable::filter(sex != 0) %>% 
-                           tidytable::summarise(apop = sum(apop, na.rm = TRUE),
+                           tidytable::summarise(agepop = sum(agepop, na.rm = TRUE),
                                                 mean_length = sum(agepop * mean_length, na.rm = TRUE) / sum(agepop, na.rm = TRUE),
                                                 sd_length = sum(agepop * sd_length, na.rm = TRUE) / sum(agepop, na.rm = TRUE),
                                                 .by = c(year, species_code, region, age)) %>% 
@@ -1121,7 +1121,7 @@ srvy_iss_goa_wc_e <- function(iters = 1,
   oga <- .oga %>% 
     tidytable::bind_rows(.oga %>%
                            tidytable::filter(sex != 0) %>% 
-                           tidytable::summarise(apop = sum(apop, na.rm = TRUE),
+                           tidytable::summarise(agepop = sum(agepop, na.rm = TRUE),
                                                 mean_length = sum(agepop * mean_length, na.rm = TRUE) / sum(agepop, na.rm = TRUE),
                                                 sd_length = sum(agepop * sd_length, na.rm = TRUE) / sum(agepop, na.rm = TRUE),
                                                 .by = c(year, species_code, region, age)) %>% 
@@ -1411,7 +1411,7 @@ srvy_iss_w140 <- function(iters = 1,
   oga <- og$age %>% 
     tidytable::bind_rows(og$age %>%
                            tidytable::filter(sex != 0) %>% 
-                           tidytable::summarise(apop = sum(apop, na.rm = TRUE),
+                           tidytable::summarise(agepop = sum(agepop, na.rm = TRUE),
                                                 mean_length = sum(agepop * mean_length, na.rm = TRUE) / sum(agepop, na.rm = TRUE),
                                                 sd_length = sum(agepop * sd_length, na.rm = TRUE) / sum(agepop, na.rm = TRUE),
                                                 .by = c(year, species_code, age)) %>% 
@@ -1680,7 +1680,7 @@ srvy_iss_ai_subreg <- function(iters = 1,
   oga <- .oga %>% 
     tidytable::bind_rows(.oga %>%
                            tidytable::filter(sex != 0) %>% 
-                           tidytable::summarise(apop = sum(apop, na.rm = TRUE),
+                           tidytable::summarise(agepop = sum(agepop, na.rm = TRUE),
                                                 mean_length = sum(agepop * mean_length, na.rm = TRUE) / sum(agepop, na.rm = TRUE),
                                                 sd_length = sum(agepop * sd_length, na.rm = TRUE) / sum(agepop, na.rm = TRUE),
                                                 .by = c(year, species_code, region, age)) %>% 
