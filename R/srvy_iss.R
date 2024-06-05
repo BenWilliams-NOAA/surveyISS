@@ -105,7 +105,7 @@ srvy_iss <- function(iters = 1,
   oga <- og$age %>% 
     tidytable::bind_rows(og$age %>%
                            tidytable::filter(sex != 0) %>% 
-                           tidytable::summarise(agepop = sum(agepop, na.rm = TRUE)),
+                           tidytable::summarise(agepop = sum(agepop, na.rm = TRUE),
                                                 mean_length = sum(agepop * mean_length, na.rm = TRUE) / sum(agepop, na.rm = TRUE),
                                                 sd_length = sum(agepop * sd_length, na.rm = TRUE) / sum(agepop, na.rm = TRUE),
                                                 .by = c(year, species_code, age)) %>% 
