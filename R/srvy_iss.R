@@ -1573,8 +1573,8 @@ srvy_iss_ai_subreg <- function(iters = 1,
     tidytable::bind_rows(do.call(mapply, c(list, og, SIMPLIFY = FALSE))$age %>% 
                            tidytable::map_df(., ~as.data.frame(.x), .id = "region") %>% 
                            tidytable::summarize(agepop = sum(agepop),
-                                                mean_length = mean_length * agepop / sum(agepop),
-                                                sd_length = sd_length * agepop / sum(agepop),
+                                                mean_length = sum(mean_length * agepop) / sum(agepop),
+                                                sd_length = sum(sd_length * agepop) / sum(agepop),
                                                 .by = c(year, species_code, sex, age)) %>% 
                            tidytable::mutate(region = 'ai'))
   
