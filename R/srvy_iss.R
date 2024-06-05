@@ -102,8 +102,21 @@ srvy_iss <- function(iters = 1,
                    plus_age = plus_age,
                    by_strata = by_strata,
                    global = global)
-  oga <- og$age
-  ogl <- og$length
+  oga <- og$age %>% 
+    tidytable::bind_rows(og$age %>%
+                           tidytable::filter(sex != 0) %>% 
+                           tidytable::summarise(apop = sum(apop, na.rm = TRUE),
+                                                mean_length = sum(agepop * mean_length, na.rm = TRUE) / sum(agepop, na.rm = TRUE),
+                                                sd_length = sum(agepop * sd_length, na.rm = TRUE) / sum(agepop, na.rm = TRUE),
+                                                .by = c(year, species_code, age)) %>% 
+                           tidytable::mutate(sex = 4))
+
+  ogl <- og$length %>% 
+    tidytable::bind_rows(og$length %>%
+                           tidytable::filter(sex != 0) %>% 
+                           tidytable::summarise(abund = sum(abund, na.rm = TRUE),
+                                                .by = c(year, species_code, length)) %>% 
+                           tidytable::mutate(sex = 4))
   
   # run resampling iterations ----
   rr <- purrr::map(1:iters, ~ srvy_comps(lfreq_data = lfreq_data, 
@@ -310,8 +323,22 @@ srvy_iss_ai_cmplx <- function(iters = 1,
                             cmplx_code = cmplx_code,
                             by_strata = by_strata,
                             global = global)
-  oga <- og$age
-  ogl <- og$length
+
+  oga <- og$age %>% 
+    tidytable::bind_rows(og$age %>%
+                           tidytable::filter(sex != 0) %>% 
+                           tidytable::summarise(apop = sum(apop, na.rm = TRUE),
+                                                mean_length = sum(agepop * mean_length, na.rm = TRUE) / sum(agepop, na.rm = TRUE),
+                                                sd_length = sum(agepop * sd_length, na.rm = TRUE) / sum(agepop, na.rm = TRUE),
+                                                .by = c(year, species_code, age)) %>% 
+                           tidytable::mutate(sex = 4))
+  
+  ogl <- og$length %>% 
+    tidytable::bind_rows(og$length %>%
+                           tidytable::filter(sex != 0) %>% 
+                           tidytable::summarise(abund = sum(abund, na.rm = TRUE),
+                                                .by = c(year, species_code, length)) %>% 
+                           tidytable::mutate(sex = 4))
   
   # run resampling iterations ----
   rr <- purrr::map(1:iters, ~ srvy_comps_ai_cmplx(lfreq_data = lfreq_data, 
@@ -525,14 +552,33 @@ srvy_iss_goa_cmplx <- function(iters = 1,
   
   og$age %>% 
     tidytable::summarize(agepop = sum(agepop),
-                         mean_length = agepop * mean_length / sum(agepop),
-                         sd_length = agepop * sd_length / sum(agepop),
+                         mean_length = sum(agepop * mean_length, na.rm = TRUE) / sum(agepop, na.rm = TRUE),
+                         sd_length = sum(agepop * sd_length, na.rm = TRUE) / sum(agepop, na.rm = TRUE),
                          .by = c(year, sex, age)) %>% 
-    tidytable::mutate(species_code = cmplx_code) -> oga
+    tidytable::mutate(species_code = cmplx_code) -> .oga
+  
+  oga <- .oga %>% 
+    tidytable::bind_rows(.oga %>%
+                           tidytable::filter(sex != 0) %>% 
+                           tidytable::summarise(apop = sum(apop, na.rm = TRUE),
+                                                mean_length = sum(agepop * mean_length, na.rm = TRUE) / sum(agepop, na.rm = TRUE),
+                                                sd_length = sum(agepop * sd_length, na.rm = TRUE) / sum(agepop, na.rm = TRUE),
+                                                .by = c(year, species_code, age)) %>% 
+                           tidytable::mutate(sex = 4))
+    
+  
+  
   og$length %>% 
     tidytable::summarize(abund = sum(abund), .by = c(year, sex, length)) %>% 
-    tidytable::mutate(species_code = cmplx_code) -> ogl
+    tidytable::mutate(species_code = cmplx_code) -> .ogl
   
+  ogl <- .ogl %>% 
+    tidytable::bind_rows(.ogl %>%
+                           tidytable::filter(sex != 0) %>% 
+                           tidytable::summarise(abund = sum(abund, na.rm = TRUE),
+                                                .by = c(year, species_code, length)) %>% 
+                           tidytable::mutate(sex = 4))
+
   # run resampling iterations ----
   rr <- purrr::map(1:iters, ~ srvy_comps(lfreq_data = lfreq_data, 
                                          specimen_data = specimen_data, 
@@ -767,7 +813,7 @@ srvy_iss_goa_w_c_e <- function(iters = 1,
                                                      by_strata = by_strata,
                                                      global = global))
   
-  oga <- do.call(mapply, c(list, og, SIMPLIFY = FALSE))$age %>% 
+  .oga <- do.call(mapply, c(list, og, SIMPLIFY = FALSE))$age %>% 
     tidytable::map_df(., ~as.data.frame(.x), .id = "region") %>% 
     tidytable::mutate(region = dplyr::case_when(region == 1 ~ subregion[1],
                                                 region == 2 ~ subregion[2],
@@ -775,12 +821,24 @@ srvy_iss_goa_w_c_e <- function(iters = 1,
     tidytable::bind_rows(do.call(mapply, c(list, og, SIMPLIFY = FALSE))$age %>% 
                            tidytable::map_df(., ~as.data.frame(.x), .id = "region") %>% 
                            tidytable::summarize(agepop = sum(agepop),
-                                                mean_length = mean_length * agepop / sum(agepop),
-                                                sd_length = sd_length * agepop / sum(agepop),
+                                                mean_length = sum(mean_length * agepop, na.rm = TRUE) / sum(agepop, na.rm = TRUE),
+                                                sd_length = sum(sd_length * agepop, na.rm = TRUE) / sum(agepop, na.rm = TRUE),
                                                 .by = c(year, species_code, sex, age)) %>% 
                            tidytable::mutate(region = 'goa'))
   
-  ogl <- do.call(mapply, c(list, og, SIMPLIFY = FALSE))$length %>% 
+  oga <- .oga %>% 
+    tidytable::bind_rows(.oga %>%
+                           tidytable::filter(sex != 0) %>% 
+                           tidytable::summarise(apop = sum(apop, na.rm = TRUE),
+                                                mean_length = sum(agepop * mean_length, na.rm = TRUE) / sum(agepop, na.rm = TRUE),
+                                                sd_length = sum(agepop * sd_length, na.rm = TRUE) / sum(agepop, na.rm = TRUE),
+                                                .by = c(year, species_code, region, age)) %>% 
+                           tidytable::mutate(sex = 4))
+  
+  
+  
+  
+  .ogl <- do.call(mapply, c(list, og, SIMPLIFY = FALSE))$length %>% 
     tidytable::map_df(., ~as.data.frame(.x), .id = "region") %>% 
     tidytable::mutate(region = dplyr::case_when(region == 1 ~ subregion[1],
                                                 region == 2 ~ subregion[2],
@@ -791,6 +849,13 @@ srvy_iss_goa_w_c_e <- function(iters = 1,
                                                 .by = c(year, species_code, sex, length)) %>% 
                            tidytable::mutate(region = 'goa'))
   
+  ogl <- .ogl %>% 
+    tidytable::bind_rows(.ogl %>%
+                           tidytable::filter(sex != 0) %>% 
+                           tidytable::summarise(abund = sum(abund, na.rm = TRUE),
+                                                .by = c(year, species_code, region, length)) %>% 
+                           tidytable::mutate(sex = 4))
+
   # run resampling iterations ----
   rr <- purrr::map(1:iters, ~ purrr::map(1:length(subregion), ~ srvy_comps(lfreq_data = subset(.lfreq_data, .lfreq_data$region == subregion[.]), 
                                                                            specimen_data = subset(.specimen_data, .specimen_data$region == subregion[.]), 
@@ -1040,27 +1105,48 @@ srvy_iss_goa_wc_e <- function(iters = 1,
                                                      by_strata = by_strata,
                                                      global = global))
   
-  oga <- do.call(mapply, c(list, og, SIMPLIFY = FALSE))$age %>% 
+  .oga <- do.call(mapply, c(list, og, SIMPLIFY = FALSE))$age %>% 
     tidytable::map_df(., ~as.data.frame(.x), .id = "region") %>% 
     tidytable::mutate(region = dplyr::case_when(region == 1 ~ subregion[1],
-                                                region == 2 ~ subregion[2])) %>% 
+                                                region == 2 ~ subregion[2],
+                                                region == 3 ~ subregion[3])) %>% 
     tidytable::bind_rows(do.call(mapply, c(list, og, SIMPLIFY = FALSE))$age %>% 
                            tidytable::map_df(., ~as.data.frame(.x), .id = "region") %>% 
                            tidytable::summarize(agepop = sum(agepop),
-                                                mean_length = mean_length * agepop / sum(agepop),
-                                                sd_length = sd_length * agepop / sum(agepop),
+                                                mean_length = sum(mean_length * agepop, na.rm = TRUE) / sum(agepop, na.rm = TRUE),
+                                                sd_length = sum(sd_length * agepop, na.rm = TRUE) / sum(agepop, na.rm = TRUE),
                                                 .by = c(year, species_code, sex, age)) %>% 
                            tidytable::mutate(region = 'goa'))
   
-  ogl <- do.call(mapply, c(list, og, SIMPLIFY = FALSE))$length %>% 
+  oga <- .oga %>% 
+    tidytable::bind_rows(.oga %>%
+                           tidytable::filter(sex != 0) %>% 
+                           tidytable::summarise(apop = sum(apop, na.rm = TRUE),
+                                                mean_length = sum(agepop * mean_length, na.rm = TRUE) / sum(agepop, na.rm = TRUE),
+                                                sd_length = sum(agepop * sd_length, na.rm = TRUE) / sum(agepop, na.rm = TRUE),
+                                                .by = c(year, species_code, region, age)) %>% 
+                           tidytable::mutate(sex = 4))
+  
+  
+  
+  
+  .ogl <- do.call(mapply, c(list, og, SIMPLIFY = FALSE))$length %>% 
     tidytable::map_df(., ~as.data.frame(.x), .id = "region") %>% 
     tidytable::mutate(region = dplyr::case_when(region == 1 ~ subregion[1],
-                                                region == 2 ~ subregion[2])) %>% 
+                                                region == 2 ~ subregion[2],
+                                                region == 3 ~ subregion[3])) %>% 
     tidytable::bind_rows(do.call(mapply, c(list, og, SIMPLIFY = FALSE))$length %>% 
                            tidytable::map_df(., ~as.data.frame(.x), .id = "region") %>% 
                            tidytable::summarize(abund = sum(abund),
                                                 .by = c(year, species_code, sex, length)) %>% 
                            tidytable::mutate(region = 'goa'))
+  
+  ogl <- .ogl %>% 
+    tidytable::bind_rows(.ogl %>%
+                           tidytable::filter(sex != 0) %>% 
+                           tidytable::summarise(abund = sum(abund, na.rm = TRUE),
+                                                .by = c(year, species_code, region, length)) %>% 
+                           tidytable::mutate(sex = 4))
   
   # run resampling iterations ----
   rr <- purrr::map(1:iters, ~ purrr::map(1:length(subregion), ~ srvy_comps(lfreq_data = subset(.lfreq_data, .lfreq_data$region == subregion[.]), 
@@ -1322,8 +1408,21 @@ srvy_iss_w140 <- function(iters = 1,
                    plus_age = plus_age,
                    by_strata = by_strata,
                    global = global)
-  oga <- og$age
-  ogl <- og$length
+  oga <- og$age %>% 
+    tidytable::bind_rows(og$age %>%
+                           tidytable::filter(sex != 0) %>% 
+                           tidytable::summarise(apop = sum(apop, na.rm = TRUE),
+                                                mean_length = sum(agepop * mean_length, na.rm = TRUE) / sum(agepop, na.rm = TRUE),
+                                                sd_length = sum(agepop * sd_length, na.rm = TRUE) / sum(agepop, na.rm = TRUE),
+                                                .by = c(year, species_code, age)) %>% 
+                           tidytable::mutate(sex = 4))
+  
+  ogl <- og$length %>% 
+    tidytable::bind_rows(og$length %>%
+                           tidytable::filter(sex != 0) %>% 
+                           tidytable::summarise(abund = sum(abund, na.rm = TRUE),
+                                                .by = c(year, species_code, length)) %>% 
+                           tidytable::mutate(sex = 4))
   
   # run resampling iterations ----
   rr <- purrr::map(1:iters, ~ srvy_comps(lfreq_data = lfreq_data, 
@@ -1564,7 +1663,7 @@ srvy_iss_ai_subreg <- function(iters = 1,
                                                      by_strata = by_strata,
                                                      global = global))
   
-  oga <- do.call(mapply, c(list, og, SIMPLIFY = FALSE))$age %>% 
+  .oga <- do.call(mapply, c(list, og, SIMPLIFY = FALSE))$age %>% 
     tidytable::map_df(., ~as.data.frame(.x), .id = "region") %>% 
     tidytable::mutate(region = dplyr::case_when(region == 1 ~ subregion[1],
                                                 region == 2 ~ subregion[2],
@@ -1578,7 +1677,18 @@ srvy_iss_ai_subreg <- function(iters = 1,
                                                 .by = c(year, species_code, sex, age)) %>% 
                            tidytable::mutate(region = 'ai'))
   
-  ogl <- do.call(mapply, c(list, og, SIMPLIFY = FALSE))$length %>% 
+  oga <- .oga %>% 
+    tidytable::bind_rows(.oga %>%
+                           tidytable::filter(sex != 0) %>% 
+                           tidytable::summarise(apop = sum(apop, na.rm = TRUE),
+                                                mean_length = sum(agepop * mean_length, na.rm = TRUE) / sum(agepop, na.rm = TRUE),
+                                                sd_length = sum(agepop * sd_length, na.rm = TRUE) / sum(agepop, na.rm = TRUE),
+                                                .by = c(year, species_code, region, age)) %>% 
+                           tidytable::mutate(sex = 4))
+  
+  
+  
+  .ogl <- do.call(mapply, c(list, og, SIMPLIFY = FALSE))$length %>% 
     tidytable::map_df(., ~as.data.frame(.x), .id = "region") %>% 
     tidytable::mutate(region = dplyr::case_when(region == 1 ~ subregion[1],
                                                 region == 2 ~ subregion[2],
@@ -1590,6 +1700,13 @@ srvy_iss_ai_subreg <- function(iters = 1,
                                                 .by = c(year, species_code, sex, length)) %>% 
                            tidytable::mutate(region = 'ai'))
   
+  ogl <- .ogl %>% 
+    tidytable::bind_rows(.ogl %>%
+                           tidytable::filter(sex != 0) %>% 
+                           tidytable::summarise(abund = sum(abund, na.rm = TRUE),
+                                                .by = c(year, species_code, region, length)) %>% 
+                           tidytable::mutate(sex = 4))
+
   # run resampling iterations ----
   rr <- purrr::map(1:iters, ~ purrr::map(1:length(subregion), ~ srvy_comps(lfreq_data = subset(.lfreq_data, .lfreq_data$region == subregion[.]), 
                                                                            specimen_data = subset(.specimen_data, .specimen_data$region == subregion[.]), 

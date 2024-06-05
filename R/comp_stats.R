@@ -130,10 +130,6 @@ rss_age <- function(sim_data,
   if(!("region" %in% names(sim_data))){
     # compute post-expansion total age pop'n and add to og and sim data
     og_data %>% 
-      tidytable::bind_rows(og_data %>% 
-                             tidytable::filter(sex != 0) %>% 
-                             tidytable::summarise(agepop = sum(agepop), .by = c(year, species_code, age)) %>% 
-                             tidytable::mutate(sex = 4)) %>% 
       tidytable::select(year, species_code, sex, age, og_agepop = agepop) -> .og_data
     sim_data %>% 
       tidytable::bind_rows(sim_data %>% 
@@ -170,10 +166,6 @@ rss_age <- function(sim_data,
   } else{ # compute rss at subregion scale
     # compute post-expansion total age pop'n and add to og and sim data
     og_data %>% 
-      tidytable::bind_rows(og_data %>% 
-                             tidytable::filter(sex != 0) %>% 
-                             tidytable::summarise(agepop = sum(agepop), .by = c(year, region, species_code, age)) %>% 
-                             tidytable::mutate(sex = 4)) %>% 
       tidytable::select(year, region, species_code, sex, age, og_agepop = agepop)  -> .og_data
     sim_data %>% 
       tidytable::bind_rows(sim_data %>% 
@@ -253,10 +245,6 @@ rss_length <- function(sim_data,
   if(!("region" %in% names(sim_data))){
     # compute post-expansion total length pop'n and add to og and sim data
     og_data %>% 
-      tidytable::bind_rows(og_data %>% 
-                             tidytable::filter(sex != 0) %>% 
-                             tidytable::summarise(abund = sum(abund), .by = c(year, species_code, length)) %>% 
-                             tidytable::mutate(sex = 4)) %>% 
       tidytable::rename(og_abund = abund) -> .og_data
     sim_data %>% 
       tidytable::bind_rows(sim_data %>% 
@@ -291,10 +279,6 @@ rss_length <- function(sim_data,
   } else{ # compute rss at subregion scale
     # compute post-expansion total length pop'n and add to og and sim data
     og_data %>% 
-      tidytable::bind_rows(og_data %>% 
-                             tidytable::filter(sex != 0) %>% 
-                             tidytable::summarise(abund = sum(abund), .by = c(year, region, species_code, length)) %>% 
-                             tidytable::mutate(sex = 4)) %>% 
       tidytable::rename(og_abund = abund) -> .og_data
     sim_data %>% 
       tidytable::bind_rows(sim_data %>% 
@@ -684,10 +668,6 @@ bias_age <- function(r_age,
       tidytable::drop_na() %>% 
       tidytable::select(-agepop) %>% 
       tidytable::left_join(oga %>% 
-                             tidytable::bind_rows(oga %>% 
-                                                    tidytable::filter(sex != 0) %>% 
-                                                    tidytable::summarise(agepop = sum(agepop), .by = c(year, species_code, age)) %>% 
-                                                    tidytable::mutate(sex = 4)) %>% 
                              tidytable::mutate(p_og = agepop / sum(agepop), .by = c(year, species_code, sex)) %>% 
                              tidytable::bind_rows(oga %>% 
                                                     tidytable::filter(sex %in% c(1, 2)) %>% 
@@ -714,10 +694,6 @@ bias_age <- function(r_age,
       tidytable::drop_na() %>% 
       tidytable::select(-agepop) %>% 
       tidytable::left_join(oga %>% 
-                             tidytable::bind_rows(oga %>% 
-                                                    tidytable::filter(sex != 0) %>% 
-                                                    tidytable::summarise(agepop = sum(agepop), .by = c(year, region, species_code, age)) %>% 
-                                                    tidytable::mutate(sex = 4)) %>% 
                              tidytable::mutate(p_og = agepop / sum(agepop), .by = c(year, region, species_code, sex)) %>% 
                              tidytable::bind_rows(oga %>% 
                                                     tidytable::filter(sex %in% c(1, 2)) %>% 
@@ -786,10 +762,6 @@ bias_length <- function(r_length,
       tidytable::drop_na() %>% 
       tidytable::select(-abund) %>% 
       tidytable::left_join(ogl %>% 
-                             tidytable::bind_rows(ogl %>% 
-                                                    tidytable::filter(sex != 0) %>% 
-                                                    tidytable::summarise(abund = sum(abund), .by = c(year, species_code, length)) %>% 
-                                                    tidytable::mutate(sex = 4)) %>% 
                              tidytable::mutate(p_og = abund / sum(abund), .by = c(year, species_code, sex)) %>% 
                              tidytable::bind_rows(ogl %>% 
                                                     tidytable::filter(sex %in% c(1, 2)) %>% 
@@ -816,10 +788,6 @@ bias_length <- function(r_length,
       tidytable::drop_na() %>% 
       tidytable::select(-abund) %>% 
       tidytable::left_join(ogl %>% 
-                             tidytable::bind_rows(ogl %>% 
-                                                    tidytable::filter(sex != 0) %>% 
-                                                    tidytable::summarise(abund = sum(abund), .by = c(year, region, species_code, length)) %>% 
-                                                    tidytable::mutate(sex = 4)) %>% 
                              tidytable::mutate(p_og = abund / sum(abund), .by = c(year, region, species_code, sex)) %>% 
                              tidytable::bind_rows(ogl %>% 
                                                     tidytable::filter(sex %in% c(1, 2)) %>% 
@@ -852,8 +820,8 @@ grwth_stats <- function(r_age,
       tidytable::bind_rows(r_age %>% 
                              tidytable::filter(sex != 0) %>% 
                              tidytable::summarise(agepop = sum(agepop),
-                                                  mean_length = sum(agepop * mean_length) / sum(agepop),
-                                                  sd_length = sum(agepop * sd_length) / sum(agepop),
+                                                  mean_length = sum(agepop * mean_length, na.rm = TRUE) / sum(agepop, na.rm = TRUE),
+                                                  sd_length = sum(agepop * sd_length, na.rm = TRUE) / sum(agepop, na.rm = TRUE),
                                                   .by = c(sim, year, species_code, age)) %>% 
                              tidytable::mutate(sex = 4)) %>% 
       tidytable::summarise(mean_length_bs = mean(mean_length), 
@@ -867,8 +835,8 @@ grwth_stats <- function(r_age,
       tidytable::bind_rows(r_age %>% 
                              tidytable::filter(sex != 0) %>% 
                              tidytable::summarise(agepop = sum(agepop),
-                                                  mean_length = sum(agepop * mean_length) / sum(agepop),
-                                                  sd_length = sum(agepop * sd_length) / sum(agepop),
+                                                  mean_length = sum(agepop * mean_length, na.rm = TRUE) / sum(agepop, na.rm = TRUE),
+                                                  sd_length = sum(agepop * sd_length, na.rm = TRUE) / sum(agepop, na.rm = TRUE),
                                                   .by = c(sim, region, year, species_code, age)) %>% 
                              tidytable::mutate(sex = 4)) %>% 
       tidytable::summarise(mean_length_bs = mean(mean_length), 
