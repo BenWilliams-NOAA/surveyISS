@@ -975,7 +975,7 @@ srvy_iss_goa_w_c_e <- function(iters = 1,
   if(isTRUE(save_interm)) {
     vroom::vroom_write(r_length, here::here("output", region, paste0(save, "_resampled_length_w_c_egoa.csv")), delim = ",")
     vroom::vroom_write(r_age, here::here("output", region, paste0(save, "_resampled_age_w_c_egoa.csv")), delim = ",")
-    vroom::vroom_write(out_stats$rss_length, here::here("output", region, paste0(save, "_iter_rss_ln._w_c_egoacsv")), delim = ",")
+    vroom::vroom_write(out_stats$rss_length, here::here("output", region, paste0(save, "_iter_rss_ln_w_c_egoa.csv")), delim = ",")
     vroom::vroom_write(out_stats$rss_age, here::here("output", region, paste0(save, "_iter_rss_ag_w_c_egoa.csv")), delim = ",")
   }
   
@@ -1267,7 +1267,7 @@ srvy_iss_goa_wc_e <- function(iters = 1,
   if(isTRUE(save_interm)) {
     vroom::vroom_write(r_length, here::here("output", region, paste0(save, "_resampled_length_wc_egoa.csv")), delim = ",")
     vroom::vroom_write(r_age, here::here("output", region, paste0(save, "_resampled_age_wc_egoa.csv")), delim = ",")
-    vroom::vroom_write(out_stats$rss_length, here::here("output", region, paste0(save, "_iter_rss_ln._wc_egoacsv")), delim = ",")
+    vroom::vroom_write(out_stats$rss_length, here::here("output", region, paste0(save, "_iter_rss_ln_wc_egoa.csv")), delim = ",")
     vroom::vroom_write(out_stats$rss_age, here::here("output", region, paste0(save, "_iter_rss_ag_wc_egoa.csv")), delim = ",")
   }
   
@@ -1830,7 +1830,7 @@ srvy_iss_ai_subreg <- function(iters = 1,
   if(isTRUE(save_interm)) {
     vroom::vroom_write(r_length, here::here("output", region, paste0(save, "_resampled_length_ai_subreg.csv")), delim = ",")
     vroom::vroom_write(r_age, here::here("output", region, paste0(save, "_resampled_age_ai_subreg.csv")), delim = ",")
-    vroom::vroom_write(out_stats$rss_length, here::here("output", region, paste0(save, "_iter_rss_ln._ai_subregcsv")), delim = ",")
+    vroom::vroom_write(out_stats$rss_length, here::here("output", region, paste0(save, "_iter_rss_ln_ai_subreg.csv")), delim = ",")
     vroom::vroom_write(out_stats$rss_age, here::here("output", region, paste0(save, "_iter_rss_ag_ai_subreg.csv")), delim = ",")
   }
   
