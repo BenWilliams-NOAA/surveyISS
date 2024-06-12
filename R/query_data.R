@@ -181,12 +181,16 @@ query_data <- function(survey,
                   year >= yrs) %>% 
     dplyr::mutate(lat_mid = (latitude_dd_start + latitude_dd_end) / 2,
                   long_mid = (longitude_dd_start + longitude_dd_end) / 2) %>% 
-    dplyr::select(-latitude_dd_start, 
-                  -latitude_dd_end,
-                  -longitude_dd_start, 
-                  -longitude_dd_end, 
+    dplyr::select(year, 
                   survey = survey_definition_id,
-                  length = length_mm) %>% 
+                  species_code,
+                  stratum,
+                  hauljoin,
+                  sex,
+                  length = length_mm,
+                  frequency,
+                  lat_mid,
+                  long_mid) %>% 
     dplyr::collect() %>% 
     vroom::vroom_write(here::here('data', region, "lfreq.csv"), 
                        delim = ',') -> lfreq
@@ -218,12 +222,16 @@ query_data <- function(survey,
                   year >= yrs) %>% 
     dplyr::mutate(lat_mid = (latitude_dd_start + latitude_dd_end) / 2,
                   long_mid = (longitude_dd_start + longitude_dd_end) / 2) %>% 
-    dplyr::select(-latitude_dd_start, 
-                  -latitude_dd_end,
-                  -longitude_dd_start, 
-                  -longitude_dd_end, 
+    dplyr::select(year, 
                   survey = survey_definition_id,
-                  length = length_mm) %>% 
+                  species_code,
+                  stratum,
+                  hauljoin,
+                  sex,
+                  length = length_mm,
+                  age,
+                  lat_mid,
+                  long_mid) %>% 
     dplyr::collect() %>% 
     vroom::vroom_write(here::here('data', region, "specimen.csv"), 
                        delim = ',') -> specimen
@@ -254,12 +262,14 @@ query_data <- function(survey,
                   year >= yrs) %>% 
     dplyr::mutate(lat_mid = (latitude_dd_start + latitude_dd_end) / 2,
                   long_mid = (longitude_dd_start + longitude_dd_end) / 2) %>% 
-    dplyr::select(-latitude_dd_start, 
-                  -latitude_dd_end,
-                  -longitude_dd_start, 
-                  -longitude_dd_end, 
+    dplyr::select(year,
+                  species_code,
+                  stratum,
+                  hauljoin,
                   survey = survey_definition_id,
-                  numcpue = cpue_nokm2) %>% 
+                  numcpue = cpue_nokm2,
+                  lat_mid,
+                  long_mid) %>% 
     dplyr::collect() -> cpue
   
   # get gap_products catch
@@ -287,14 +297,14 @@ query_data <- function(survey,
     dplyr::mutate(lat_mid = (latitude_dd_start + latitude_dd_end) / 2,
                   long_mid = (longitude_dd_start + longitude_dd_end) / 2,
                   numcpue = count / (distance_fished_km * (0.001 * net_width_m))) %>% 
-    dplyr::select(-latitude_dd_start, 
-                  -latitude_dd_end,
-                  -longitude_dd_start, 
-                  -longitude_dd_end, 
-                  -count, 
-                  -distance_fished_km, 
-                  -net_width_m,
-                  survey = survey_definition_id) %>% 
+    dplyr::select(year,
+                  survey = survey_definition_id,
+                  species_code,
+                  stratum,
+                  hauljoin,
+                  lat_mid,
+                  long_mid,
+                  numcpue) %>% 
     dplyr::collect() -> cpue_calc
   
   # filling in 0's like gapindex and write cpue data
