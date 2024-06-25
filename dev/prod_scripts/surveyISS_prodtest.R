@@ -48,8 +48,7 @@ strata_data <- data_goa$strata
 # lfreq_data = .lfreq
 # specimen_data = .specimen
 # cpue_data = .cpue
-# strata_data = strata
-# r_t = .read_test
+# yrs = 1990
 # bin = 1
 # boot_hauls = TRUE
 # boot_lengths = TRUE
@@ -57,6 +56,10 @@ strata_data <- data_goa$strata
 # al_var = TRUE
 # al_var_ann = TRUE
 # age_err = TRUE
+# len_samples = NULL
+# age_samples = NULL
+# plus_len = NULL
+# plus_age = NULL
 # use_gapindex = TRUE
 # by_strata = TRUE
 # global = FALSE

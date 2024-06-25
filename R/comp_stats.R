@@ -132,10 +132,6 @@ rss_age <- function(sim_data,
     og_data %>% 
       tidytable::select(year, species_code, sex, age, og_agepop = agepop) -> .og_data
     sim_data %>% 
-      tidytable::bind_rows(sim_data %>% 
-                             tidytable::filter(sex != 0) %>% 
-                             tidytable::summarise(agepop = sum(agepop), .by = c(sim, year, species_code, age)) %>% 
-                             tidytable::mutate(sex = 4)) %>% 
       tidytable::select(sim, year, species_code, sex, age, agepop) -> .sim_data
     
     # compute realized sample size
@@ -168,10 +164,6 @@ rss_age <- function(sim_data,
     og_data %>% 
       tidytable::select(year, region, species_code, sex, age, og_agepop = agepop)  -> .og_data
     sim_data %>% 
-      tidytable::bind_rows(sim_data %>% 
-                             tidytable::filter(sex != 0) %>% 
-                             tidytable::summarise(agepop = sum(agepop), .by = c(sim, year, region, species_code, age)) %>% 
-                             tidytable::mutate(sex = 4)) %>% 
       tidytable::select(sim, year, region, species_code, sex, age, agepop) -> .sim_data
     
     # compute realized sample size  
@@ -246,14 +238,9 @@ rss_length <- function(sim_data,
     # compute post-expansion total length pop'n and add to og and sim data
     og_data %>% 
       tidytable::rename(og_abund = abund) -> .og_data
-    sim_data %>% 
-      tidytable::bind_rows(sim_data %>% 
-                             tidytable::filter(sex != 0) %>% 
-                             tidytable::summarise(abund = sum(abund), .by = c(sim, year, species_code, length)) %>%
-                             tidytable::mutate(sex = 4)) -> .sim_data
     
     # compute realized sample size
-    .sim_data %>% 
+    sim_data %>% 
       tidytable::full_join(.og_data) %>% 
       tidytable::replace_na(list(abund = 0, og_abund = 0)) %>%
       tidytable::filter(sex != 3) %>%
@@ -264,7 +251,7 @@ rss_length <- function(sim_data,
                            .by = c(sim, year, species_code, sex)) %>% 
       tidytable::drop_na() %>% 
       # compute realized sample size for female-male comps that sum to 1
-      tidytable::bind_rows(.sim_data %>% 
+      tidytable::bind_rows(sim_data %>% 
                              tidytable::full_join(.og_data) %>% 
                              tidytable::replace_na(list(abund = 0, og_abund = 0)) %>% 
                              tidytable::filter(sex %in% c(1,2)) %>% 
@@ -280,14 +267,9 @@ rss_length <- function(sim_data,
     # compute post-expansion total length pop'n and add to og and sim data
     og_data %>% 
       tidytable::rename(og_abund = abund) -> .og_data
-    sim_data %>% 
-      tidytable::bind_rows(sim_data %>% 
-                             tidytable::filter(sex != 0) %>% 
-                             tidytable::summarise(abund = sum(abund), .by = c(sim, year, region, species_code, length)) %>%
-                             tidytable::mutate(sex = 4)) -> .sim_data
     
     # compute realized sample size
-    .sim_data %>% 
+    sim_data %>% 
       tidytable::full_join(.og_data) %>% 
       tidytable::replace_na(list(abund = 0, og_abund = 0)) %>%
       tidytable::filter(sex != 3) %>%
@@ -298,7 +280,7 @@ rss_length <- function(sim_data,
                            .by = c(sim, year, region, species_code, sex)) %>% 
       tidytable::drop_na() %>% 
       # compute realized sample size for female-male comps that sum to 1
-      tidytable::bind_rows(.sim_data %>% 
+      tidytable::bind_rows(sim_data %>% 
                              tidytable::full_join(.og_data) %>% 
                              tidytable::replace_na(list(abund = 0, og_abund = 0)) %>% 
                              tidytable::filter(sex %in% c(1,2)) %>% 
@@ -653,11 +635,7 @@ bias_age <- function(r_age,
   # at region scale
   if(!("region" %in% names(r_age))){
     # compute average bias in pop'n estimates
-    r_age %>%
-      tidytable::bind_rows(r_age %>% 
-                             tidytable::filter(sex != 0) %>% 
-                             tidytable::summarise(agepop = sum(agepop), .by = c(sim, year, species_code, age)) %>% 
-                             tidytable::mutate(sex = 4)) %>% 
+    r_age %>% 
       tidytable::summarise(agepop = mean(agepop), .by = c(year, species_code, sex, age)) %>% 
       tidytable::mutate(p_sim = agepop / sum(agepop), .by = c(year, species_code, sex)) %>% 
       tidytable::bind_rows(r_age %>% 
@@ -679,11 +657,7 @@ bias_age <- function(r_age,
       tidytable::summarise(bias = mean(bias), .by = c(year, species_code, sex))
   } else{ # at subregion scale
     # compute average bias in pop'n estimates
-    r_age %>%
-      tidytable::bind_rows(r_age %>% 
-                             tidytable::filter(sex != 0) %>% 
-                             tidytable::summarise(agepop = sum(agepop), .by = c(sim, region, year, species_code, age)) %>% 
-                             tidytable::mutate(sex = 4)) %>% 
+    r_age %>% 
       tidytable::summarise(agepop = mean(agepop), .by = c(year, region, species_code, sex, age)) %>% 
       tidytable::mutate(p_sim = agepop / sum(agepop), .by = c(year, region, species_code, sex)) %>% 
       tidytable::bind_rows(r_age %>% 
@@ -747,11 +721,7 @@ bias_length <- function(r_length,
   # at region scale
   if(!("region" %in% names(r_length))){
     # compute average relative bias in pop'n estimates (avg relative bias across age or length)
-    r_length %>%
-      tidytable::bind_rows(r_length %>% 
-                             tidytable::filter(sex != 0) %>% 
-                             tidytable::summarise(abund = sum(abund), .by = c(sim, year, species_code, length)) %>% 
-                             tidytable::mutate(sex = 4)) %>% 
+    r_length %>% 
       tidytable::summarise(abund = mean(abund), .by = c(year, species_code, sex, length)) %>% 
       tidytable::mutate(p_sim = abund / sum(abund), .by = c(year, species_code, sex)) %>% 
       tidytable::bind_rows(r_length %>% 
@@ -773,11 +743,7 @@ bias_length <- function(r_length,
       tidytable::summarise(bias = mean(bias), .by = c(year, species_code, sex))
   } else{ # at subregion scale
     # compute average relative bias in pop'n estimates (avg relative bias across age or length)
-    r_length %>%
-      tidytable::bind_rows(r_length %>% 
-                             tidytable::filter(sex != 0) %>% 
-                             tidytable::summarise(abund = sum(abund), .by = c(sim, year, region, species_code, length)) %>% 
-                             tidytable::mutate(sex = 4)) %>% 
+    r_length %>% 
       tidytable::summarise(abund = mean(abund), .by = c(year, region, species_code, sex, length)) %>% 
       tidytable::mutate(p_sim = abund / sum(abund), .by = c(year, region, species_code, sex)) %>% 
       tidytable::bind_rows(r_length %>% 
@@ -816,14 +782,7 @@ grwth_stats <- function(r_age,
   # at region sacle
   if(!("region" %in% names(r_age))){
     # compute mean length-at-age and sd across bootstrap replicates and add orig values
-    r_age %>%
-      tidytable::bind_rows(r_age %>% 
-                             tidytable::filter(sex != 0) %>% 
-                             tidytable::summarise(agepop = sum(agepop),
-                                                  mean_length = sum(agepop * mean_length, na.rm = TRUE) / sum(agepop, na.rm = TRUE),
-                                                  sd_length = sum(agepop * sd_length, na.rm = TRUE) / sum(agepop, na.rm = TRUE),
-                                                  .by = c(sim, year, species_code, age)) %>% 
-                             tidytable::mutate(sex = 4)) %>% 
+    r_age %>% 
       tidytable::summarise(mean_length_bs = mean(mean_length), 
                            sd_length_bs = sd(mean_length),
                            .by = c(year, species_code, sex, age)) %>% 
@@ -831,14 +790,7 @@ grwth_stats <- function(r_age,
                              tidytable::select(-agepop))
   } else{ # at subregion scale
     # compute mean length-at-age and sd across bootstrap replicates and add orig values
-    r_age %>%
-      tidytable::bind_rows(r_age %>% 
-                             tidytable::filter(sex != 0) %>% 
-                             tidytable::summarise(agepop = sum(agepop),
-                                                  mean_length = sum(agepop * mean_length, na.rm = TRUE) / sum(agepop, na.rm = TRUE),
-                                                  sd_length = sum(agepop * sd_length, na.rm = TRUE) / sum(agepop, na.rm = TRUE),
-                                                  .by = c(sim, region, year, species_code, age)) %>% 
-                             tidytable::mutate(sex = 4)) %>% 
+    r_age %>% 
       tidytable::summarise(mean_length_bs = mean(mean_length), 
                            sd_length_bs = sd(mean_length),
                            .by = c(year, region, species_code, sex, age)) %>% 

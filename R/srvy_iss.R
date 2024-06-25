@@ -140,9 +140,23 @@ srvy_iss <- function(iters = 1,
                                          global = global))
   
   r_age <- do.call(mapply, c(list, rr, SIMPLIFY = FALSE))$age %>% 
-    tidytable::map_df(., ~as.data.frame(.x), .id = "sim")
+    tidytable::map_df(., ~as.data.frame(.x), .id = "sim") %>% 
+    tidytable::bind_rows(do.call(mapply, c(list, rr, SIMPLIFY = FALSE))$age %>% 
+                           tidytable::map_df(., ~as.data.frame(.x), .id = "sim") %>% 
+                           tidytable::filter(sex != 0) %>% 
+                           tidytable::summarise(agepop = sum(agepop),
+                                                mean_length = sum(agepop * mean_length, na.rm = TRUE) / sum(agepop, na.rm = TRUE),
+                                                sd_length = sum(agepop * sd_length, na.rm = TRUE) / sum(agepop, na.rm = TRUE),
+                                                .by = c(sim, year, species_code, age)) %>% 
+                           tidytable::mutate(sex = 4)) 
+  
   r_length <- do.call(mapply, c(list, rr, SIMPLIFY = FALSE))$length %>% 
-    tidytable::map_df(., ~as.data.frame(.x), .id = "sim")
+    tidytable::map_df(., ~as.data.frame(.x), .id = "sim") %>% 
+    tidytable::bind_rows(do.call(mapply, c(list, rr, SIMPLIFY = FALSE))$length %>% 
+                           tidytable::map_df(., ~as.data.frame(.x), .id = "sim") %>% 
+                           tidytable::filter(sex != 0) %>% 
+                           tidytable::summarise(abund = sum(abund), .by = c(sim, year, species_code, length)) %>%
+                           tidytable::mutate(sex = 4)) 
   
   # compute statistics ----
   ## first re-bin length freq data ----
@@ -361,12 +375,25 @@ srvy_iss_ai_cmplx <- function(iters = 1,
                                                   cmplx_code = cmplx_code,
                                                   by_strata = by_strata,
                                                   global = global))
+
+  r_age <- do.call(mapply, c(list, rr, SIMPLIFY = FALSE))$age %>% 
+    tidytable::map_df(., ~as.data.frame(.x), .id = "sim") %>% 
+    tidytable::bind_rows(do.call(mapply, c(list, rr, SIMPLIFY = FALSE))$age %>% 
+                           tidytable::map_df(., ~as.data.frame(.x), .id = "sim") %>% 
+                           tidytable::filter(sex != 0) %>% 
+                           tidytable::summarise(agepop = sum(agepop),
+                                                mean_length = sum(agepop * mean_length, na.rm = TRUE) / sum(agepop, na.rm = TRUE),
+                                                sd_length = sum(agepop * sd_length, na.rm = TRUE) / sum(agepop, na.rm = TRUE),
+                                                .by = c(sim, year, species_code, age)) %>% 
+                           tidytable::mutate(sex = 4)) 
   
-  r_age <- do.call(mapply, c(list, rr, SIMPLIFY = FALSE))$age %>%
-    tidytable::map_df(., ~as.data.frame(.x), .id = "sim")
-  r_length <- do.call(mapply, c(list, rr, SIMPLIFY = FALSE))$length %>%
-    tidytable::map_df(., ~as.data.frame(.x), .id = "sim")
-  
+  r_length <- do.call(mapply, c(list, rr, SIMPLIFY = FALSE))$length %>% 
+    tidytable::map_df(., ~as.data.frame(.x), .id = "sim") %>% 
+    tidytable::bind_rows(do.call(mapply, c(list, rr, SIMPLIFY = FALSE))$length %>% 
+                           tidytable::map_df(., ~as.data.frame(.x), .id = "sim") %>% 
+                           tidytable::filter(sex != 0) %>% 
+                           tidytable::summarise(abund = sum(abund), .by = c(sim, year, species_code, length)) %>%
+                           tidytable::mutate(sex = 4)) 
   # compute statistics ----
   ## first re-bin length freq data ----
   # bin by cm blocks
@@ -608,11 +635,26 @@ srvy_iss_goa_cmplx <- function(iters = 1,
                          .by = c(sim, year, sex, age)) %>% 
     tidytable::mutate(species_code = cmplx_code)
   
+  r_age <- r_age %>% 
+    tidytable::bind_rows(r_age %>% 
+                           tidytable::filter(sex != 0) %>% 
+                           tidytable::summarise(agepop = sum(agepop),
+                                                mean_length = sum(agepop * mean_length, na.rm = TRUE) / sum(agepop, na.rm = TRUE),
+                                                sd_length = sum(agepop * sd_length, na.rm = TRUE) / sum(agepop, na.rm = TRUE),
+                                                .by = c(sim, year, species_code, age)) %>% 
+                           tidytable::mutate(sex = 4))  
+  
   r_length <- do.call(mapply, c(list, rr, SIMPLIFY = FALSE))$length %>% 
     tidytable::map_df(., ~as.data.frame(.x), .id = "sim") %>% 
     tidytable::summarize(abund = sum(abund), .by = c(sim, year, sex, length)) %>% 
     tidytable::mutate(species_code = cmplx_code)
-  
+
+  r_length <- r_length %>% 
+    tidytable::bind_rows(r_length %>% 
+                           tidytable::filter(sex != 0) %>% 
+                           tidytable::summarise(abund = sum(abund), .by = c(sim, year, species_code, length)) %>%
+                           tidytable::mutate(sex = 4)) 
+
   # compute statistics ----
   ## first re-bin length freq data ----
   # bin by cm blocks
@@ -896,6 +938,16 @@ srvy_iss_goa_w_c_e <- function(iters = 1,
                                                 sd_length = sum(sd_length * agepop) / sum(agepop),
                                                 .by = c(sim, year, species_code, sex, age)) %>% 
                            tidytable::mutate(region = 'goa'))
+
+  r_age <- r_age %>% 
+    tidytable::bind_rows(r_age %>% 
+                           tidytable::filter(sex != 0) %>% 
+                           tidytable::summarise(agepop = sum(agepop),
+                                                mean_length = sum(agepop * mean_length, na.rm = TRUE) / sum(agepop, na.rm = TRUE),
+                                                sd_length = sum(agepop * sd_length, na.rm = TRUE) / sum(agepop, na.rm = TRUE),
+                                                .by = c(sim, year, region, species_code, age)) %>% 
+                           tidytable::mutate(sex = 4)) 
+
   # get resampled length pop'n
   r_length <- purrr::map(1:iters, ~(do.call(mapply, c(list, rr[[.]], SIMPLIFY = FALSE))$length %>% 
                                       tidytable::map_df(., ~as.data.frame(.x), .id = "region") %>% 
@@ -914,6 +966,12 @@ srvy_iss_goa_w_c_e <- function(iters = 1,
                                                 .by = c(sim, year, species_code, sex, length)) %>% 
                            tidytable::mutate(region = 'goa')) 
   
+  r_length <- r_length %>% 
+    tidytable::bind_rows(r_length %>% 
+                           tidytable::filter(sex != 0) %>% 
+                           tidytable::summarise(abund = sum(abund), .by = c(sim, year, region, species_code, length)) %>%
+                           tidytable::mutate(sex = 4)) 
+
   # compute statistics ----
   ## first re-bin length freq data ----
   # bin by cm blocks
@@ -1188,6 +1246,16 @@ srvy_iss_goa_wc_e <- function(iters = 1,
                                                 sd_length = sum(sd_length * agepop) / sum(agepop),
                                                 .by = c(sim, year, species_code, sex, age)) %>% 
                            tidytable::mutate(region = 'goa'))
+  
+  r_age <- r_age %>% 
+    tidytable::bind_rows(r_age %>% 
+                           tidytable::filter(sex != 0) %>% 
+                           tidytable::summarise(agepop = sum(agepop),
+                                                mean_length = sum(agepop * mean_length, na.rm = TRUE) / sum(agepop, na.rm = TRUE),
+                                                sd_length = sum(agepop * sd_length, na.rm = TRUE) / sum(agepop, na.rm = TRUE),
+                                                .by = c(sim, year, region, species_code, age)) %>% 
+                           tidytable::mutate(sex = 4)) 
+  
   # get resampled length pop'n
   r_length <- purrr::map(1:iters, ~(do.call(mapply, c(list, rr[[.]], SIMPLIFY = FALSE))$length %>% 
                                       tidytable::map_df(., ~as.data.frame(.x), .id = "region") %>% 
@@ -1205,6 +1273,12 @@ srvy_iss_goa_wc_e <- function(iters = 1,
                            tidytable::summarise(abund = sum(abund),
                                                 .by = c(sim, year, species_code, sex, length)) %>% 
                            tidytable::mutate(region = 'goa')) 
+  
+  r_length <- r_length %>% 
+    tidytable::bind_rows(r_length %>% 
+                           tidytable::filter(sex != 0) %>% 
+                           tidytable::summarise(abund = sum(abund), .by = c(sim, year, region, species_code, length)) %>%
+                           tidytable::mutate(sex = 4)) 
   
   # compute statistics ----
   ## first re-bin length freq data ----
@@ -1446,9 +1520,23 @@ srvy_iss_w140 <- function(iters = 1,
                                          global = global))
   
   r_age <- do.call(mapply, c(list, rr, SIMPLIFY = FALSE))$age %>% 
-    tidytable::map_df(., ~as.data.frame(.x), .id = "sim")
+    tidytable::map_df(., ~as.data.frame(.x), .id = "sim") %>% 
+    tidytable::bind_rows(do.call(mapply, c(list, rr, SIMPLIFY = FALSE))$age %>% 
+                           tidytable::map_df(., ~as.data.frame(.x), .id = "sim") %>% 
+                           tidytable::filter(sex != 0) %>% 
+                           tidytable::summarise(agepop = sum(agepop),
+                                                mean_length = sum(agepop * mean_length, na.rm = TRUE) / sum(agepop, na.rm = TRUE),
+                                                sd_length = sum(agepop * sd_length, na.rm = TRUE) / sum(agepop, na.rm = TRUE),
+                                                .by = c(sim, year, species_code, age)) %>% 
+                           tidytable::mutate(sex = 4)) 
+  
   r_length <- do.call(mapply, c(list, rr, SIMPLIFY = FALSE))$length %>% 
-    tidytable::map_df(., ~as.data.frame(.x), .id = "sim")
+    tidytable::map_df(., ~as.data.frame(.x), .id = "sim") %>% 
+    tidytable::bind_rows(do.call(mapply, c(list, rr, SIMPLIFY = FALSE))$length %>% 
+                           tidytable::map_df(., ~as.data.frame(.x), .id = "sim") %>% 
+                           tidytable::filter(sex != 0) %>% 
+                           tidytable::summarise(abund = sum(abund), .by = c(sim, year, species_code, length)) %>%
+                           tidytable::mutate(sex = 4)) 
   
   # compute statistics ----
   ## first re-bin length freq data ----
@@ -1749,6 +1837,16 @@ srvy_iss_ai_subreg <- function(iters = 1,
                                                 sd_length = sum(sd_length * agepop) / sum(agepop),
                                                 .by = c(sim, year, species_code, sex, age)) %>% 
                            tidytable::mutate(region = 'ai'))
+
+  r_age <- r_age %>% 
+    tidytable::bind_rows(r_age%>% 
+                           tidytable::filter(sex != 0) %>% 
+                           tidytable::summarise(agepop = sum(agepop),
+                                                mean_length = sum(agepop * mean_length, na.rm = TRUE) / sum(agepop, na.rm = TRUE),
+                                                sd_length = sum(agepop * sd_length, na.rm = TRUE) / sum(agepop, na.rm = TRUE),
+                                                .by = c(sim, year, region, species_code, age)) %>% 
+                           tidytable::mutate(sex = 4)) 
+
   # get resampled length pop'n
   r_length <- purrr::map(1:iters, ~(do.call(mapply, c(list, rr[[.]], SIMPLIFY = FALSE))$length %>% 
                                       tidytable::map_df(., ~as.data.frame(.x), .id = "region") %>% 
@@ -1768,6 +1866,13 @@ srvy_iss_ai_subreg <- function(iters = 1,
                            tidytable::summarise(abund = sum(abund),
                                                 .by = c(sim, year, species_code, sex, length)) %>% 
                            tidytable::mutate(region = 'ai')) 
+
+  r_length <- r_length %>% 
+    tidytable::bind_rows(r_length %>% 
+                           tidytable::filter(sex != 0) %>% 
+                           tidytable::summarise(abund = sum(abund), .by = c(sim, year, region, species_code, length)) %>%
+                           tidytable::mutate(sex = 4)) 
+  
   
   # compute statistics ----
   ## first re-bin length freq data ----
