@@ -138,7 +138,9 @@ srvy_iss <- function(iters = 1,
                                          plus_age = plus_age,
                                          by_strata = by_strata,
                                          global = global),
-                   .progress = TRUE)
+                   .progress = list(type = "iterator", 
+                                    format = "Resampling {cli::pb_bar} {cli::pb_percent}",
+                                    clear = TRUE))
   
   r_age <- do.call(mapply, c(list, rr, SIMPLIFY = FALSE))$age %>% 
     tidytable::map_df(., ~as.data.frame(.x), .id = "sim") %>% 
@@ -376,7 +378,9 @@ srvy_iss_ai_cmplx <- function(iters = 1,
                                                   cmplx_code = cmplx_code,
                                                   by_strata = by_strata,
                                                   global = global),
-                   .progress = TRUE)
+                   .progress = list(type = "iterator", 
+                                    format = "Resampling {cli::pb_bar} {cli::pb_percent}",
+                                    clear = TRUE))
 
   r_age <- do.call(mapply, c(list, rr, SIMPLIFY = FALSE))$age %>% 
     tidytable::map_df(., ~as.data.frame(.x), .id = "sim") %>% 
@@ -628,7 +632,9 @@ srvy_iss_goa_cmplx <- function(iters = 1,
                                          plus_age = plus_age,
                                          by_strata = by_strata,
                                          global = global),
-                   .progress = TRUE)
+                   .progress = list(type = "iterator", 
+                                    format = "Resampling {cli::pb_bar} {cli::pb_percent}",
+                                    clear = TRUE))
   
   r_age <- do.call(mapply, c(list, rr, SIMPLIFY = FALSE))$age %>% 
     tidytable::map_df(., ~as.data.frame(.x), .id = "sim") %>% 
@@ -921,7 +927,9 @@ srvy_iss_goa_w_c_e <- function(iters = 1,
                                                                            plus_age = plus_age,
                                                                            by_strata = by_strata,
                                                                            global = global)),
-                   .progress = TRUE)
+                   .progress = list(type = "iterator", 
+                                    format = "Resampling {cli::pb_bar} {cli::pb_percent}",
+                                    clear = TRUE))
   
   # get resampled age pop'n
   r_age <- purrr::map(1:iters, ~(do.call(mapply, c(list, rr[[.]], SIMPLIFY = FALSE))$age %>% 
@@ -1230,7 +1238,9 @@ srvy_iss_goa_wc_e <- function(iters = 1,
                                                                            plus_age = plus_age,
                                                                            by_strata = by_strata,
                                                                            global = global)),
-                   .progress = TRUE)
+                   .progress = list(type = "iterator", 
+                                    format = "Resampling {cli::pb_bar} {cli::pb_percent}",
+                                    clear = TRUE))
   
   # get resampled age pop'n
   r_age <- purrr::map(1:iters, ~(do.call(mapply, c(list, rr[[.]], SIMPLIFY = FALSE))$age %>% 
@@ -1523,7 +1533,9 @@ srvy_iss_w140 <- function(iters = 1,
                                          plus_age = plus_age,
                                          by_strata = by_strata,
                                          global = global),
-                   .progress = TRUE)
+                   .progress = list(type = "iterator", 
+                                    format = "Resampling {cli::pb_bar} {cli::pb_percent}",
+                                    clear = TRUE))
   
   r_age <- do.call(mapply, c(list, rr, SIMPLIFY = FALSE))$age %>% 
     tidytable::map_df(., ~as.data.frame(.x), .id = "sim") %>% 
@@ -1821,7 +1833,9 @@ srvy_iss_ai_subreg <- function(iters = 1,
                                                                            plus_age = plus_age,
                                                                            by_strata = by_strata,
                                                                            global = global)),
-                   .progress = TRUE)
+                   .progress = list(type = "iterator", 
+                                    format = "Resampling {cli::pb_bar} {cli::pb_percent}",
+                                    clear = TRUE))
   
   # get resampled age pop'n
   r_age <- purrr::map(1:iters, ~(do.call(mapply, c(list, rr[[.]], SIMPLIFY = FALSE))$age %>% 
@@ -2042,7 +2056,9 @@ srvy_iss_caal <- function(iters = 1,
                                               age_samples = age_samples,
                                               plus_len = plus_len,
                                               plus_age = plus_age),
-                   .progress = TRUE)
+                   .progress = list(type = "iterator", 
+                                    format = "Resampling {cli::pb_bar} {cli::pb_percent}",
+                                    clear = TRUE))
   
   r_caal <- do.call(mapply, c(list, rr, SIMPLIFY = FALSE))$caal %>%
     tidytable::map_df(., ~as.data.frame(.x), .id = "sim")
