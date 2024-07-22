@@ -340,19 +340,19 @@ iss_age <- function(rss_age,
                              tidytable::left_join(specimen_data %>% 
                                                     tidytable::drop_na(age) %>% 
                                                     tidytable::filter(sex != 3) %>% 
-                                                    tidytable::summarize(nhl = length(unique(hauljoin)), .by = c(year, species_code, sex)) %>% 
+                                                    tidytable::summarize(nhls = length(unique(hauljoin)), .by = c(year, species_code, sex)) %>% 
                                                     tidytable::bind_rows(specimen_data %>% 
                                                                            tidytable::drop_na(age) %>% 
-                                                                           tidytable::summarize(nhl = length(unique(hauljoin)), .by = c(year, species_code)) %>% 
+                                                                           tidytable::summarize(nhls = length(unique(hauljoin)), .by = c(year, species_code)) %>% 
                                                                            tidytable::mutate(sex = 0)) %>% 
                                                     tidytable::bind_rows(specimen_data %>% 
                                                                            tidytable::drop_na(age) %>% 
-                                                                           tidytable::summarize(nhl = length(unique(hauljoin)), .by = c(year, species_code)) %>% 
+                                                                           tidytable::summarize(nhls = length(unique(hauljoin)), .by = c(year, species_code)) %>% 
                                                                            tidytable::mutate(sex = 4)) %>% 
                                                     tidytable::bind_rows(specimen_data %>% 
                                                                            tidytable::drop_na(age) %>% 
                                                                            tidytable::filter(sex != 3) %>% 
-                                                                           tidytable::summarize(nhl = length(unique(hauljoin)), .by = c(year, species_code)) %>% 
+                                                                           tidytable::summarize(nhls = length(unique(hauljoin)), .by = c(year, species_code)) %>% 
                                                                            tidytable::mutate(sex = 12)))) %>% 
       tidytable::filter(iss > 0)
   } else{ # compute for subregion scale
@@ -402,39 +402,39 @@ iss_age <- function(rss_age,
                              tidytable::left_join(specimen_data %>% 
                                                     tidytable::drop_na(age) %>% 
                                                     tidytable::filter(sex != 3) %>% 
-                                                    tidytable::summarize(nhl = length(unique(hauljoin)), .by = c(year, region, species_code, sex)) %>% 
+                                                    tidytable::summarize(nhls = length(unique(hauljoin)), .by = c(year, region, species_code, sex)) %>% 
                                                     tidytable::bind_rows(specimen_data %>% 
                                                                            tidytable::drop_na(age) %>% 
-                                                                           tidytable::summarize(nhl = length(unique(hauljoin)), .by = c(year, region, species_code)) %>% 
+                                                                           tidytable::summarize(nhls = length(unique(hauljoin)), .by = c(year, region, species_code)) %>% 
                                                                            tidytable::mutate(sex = 0)) %>% 
                                                     tidytable::bind_rows(specimen_data %>% 
                                                                            tidytable::drop_na(age) %>% 
-                                                                           tidytable::summarize(nhl = length(unique(hauljoin)), .by = c(year, region, species_code)) %>% 
+                                                                           tidytable::summarize(nhls = length(unique(hauljoin)), .by = c(year, region, species_code)) %>% 
                                                                            tidytable::mutate(sex = 4)) %>% 
                                                     tidytable::bind_rows(specimen_data %>% 
                                                                            tidytable::drop_na(age) %>% 
                                                                            tidytable::filter(sex != 3) %>% 
-                                                                           tidytable::summarize(nhl = length(unique(hauljoin)), .by = c(year, region, species_code)) %>% 
+                                                                           tidytable::summarize(nhls = length(unique(hauljoin)), .by = c(year, region, species_code)) %>% 
                                                                            tidytable::mutate(sex = 12)) %>% 
                                                     tidytable::bind_rows(specimen_data %>% 
                                                                            tidytable::drop_na(age) %>% 
                                                                            tidytable::filter(sex != 3) %>% 
-                                                                           tidytable::summarize(nhl = length(unique(hauljoin)), .by = c(year, species_code, sex)) %>% 
+                                                                           tidytable::summarize(nhls = length(unique(hauljoin)), .by = c(year, species_code, sex)) %>% 
                                                                            tidytable::mutate(region = survey_region) %>% 
                                                                            tidytable::bind_rows(specimen_data %>% 
                                                                                                   tidytable::drop_na(age) %>% 
-                                                                                                  tidytable::summarize(nhl = length(unique(hauljoin)), .by = c(year, species_code)) %>% 
+                                                                                                  tidytable::summarize(nhls = length(unique(hauljoin)), .by = c(year, species_code)) %>% 
                                                                                                   tidytable::mutate(sex = 0,
                                                                                                                     region = survey_region)) %>% 
                                                                            tidytable::bind_rows(specimen_data %>% 
                                                                                                   tidytable::drop_na(age) %>% 
-                                                                                                  tidytable::summarize(nhl = length(unique(hauljoin)), .by = c(year, species_code)) %>% 
+                                                                                                  tidytable::summarize(nhls = length(unique(hauljoin)), .by = c(year, species_code)) %>% 
                                                                                                   tidytable::mutate(sex = 4,
                                                                                                                     region = survey_region)) %>% 
                                                                            tidytable::bind_rows(specimen_data %>% 
                                                                                                   tidytable::drop_na(age) %>% 
                                                                                                   tidytable::filter(sex != 3) %>% 
-                                                                                                  tidytable::summarize(nhl = length(unique(hauljoin)), .by = c(year, species_code)) %>% 
+                                                                                                  tidytable::summarize(nhls = length(unique(hauljoin)), .by = c(year, species_code)) %>% 
                                                                                                   tidytable::mutate(sex = 12,
                                                                                                                     region = survey_region))))) %>% 
       tidytable::filter(iss > 0)
@@ -470,10 +470,10 @@ iss_caal <- function(rss_caal,
     tidytable::left_join(specimen_data %>% 
                            tidytable::drop_na(age) %>% 
                            tidytable::filter(sex != 3) %>% 
-                           tidytable::summarize(nhl = length(unique(hauljoin)), .by = c(year, species_code, sex, length)) %>% 
+                           tidytable::summarize(nhls = length(unique(hauljoin)), .by = c(year, species_code, sex, length)) %>% 
                            tidytable::bind_rows(specimen_data %>% 
                                                   tidytable::drop_na(age) %>% 
-                                                  tidytable::summarize(nhl = length(unique(hauljoin)), .by = c(year, species_code, length)) %>% 
+                                                  tidytable::summarize(nhls = length(unique(hauljoin)), .by = c(year, species_code, length)) %>% 
                                                   tidytable::mutate(sex = 0)))
   
 }
