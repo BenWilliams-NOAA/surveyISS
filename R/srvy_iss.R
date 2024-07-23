@@ -137,7 +137,10 @@ srvy_iss <- function(iters = 1,
                                          plus_len = plus_len,
                                          plus_age = plus_age,
                                          by_strata = by_strata,
-                                         global = global))
+                                         global = global),
+                   .progress = list(type = "iterator", 
+                                    format = "Resampling {cli::pb_bar} {cli::pb_percent}",
+                                    clear = TRUE))
   
   r_age <- do.call(mapply, c(list, rr, SIMPLIFY = FALSE))$age %>% 
     tidytable::map_df(., ~as.data.frame(.x), .id = "sim") %>% 
@@ -215,14 +218,15 @@ srvy_iss <- function(iters = 1,
     vroom::vroom_write(out_stats$bias_length, file = here::here("output", region, paste0(save, "_bias_length.csv")), delim = ",")
     # mean length-at-age and sd
     vroom::vroom_write(out_stats$mean_length, file = here::here("output", region, paste0(save, "_mean_length.csv")), delim = ",")
+    # realized sample size
+    vroom::vroom_write(out_stats$rss_length, here::here("output", region, paste0(save, "_iter_rss_ln.csv")), delim = ",")
+    vroom::vroom_write(out_stats$rss_age, here::here("output", region, paste0(save, "_iter_rss_ag.csv")), delim = ",")
   }
   
-  # if desired, write out bootstrapped age & length pop'n and realized sample sizes
+  # if desired, write out bootstrapped age & length pop'n
   if(isTRUE(save_interm)) {
     vroom::vroom_write(r_length, here::here("output", region, paste0(save, "_resampled_length.csv")), delim = ",")
     vroom::vroom_write(r_age, here::here("output", region, paste0(save, "_resampled_age.csv")), delim = ",")
-    vroom::vroom_write(out_stats$rss_length, here::here("output", region, paste0(save, "_iter_rss_ln.csv")), delim = ",")
-    vroom::vroom_write(out_stats$rss_age, here::here("output", region, paste0(save, "_iter_rss_ag.csv")), delim = ",")
   }
   
 }
@@ -374,7 +378,10 @@ srvy_iss_ai_cmplx <- function(iters = 1,
                                                   plus_age = plus_age,
                                                   cmplx_code = cmplx_code,
                                                   by_strata = by_strata,
-                                                  global = global))
+                                                  global = global),
+                   .progress = list(type = "iterator", 
+                                    format = "Resampling {cli::pb_bar} {cli::pb_percent}",
+                                    clear = TRUE))
 
   r_age <- do.call(mapply, c(list, rr, SIMPLIFY = FALSE))$age %>% 
     tidytable::map_df(., ~as.data.frame(.x), .id = "sim") %>% 
@@ -455,14 +462,15 @@ srvy_iss_ai_cmplx <- function(iters = 1,
     vroom::vroom_write(out_stats$bias_length, file = here::here("output", region, paste0(save, "_bias_length_", cmplx, ".csv")), delim = ",")
     # mean length-at-age and sd
     vroom::vroom_write(out_stats$mean_length, file = here::here("output", region, paste0(save, "_mean_length_", cmplx, ".csv")), delim = ",")
+    # realized sample size
+    vroom::vroom_write(out_stats$rss_length, here::here("output", region, paste0(save, "_iter_rss_ln_", cmplx, ".csv")), delim = ",")
+    vroom::vroom_write(out_stats$rss_age, here::here("output", region, paste0(save, "_iter_rss_ag_", cmplx, ".csv")), delim = ",")
   }
   
-  # if desired, write out bootstrapped age & length pop'n and realized sample sizes
+  # if desired, write out bootstrapped age & length pop'n
   if(isTRUE(save_interm)) {
     vroom::vroom_write(r_length, here::here("output", region, paste0(save, "_resampled_length_", cmplx, ".csv")), delim = ",")
     vroom::vroom_write(r_age, here::here("output", region, paste0(save, "_resampled_age_", cmplx, ".csv")), delim = ",")
-    vroom::vroom_write(out_stats$rss_length, here::here("output", region, paste0(save, "_iter_rss_ln_", cmplx, ".csv")), delim = ",")
-    vroom::vroom_write(out_stats$rss_age, here::here("output", region, paste0(save, "_iter_rss_ag_", cmplx, ".csv")), delim = ",")
   }
   
 }
@@ -625,7 +633,10 @@ srvy_iss_goa_cmplx <- function(iters = 1,
                                          plus_len = plus_len,
                                          plus_age = plus_age,
                                          by_strata = by_strata,
-                                         global = global))
+                                         global = global),
+                   .progress = list(type = "iterator", 
+                                    format = "Resampling {cli::pb_bar} {cli::pb_percent}",
+                                    clear = TRUE))
   
   r_age <- do.call(mapply, c(list, rr, SIMPLIFY = FALSE))$age %>% 
     tidytable::map_df(., ~as.data.frame(.x), .id = "sim") %>% 
@@ -716,14 +727,15 @@ srvy_iss_goa_cmplx <- function(iters = 1,
     vroom::vroom_write(out_stats$bias_length, file = here::here("output", region, paste0(save, "_bias_length_", cmplx, ".csv")), delim = ",")
     # mean length-at-age and sd
     vroom::vroom_write(out_stats$mean_length, file = here::here("output", region, paste0(save, "_mean_length_", cmplx, ".csv")), delim = ",")
+    # realized sample size
+    vroom::vroom_write(out_stats$rss_length, here::here("output", region, paste0(save, "_iter_rss_ln_", cmplx, ".csv")), delim = ",")
+    vroom::vroom_write(out_stats$rss_age, here::here("output", region, paste0(save, "_iter_rss_ag_", cmplx, ".csv")), delim = ",")
   }
   
   # if desired, write out bootstrapped age & length pop'n and realized sample sizes
   if(isTRUE(save_interm)) {
     vroom::vroom_write(r_length, here::here("output", region, paste0(save, "_resampled_length_", cmplx, ".csv")), delim = ",")
     vroom::vroom_write(r_age, here::here("output", region, paste0(save, "_resampled_age_", cmplx, ".csv")), delim = ",")
-    vroom::vroom_write(out_stats$rss_length, here::here("output", region, paste0(save, "_iter_rss_ln_", cmplx, ".csv")), delim = ",")
-    vroom::vroom_write(out_stats$rss_age, here::here("output", region, paste0(save, "_iter_rss_ag_", cmplx, ".csv")), delim = ",")
   }
 }
 
@@ -917,7 +929,10 @@ srvy_iss_goa_w_c_e <- function(iters = 1,
                                                                            plus_len = plus_len,
                                                                            plus_age = plus_age,
                                                                            by_strata = by_strata,
-                                                                           global = global)))
+                                                                           global = global)),
+                   .progress = list(type = "iterator", 
+                                    format = "Resampling {cli::pb_bar} {cli::pb_percent}",
+                                    clear = TRUE))
   
   # get resampled age pop'n
   r_age <- purrr::map(1:iters, ~(do.call(mapply, c(list, rr[[.]], SIMPLIFY = FALSE))$age %>% 
@@ -1027,14 +1042,15 @@ srvy_iss_goa_w_c_e <- function(iters = 1,
     vroom::vroom_write(out_stats$bias_length, file = here::here("output", region, paste0(save, "_bias_length_w_c_egoa.csv")), delim = ",")
     # mean length-at-age and sd
     vroom::vroom_write(out_stats$mean_length, file = here::here("output", region, paste0(save, "_mean_length_w_c_egoa.csv")), delim = ",")
+    # realized sample size
+    vroom::vroom_write(out_stats$rss_length, here::here("output", region, paste0(save, "_iter_rss_ln_w_c_egoa.csv")), delim = ",")
+    vroom::vroom_write(out_stats$rss_age, here::here("output", region, paste0(save, "_iter_rss_ag_w_c_egoa.csv")), delim = ",")
   }
   
-  # if desired, write out bootstrapped age & length pop'n and realized sample sizes
+  # if desired, write out bootstrapped age & length pop'n
   if(isTRUE(save_interm)) {
     vroom::vroom_write(r_length, here::here("output", region, paste0(save, "_resampled_length_w_c_egoa.csv")), delim = ",")
     vroom::vroom_write(r_age, here::here("output", region, paste0(save, "_resampled_age_w_c_egoa.csv")), delim = ",")
-    vroom::vroom_write(out_stats$rss_length, here::here("output", region, paste0(save, "_iter_rss_ln_w_c_egoa.csv")), delim = ",")
-    vroom::vroom_write(out_stats$rss_age, here::here("output", region, paste0(save, "_iter_rss_ag_w_c_egoa.csv")), delim = ",")
   }
   
 }
@@ -1225,7 +1241,10 @@ srvy_iss_goa_wc_e <- function(iters = 1,
                                                                            plus_len = plus_len,
                                                                            plus_age = plus_age,
                                                                            by_strata = by_strata,
-                                                                           global = global)))
+                                                                           global = global)),
+                   .progress = list(type = "iterator", 
+                                    format = "Resampling {cli::pb_bar} {cli::pb_percent}",
+                                    clear = TRUE))
   
   # get resampled age pop'n
   r_age <- purrr::map(1:iters, ~(do.call(mapply, c(list, rr[[.]], SIMPLIFY = FALSE))$age %>% 
@@ -1335,14 +1354,15 @@ srvy_iss_goa_wc_e <- function(iters = 1,
     vroom::vroom_write(out_stats$bias_length, file = here::here("output", region, paste0(save, "_bias_length_wc_egoa.csv")), delim = ",")
     # mean length-at-age and sd
     vroom::vroom_write(out_stats$mean_length, file = here::here("output", region, paste0(save, "_mean_length_wc_egoa.csv")), delim = ",")
+    # realized sample size
+    vroom::vroom_write(out_stats$rss_length, here::here("output", region, paste0(save, "_iter_rss_ln_wc_egoa.csv")), delim = ",")
+    vroom::vroom_write(out_stats$rss_age, here::here("output", region, paste0(save, "_iter_rss_ag_wc_egoa.csv")), delim = ",")
   }
   
   # if desired, write out bootstrapped age & length pop'n and realized sample sizes
   if(isTRUE(save_interm)) {
     vroom::vroom_write(r_length, here::here("output", region, paste0(save, "_resampled_length_wc_egoa.csv")), delim = ",")
     vroom::vroom_write(r_age, here::here("output", region, paste0(save, "_resampled_age_wc_egoa.csv")), delim = ",")
-    vroom::vroom_write(out_stats$rss_length, here::here("output", region, paste0(save, "_iter_rss_ln_wc_egoa.csv")), delim = ",")
-    vroom::vroom_write(out_stats$rss_age, here::here("output", region, paste0(save, "_iter_rss_ag_wc_egoa.csv")), delim = ",")
   }
   
 }
@@ -1517,7 +1537,10 @@ srvy_iss_w140 <- function(iters = 1,
                                          plus_len = plus_len,
                                          plus_age = plus_age,
                                          by_strata = by_strata,
-                                         global = global))
+                                         global = global),
+                   .progress = list(type = "iterator", 
+                                    format = "Resampling {cli::pb_bar} {cli::pb_percent}",
+                                    clear = TRUE))
   
   r_age <- do.call(mapply, c(list, rr, SIMPLIFY = FALSE))$age %>% 
     tidytable::map_df(., ~as.data.frame(.x), .id = "sim") %>% 
@@ -1595,14 +1618,15 @@ srvy_iss_w140 <- function(iters = 1,
     vroom::vroom_write(out_stats$bias_length, file = here::here("output", region, paste0(save, "_bias_length_w140.csv")), delim = ",")
     # mean length-at-age and sd
     vroom::vroom_write(out_stats$mean_length, file = here::here("output", region, paste0(save, "_mean_length_w140.csv")), delim = ",")
+    # realized sample size
+    vroom::vroom_write(out_stats$rss_length, here::here("output", region, paste0(save, "_iter_rss_ln_w140.csv")), delim = ",")
+    vroom::vroom_write(out_stats$rss_age, here::here("output", region, paste0(save, "_iter_rss_ag_w140.csv")), delim = ",")
   }
   
   # if desired, write out bootstrapped age & length pop'n and realized sample sizes
   if(isTRUE(save_interm)) {
     vroom::vroom_write(r_length, here::here("output", region, paste0(save, "_resampled_length_w140.csv")), delim = ",")
     vroom::vroom_write(r_age, here::here("output", region, paste0(save, "_resampled_age_w140.csv")), delim = ",")
-    vroom::vroom_write(out_stats$rss_length, here::here("output", region, paste0(save, "_iter_rss_ln_w140.csv")), delim = ",")
-    vroom::vroom_write(out_stats$rss_age, here::here("output", region, paste0(save, "_iter_rss_ag_w140.csv")), delim = ",")
   }
   
 }
@@ -1814,7 +1838,10 @@ srvy_iss_ai_subreg <- function(iters = 1,
                                                                            plus_len = plus_len,
                                                                            plus_age = plus_age,
                                                                            by_strata = by_strata,
-                                                                           global = global)))
+                                                                           global = global)),
+                   .progress = list(type = "iterator", 
+                                    format = "Resampling {cli::pb_bar} {cli::pb_percent}",
+                                    clear = TRUE))
   
   # get resampled age pop'n
   r_age <- purrr::map(1:iters, ~(do.call(mapply, c(list, rr[[.]], SIMPLIFY = FALSE))$age %>% 
@@ -1929,14 +1956,15 @@ srvy_iss_ai_subreg <- function(iters = 1,
     vroom::vroom_write(out_stats$bias_length, file = here::here("output", region, paste0(save, "_bias_length_ai_subreg.csv")), delim = ",")
     # mean length-at-age and sd
     vroom::vroom_write(out_stats$mean_length, file = here::here("output", region, paste0(save, "_mean_length_ai_subreg.csv")), delim = ",")
+    # realized sample size
+    vroom::vroom_write(out_stats$rss_length, here::here("output", region, paste0(save, "_iter_rss_ln_ai_subreg.csv")), delim = ",")
+    vroom::vroom_write(out_stats$rss_age, here::here("output", region, paste0(save, "_iter_rss_ag_ai_subreg.csv")), delim = ",")
   }
   
   # if desired, write out bootstrapped age & length pop'n and realized sample sizes
   if(isTRUE(save_interm)) {
     vroom::vroom_write(r_length, here::here("output", region, paste0(save, "_resampled_length_ai_subreg.csv")), delim = ",")
     vroom::vroom_write(r_age, here::here("output", region, paste0(save, "_resampled_age_ai_subreg.csv")), delim = ",")
-    vroom::vroom_write(out_stats$rss_length, here::here("output", region, paste0(save, "_iter_rss_ln_ai_subreg.csv")), delim = ",")
-    vroom::vroom_write(out_stats$rss_age, here::here("output", region, paste0(save, "_iter_rss_ag_ai_subreg.csv")), delim = ",")
   }
   
 }
@@ -2034,7 +2062,10 @@ srvy_iss_caal <- function(iters = 1,
                                               age_err = age_err,
                                               age_samples = age_samples,
                                               plus_len = plus_len,
-                                              plus_age = plus_age))
+                                              plus_age = plus_age),
+                   .progress = list(type = "iterator", 
+                                    format = "Resampling {cli::pb_bar} {cli::pb_percent}",
+                                    clear = TRUE))
   
   r_caal <- do.call(mapply, c(list, rr, SIMPLIFY = FALSE))$caal %>%
     tidytable::map_df(., ~as.data.frame(.x), .id = "sim")
@@ -2083,12 +2114,13 @@ srvy_iss_caal <- function(iters = 1,
     vroom::vroom_write(ogcaal, file = here::here("output", region, paste0(save, "_base_caal.csv")), delim = ",")
     # bootstrap bias in conditional age-at-length
     vroom::vroom_write(out_stats$bias_caal, file = here::here("output", region, paste0(save, "_bias_caal.csv")), delim = ",")
+    # realized sample size
+    vroom::vroom_write(out_stats$rss_caal, here::here("output", region, paste0(save, "_iter_rss_caal.csv")), delim = ",")
   }
   
-  # if desired, write out bootstrapped conditional age-at-length and realized sample sizes
+  # if desired, write out bootstrapped conditional age-at-length
   if(isTRUE(save_interm)) {
     vroom::vroom_write(r_caal, here::here("output", region, paste0(save, "_resampled_caal.csv")), delim = ",")
-    vroom::vroom_write(out_stats$rss_caal, here::here("output", region, paste0(save, "_iter_rss_caal.csv")), delim = ",")
   }
 }
 
