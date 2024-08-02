@@ -19,7 +19,7 @@ query_data(survey, region, species, yrs = NULL)
 a list of necessary data sources, dataframes are also written to csv files within the 'data/region' folder.
 }
 \description{
-Function that connects to AKFIN database (using afscdata package) and pulls catch per-unit-effort (cpue), 
+Function that connects to AKFIN database (using afscdata package) and pulls catch per-unit-effort (cpue),
 length frequency (lfreq), age-length specimen (specimen), survey strata (strata), and species information (species)
 data from the GAP_PRODUCTS tables
 }

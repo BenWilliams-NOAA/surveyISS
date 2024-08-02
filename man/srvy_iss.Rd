@@ -43,7 +43,7 @@ srvy_iss(
 
 \item{yrs}{any year filter >= (default = NULL)}
 
-\item{bin}{bin size (default = 1 cm), also can use custom length bins through defining vector of upper length bin limits, i.e., c(5, 10, 20, 35, 60), plus length group will automatically be populated and denoted with the largest defined bin + 1 (i.e., 61 for provided example)}
+\item{bin}{bin size (default = 1 cm), also can use custom length bins following ss3 bin convention}
 
 \item{boot_hauls}{Boolean. Resample hauls w/replacement? (default = FALSE)}
 
@@ -78,13 +78,13 @@ srvy_iss(
 \item{save}{Name to attach to and identify output files.}
 }
 \value{
-Dataframe of input sample size by year, species (using RACE species codes), sex (0 - combined sex 
+Dataframe of input sample size by year, species (using RACE species codes), sex (0 - combined sex
 with age/length data combined prior to expansion, 1 - males, 2 - females, 3 - unsexed, 12 - female/male
 compositions that sum to one across both sexes combined, 4 - combined sex after summing sex-specific age/length
 composition after expansion; all with short description IDs in sex_desc column) for age composition (output saved with
-'iss_age' in file name) and length composition (output saved with 'iss_ln' in file name). For comparison, 
-nominal sample size ('nss' - the number of age/length samples actually taken) and the number of 
-sampled hauls for age/length ('nhls') are included. Will also produce other dataframes if desired 
+'iss_age' in file name) and length composition (output saved with 'iss_ln' in file name). For comparison,
+nominal sample size ('nss' - the number of age/length samples actually taken) and the number of
+sampled hauls for age/length ('nhls') are included. Will also produce other dataframes if desired
 (see save_intern and save_stats argument descriptions).
 }
 \description{

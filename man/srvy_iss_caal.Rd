@@ -33,7 +33,7 @@ srvy_iss_caal(
 
 \item{yrs}{any year filter >= (default = NULL)}
 
-\item{bin}{bin size (default = 1 cm), also can use custom length bins through defining vector of upper length bin limits, i.e., c(5, 10, 20, 35, 60), plus length group will automatically be populated and denoted with the largest defined bin + 1 (i.e., 61 for provided example)}
+\item{bin}{bin size (default = 1 cm), also can use custom length bins following ss3 bin convention}
 
 \item{boot_hauls}{Boolean. Resample hauls w/replacement? (default = FALSE)}
 
@@ -62,8 +62,8 @@ srvy_iss_caal(
 \value{
 Dataframe of input sample size by year, species (using RACE species codes), sex (0 - combined sex,
 1 - males, 2 - females; all with short description IDs in sex_desc column), and length for conditional age-at-length
- (output saved with 'iss_caal' in file name). For comparison, nominal sample size ('nss' - the number of age-length samples
-  actually taken) is included. Will also produce other dataframes if desired (see save_intern and save_stats argument descriptions).
+(output saved with 'iss_caal' in file name). For comparison, nominal sample size ('nss' - the number of age-length samples
+actually taken) is included. Will also produce other dataframes if desired (see save_intern and save_stats argument descriptions).
 }
 \description{
 Bootstrap data sources to replicate bottom trawl conditional age-at-length.

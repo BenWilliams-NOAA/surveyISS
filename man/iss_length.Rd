@@ -11,7 +11,7 @@ iss_length(rss_length, lfreq_data, survey_region = NULL)
 
 \item{lfreq_data}{length frequency input dataframe}
 
-\item{survey_region}{overall region, i.e., goa, ai, ebs, nbs... If defined, will compute 
+\item{survey_region}{overall region, i.e., goa, ai, ebs, nbs... If defined, will compute
 statistics for spatially-explicit results. (default = NULL)}
 }
 \description{

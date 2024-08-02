@@ -6,7 +6,7 @@
 \alias{surveyISS-package}
 \title{surveyISS: Survey composition input sample size}
 \description{
-Produce bootstrap estimates of input sample sizes for use in statistical catch at age fishery assessments
+Produce bootstrap estimates of input sample sizes for use in statistical catch at age fishery assessments.
 }
 \seealso{
 Useful links:

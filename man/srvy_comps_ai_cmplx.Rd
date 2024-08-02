@@ -40,7 +40,7 @@ srvy_comps_ai_cmplx(
 
 \item{yrs}{any year filter >= (default = NULL)}
 
-\item{bin}{bin size (default = 1 cm), also can use custom length bins through defining vector of upper length bin limits, i.e., c(5, 10, 20, 35, 60), plus length group will automatically be populated and denoted with the largest defined bin + 1 (i.e., 61 for provided example)}
+\item{bin}{bin size (default = 1 cm), also can use custom length bins following ss3 bin convention}
 
 \item{boot_hauls}{Boolean. Resample hauls w/replacement? (default = FALSE)}
 
@@ -72,7 +72,7 @@ srvy_comps_ai_cmplx(
 List with dataframes of population numbers at length (.lpop) and age (.apop).
 }
 \description{
-Function to resample data and compute length and age expansion following Fig. 1 in Hulson and Williams 2024. 
-Customized for ai complexes (i.e., blackspotted-rougheye rockfish) where population at length are expanded at species 
+Function to resample data and compute length and age expansion following Fig. 1 in Hulson and Williams 2024.
+Customized for ai complexes (i.e., blackspotted-rougheye rockfish) where population at length are expanded at species
 level, but age specimen data are combined and population at age are expanded at complex level
 }

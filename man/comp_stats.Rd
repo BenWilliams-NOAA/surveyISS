@@ -27,12 +27,12 @@ comp_stats(
 
 \item{lfreq_data}{length frequency input dataframe}
 
-\item{survey_region}{overall region, i.e., goa, ai, ebs, nbs... If defined, will compute 
+\item{survey_region}{overall region, i.e., goa, ai, ebs, nbs... If defined, will compute
 statistics for spatially-explicit results. (default = NULL)}
 }
 \value{
-list of dataframes for realized sample size by replicate (.rss_age for age composition, 
-.rss_length for length composition), input sample size (.iss_age for age composition, 
+list of dataframes for realized sample size by replicate (.rss_age for age composition,
+.rss_length for length composition), input sample size (.iss_age for age composition,
 .iss_length for length composition), bias in resampled comp data compared to original values
 (.bias_age for age composition, .bias_length for length composition), and mean length-at-age
 (.mean_length, computed ala gapindex package)
