@@ -11,7 +11,8 @@ An R package for estimating input sample size for composition data provided by t
 
 This R package generates bootstrap replicates of the standard design-based indices of length and age composition and conditional age-at-length from AFSC bottom trawl survey data. 
 These bootstrap replicates are then used to estimate the input sample size (ISS) for these data sources.
-Survey regions include: Gulf of Alaska, Aleutian Islands, Eastern Bering Sea Shelf, Eastern Bering Sea Slope, and Northern Bering Sea Shelf.
+The general bootstrap framework is described in [Hulson et al. 2023](https://repository.library.noaa.gov/view/noaa/50425) for age and length composition from AFSC bottom trawl surveys, and in [Hulson and Williams 2024](https://doi.org/10.1016/j.fishres.2023.106894) for the inclusion of ageing error and growth variability, as well as the application to conditional age-at-length data.
+Survey regions include: Gulf of Alaska, Aleutian Islands, Eastern Bering Sea Shelf, Eastern Bering Sea Slope, and Northern Bering Sea Shelf (noting that survey regions can be combined).
 
 Please see the vignettes for examples of the overall workflow when using `surveyISS` as well as examples for special cases (e.g., stock complexes, spatially-explicit, and conditional age-at-length).
 
