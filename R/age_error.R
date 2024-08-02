@@ -35,7 +35,9 @@ age_error <- function(age_dat,
   
   # remove the old ages, replace with new ones and bind back with samples that were not tested
   agerr %>% 
-    tidytable::select(-age, age = test_age) %>% 
+    tidytable::mutate(age = tidytable::case_when(!is.na(test_age) ~ test_age,
+                                                 .default = age)) %>% 
+    tidytable::select(-test_age) %>% 
     tidytable::bind_rows(tidytable::anti_join(age_dat, agerr, by = "id")) %>% 
     tidytable::select(-id)
 
