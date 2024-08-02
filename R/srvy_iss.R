@@ -10,7 +10,7 @@
 #' @param cpue_data catch-per-unit effort input dataframe
 #' @param strata_data strata id and area size input dataframe
 #' @param yrs any year filter >= (default = NULL)
-#' @param bin bin size (default = 1 cm), also can use custom length bins through defining vector of upper length bin limits, i.e., c(5, 10, 20, 35, 60), plus length group will automatically be populated and denoted with the largest defined bin + 1 (i.e., 61 for provided example)
+#' @param bin bin size (default = 1 cm), also can use custom length bins following ss3 bin convention 
 #' @param boot_hauls Boolean. Resample hauls w/replacement? (default = FALSE)
 #' @param boot_lengths Boolean. Resample length frequency w/replacement? (default = FALSE)
 #' @param boot_ages Boolean. Resample ages w/replacement? (default = FALSE)
@@ -245,7 +245,7 @@ srvy_iss <- function(iters = 1,
 #' @param cpue_data catch-per-unit effort input dataframe
 #' @param strata_data strata id and area size input dataframe
 #' @param yrs any year filter >= (default = NULL)
-#' @param bin bin size (default = 1 cm), also can use custom length bins through defining vector of upper length bin limits, i.e., c(5, 10, 20, 35, 60), plus length group will automatically be populated and denoted with the largest defined bin + 1 (i.e., 61 for provided example)
+#' @param bin bin size (default = 1 cm), also can use custom length bins following ss3 bin convention 
 #' @param boot_hauls Boolean. Resample hauls w/replacement? (default = FALSE)
 #' @param boot_lengths Boolean. Resample length frequency w/replacement? (default = FALSE)
 #' @param boot_ages Boolean. Resample ages w/replacement? (default = FALSE)
@@ -489,7 +489,7 @@ srvy_iss_ai_cmplx <- function(iters = 1,
 #' @param cpue_data catch-per-unit effort input dataframe
 #' @param strata_data strata id and area size input dataframe
 #' @param yrs any year filter >= (default = NULL)
-#' @param bin bin size (default = 1 cm), also can use custom length bins through defining vector of upper length bin limits, i.e., c(5, 10, 20, 35, 60), plus length group will automatically be populated and denoted with the largest defined bin + 1 (i.e., 61 for provided example)
+#' @param bin bin size (default = 1 cm), also can use custom length bins following ss3 bin convention 
 #' @param boot_hauls Boolean. Resample hauls w/replacement? (default = FALSE)
 #' @param boot_lengths Boolean. Resample length frequency w/replacement? (default = FALSE)
 #' @param boot_ages Boolean. Resample ages w/replacement? (default = FALSE)
@@ -751,7 +751,7 @@ srvy_iss_goa_cmplx <- function(iters = 1,
 #' @param cpue_data catch-per-unit effort input dataframe
 #' @param strata_data strata id and area size input dataframe
 #' @param yrs any year filter >= (default = NULL)
-#' @param bin bin size (default = 1 cm), also can use custom length bins through defining vector of upper length bin limits, i.e., c(5, 10, 20, 35, 60), plus length group will automatically be populated and denoted with the largest defined bin + 1 (i.e., 61 for provided example)
+#' @param bin bin size (default = 1 cm), also can use custom length bins following ss3 bin convention 
 #' @param boot_hauls Boolean. Resample hauls w/replacement? (default = FALSE)
 #' @param boot_lengths Boolean. Resample length frequency w/replacement? (default = FALSE)
 #' @param boot_ages Boolean. Resample ages w/replacement? (default = FALSE)
@@ -1067,7 +1067,7 @@ srvy_iss_goa_w_c_e <- function(iters = 1,
 #' @param cpue_data catch-per-unit effort input dataframe
 #' @param strata_data strata id and area size input dataframe
 #' @param yrs any year filter >= (default = NULL)
-#' @param bin bin size (default = 1 cm), also can use custom length bins through defining vector of upper length bin limits, i.e., c(5, 10, 20, 35, 60), plus length group will automatically be populated and denoted with the largest defined bin + 1 (i.e., 61 for provided example)
+#' @param bin bin size (default = 1 cm), also can use custom length bins following ss3 bin convention 
 #' @param boot_hauls Boolean. Resample hauls w/replacement? (default = FALSE)
 #' @param boot_lengths Boolean. Resample length frequency w/replacement? (default = FALSE)
 #' @param boot_ages Boolean. Resample ages w/replacement? (default = FALSE)
@@ -1379,7 +1379,7 @@ srvy_iss_goa_wc_e <- function(iters = 1,
 #' @param cpue_data catch-per-unit effort input dataframe
 #' @param strata_data strata id and area size input dataframe
 #' @param yrs any year filter >= (default = NULL)
-#' @param bin bin size (default = 1 cm), also can use custom length bins through defining vector of upper length bin limits, i.e., c(5, 10, 20, 35, 60), plus length group will automatically be populated and denoted with the largest defined bin + 1 (i.e., 61 for provided example)
+#' @param bin bin size (default = 1 cm), also can use custom length bins following ss3 bin convention 
 #' @param boot_hauls Boolean. Resample hauls w/replacement? (default = FALSE)
 #' @param boot_lengths Boolean. Resample length frequency w/replacement? (default = FALSE)
 #' @param boot_ages Boolean. Resample ages w/replacement? (default = FALSE)
@@ -1643,7 +1643,7 @@ srvy_iss_w140 <- function(iters = 1,
 #' @param cpue_data catch-per-unit effort input dataframe
 #' @param strata_data strata id and area size input dataframe
 #' @param yrs any year filter >= (default = NULL)
-#' @param bin bin size (default = 1 cm), also can use custom length bins through defining vector of upper length bin limits, i.e., c(5, 10, 20, 35, 60), plus length group will automatically be populated and denoted with the largest defined bin + 1 (i.e., 61 for provided example)
+#' @param bin bin size (default = 1 cm), also can use custom length bins following ss3 bin convention 
 #' @param boot_hauls Boolean. Resample hauls w/replacement? (default = FALSE)
 #' @param boot_lengths Boolean. Resample length frequency w/replacement? (default = FALSE)
 #' @param boot_ages Boolean. Resample ages w/replacement? (default = FALSE)
@@ -1978,7 +1978,7 @@ srvy_iss_ai_subreg <- function(iters = 1,
 #' @param specimen_data age-length specimen input dataframe
 #' @param cpue_data catch-per-unit effort input dataframe
 #' @param yrs any year filter >= (default = NULL)
-#' @param bin bin size (default = 1 cm), also can use custom length bins through defining vector of upper length bin limits, i.e., c(5, 10, 20, 35, 60), plus length group will automatically be populated and denoted with the largest defined bin + 1 (i.e., 61 for provided example)
+#' @param bin bin size (default = 1 cm), also can use custom length bins following ss3 bin convention 
 #' @param boot_hauls Boolean. Resample hauls w/replacement? (default = FALSE)
 #' @param boot_ages Boolean. Resample ages w/replacement? (default = FALSE)
 #' @param al_var Boolean. Include age-length variability in resampled age data? (default = FALSE)

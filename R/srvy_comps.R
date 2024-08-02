@@ -10,7 +10,7 @@
 #' @param strata_data strata id and area size input dataframe
 #' @param r_t age reader-tester input dataframe, included in surveyISS package data
 #' @param yrs any year filter >= (default = NULL)
-#' @param bin bin size (default = 1 cm), also can use custom length bins through defining vector of upper length bin limits, i.e., c(5, 10, 20, 35, 60), plus length group will automatically be populated and denoted with the largest defined bin + 1 (i.e., 61 for provided example)
+#' @param bin bin size (default = 1 cm), also can use custom length bins following ss3 bin convention 
 #' @param boot_hauls Boolean. Resample hauls w/replacement? (default = FALSE)
 #' @param boot_lengths Boolean. Resample length frequency w/replacement? (default = FALSE)
 #' @param boot_ages Boolean. Resample ages w/replacement? (default = FALSE)
@@ -67,16 +67,16 @@ srvy_comps <- function(lfreq_data,
     .lngs %>% 
       tidytable::mutate(length = bin * ceiling((length / 10) / bin)) %>% 
       tidytable::distinct(year, species_code, sex, length, age) -> .lngs
-  } else{ # custom length bins
+  } else{ 
+    # custom length bins, convention follows ss3 binning
     # set up bin bounds
-    c(0, bin) %>% 
-      tidytable::bind_cols(c(bin, bin[length(bin)] + 1)) %>% 
-      tidytable::rename(lwr = '...1', upr = '...2') -> bin_bnds
-    # determine which bin length is in, and define new length as upper bin
-    # note, plus bin is denoted as max length bin + 1
+    tidytable(lwr = c(0, bin)) %>% 
+      tidytable::mutate(label = tidytable::case_when(lwr != 0 ~ lwr,
+                                                     lwr == 0 ~ bin[1])) -> bin_bnds
+    # determine which bin length is in
     .lngs %>% 
       tidytable::distinct(length) %>% 
-      tidytable::mutate(new_length = bin_bnds$upr[max(which(bin_bnds$lwr < length / 10))], 
+      tidytable::mutate(new_length = bin_bnds$label[max(which(bin_bnds$lwr < length / 10))], 
                         .by = c(length)) -> new_lengths
     # replace lengths in length frequency data with new binned lengths
     .lngs %>% 
@@ -142,20 +142,20 @@ srvy_comps <- function(lfreq_data,
   }
   
   # bin length data, note that this automatically converts from mm to cm
-  # bin by cm blocks
+  # bin by cm blocks, which will be bins defined as multiples of the bin width
   if(length(bin) == 1){
     .lfreq_un %>% 
       tidytable::mutate(length = bin * ceiling((length / 10) / bin)) -> .lfreq_un
-  } else{ # custom length bins
+  } else{
+    # custom length bins, convention follows ss3 binning
     # set up bin bounds
-    c(0, bin) %>% 
-      tidytable::bind_cols(c(bin, bin[length(bin)] + 1)) %>% 
-      tidytable::rename(lwr = '...1', upr = '...2') -> bin_bnds
-    # determine which bin length is in, and define new length as upper bin
-    # note, plus bin is denoted as max length bin + 1
+    tidytable(lwr = c(0, bin)) %>% 
+      tidytable::mutate(label = tidytable::case_when(lwr != 0 ~ lwr,
+                                                     lwr == 0 ~ bin[1])) -> bin_bnds
+    # determine which bin length is in
     .lfreq_un %>% 
       tidytable::distinct(length) %>% 
-      tidytable::mutate(new_length = bin_bnds$upr[max(which(bin_bnds$lwr < length / 10))], 
+      tidytable::mutate(new_length = bin_bnds$label[max(which(bin_bnds$lwr < length / 10))], 
                         .by = c(length)) -> new_lengths
     # replace lengths in length frequency data with new binned lengths
     .lfreq_un %>% 
@@ -204,16 +204,16 @@ srvy_comps <- function(lfreq_data,
   if(length(bin) == 1){
     .agedat %>% 
       tidytable::mutate(length = bin * ceiling((length / 10) / bin)) -> .agedat
-  } else{ # custom length bins
+  } else{
+    # custom length bins, convention follows ss3 binning
     # set up bin bounds
-    c(0, bin) %>% 
-      tidytable::bind_cols(c(bin, bin[length(bin)] + 1)) %>% 
-      tidytable::rename(lwr = '...1', upr = '...2') -> bin_bnds
-    # determine which bin length is in, and define new length as upper bin
-    # note, plus bin is denoted as max length bin + 1
+    tidytable(lwr = c(0, bin)) %>% 
+      tidytable::mutate(label = tidytable::case_when(lwr != 0 ~ lwr,
+                                                     lwr == 0 ~ bin[1])) -> bin_bnds
+    # determine which bin length is in
     .agedat %>% 
       tidytable::distinct(length) %>% 
-      tidytable::mutate(new_length = bin_bnds$upr[max(which(bin_bnds$lwr < length / 10))], 
+      tidytable::mutate(new_length = bin_bnds$label[max(which(bin_bnds$lwr < length / 10))], 
                         .by = c(length)) -> new_lengths
     # replace lengths in length frequency data with new binned lengths
     .agedat %>% 
@@ -262,7 +262,7 @@ srvy_comps <- function(lfreq_data,
 #' @param strata_data strata id and area size input dataframe
 #' @param r_t age reader-tester input dataframe, included in surveyISS package data
 #' @param yrs any year filter >= (default = NULL)
-#' @param bin bin size (default = 1 cm), also can use custom length bins through defining vector of upper length bin limits, i.e., c(5, 10, 20, 35, 60), plus length group will automatically be populated and denoted with the largest defined bin + 1 (i.e., 61 for provided example)
+#' @param bin bin size (default = 1 cm), also can use custom length bins following ss3 bin convention 
 #' @param boot_hauls Boolean. Resample hauls w/replacement? (default = FALSE)
 #' @param boot_lengths Boolean. Resample length frequency w/replacement? (default = FALSE)
 #' @param boot_ages Boolean. Resample ages w/replacement? (default = FALSE)
@@ -321,16 +321,16 @@ srvy_comps_ai_cmplx <- function(lfreq_data,
     .lngs %>% 
       tidytable::mutate(length = bin * ceiling((length / 10) / bin)) %>% 
       tidytable::distinct(year, species_code, sex, length, age) -> .lngs
-  } else{ # custom length bins
+  } else{
+    # custom length bins, convention follows ss3 binning
     # set up bin bounds
-    c(0, bin) %>% 
-      tidytable::bind_cols(c(bin, bin[length(bin)] + 1)) %>% 
-      tidytable::rename(lwr = '...1', upr = '...2') -> bin_bnds
-    # determine which bin length is in, and define new length as upper bin
-    # note, plus bin is denoted as max length bin + 1
+    tidytable(lwr = c(0, bin)) %>% 
+      tidytable::mutate(label = tidytable::case_when(lwr != 0 ~ lwr,
+                                                     lwr == 0 ~ bin[1])) -> bin_bnds
+    # determine which bin length is in
     .lngs %>% 
       tidytable::distinct(length) %>% 
-      tidytable::mutate(new_length = bin_bnds$upr[max(which(bin_bnds$lwr < length / 10))], 
+      tidytable::mutate(new_length = bin_bnds$label[max(which(bin_bnds$lwr < length / 10))], 
                         .by = c(length)) -> new_lengths
     # replace lengths in length frequency data with new binned lengths
     .lngs %>% 
@@ -403,16 +403,16 @@ srvy_comps_ai_cmplx <- function(lfreq_data,
   if(length(bin) == 1){
     .lfreq_un %>% 
       tidytable::mutate(length = bin * ceiling((length / 10) / bin)) -> .lfreq_un
-  } else{ # custom length bins
+  } else{
+    # custom length bins, convention follows ss3 binning
     # set up bin bounds
-    c(0, bin) %>% 
-      tidytable::bind_cols(c(bin, bin[length(bin)] + 1)) %>% 
-      tidytable::rename(lwr = '...1', upr = '...2') -> bin_bnds
-    # determine which bin length is in, and define new length as upper bin
-    # note, plus bin is denoted as max length bin + 1
+    tidytable(lwr = c(0, bin)) %>% 
+      tidytable::mutate(label = tidytable::case_when(lwr != 0 ~ lwr,
+                                                     lwr == 0 ~ bin[1])) -> bin_bnds
+    # determine which bin length is in
     .lfreq_un %>% 
       tidytable::distinct(length) %>% 
-      tidytable::mutate(new_length = bin_bnds$upr[max(which(bin_bnds$lwr < length / 10))], 
+      tidytable::mutate(new_length = bin_bnds$label[max(which(bin_bnds$lwr < length / 10))], 
                         .by = c(length)) -> new_lengths
     # replace lengths in length frequency data with new binned lengths
     .lfreq_un %>% 
@@ -475,16 +475,16 @@ srvy_comps_ai_cmplx <- function(lfreq_data,
   if(length(bin) == 1){
     .agedat %>% 
       tidytable::mutate(length = bin * ceiling((length / 10) / bin)) -> .agedat
-  } else{ # custom length bins
+  } else{
+    # custom length bins, convention follows ss3 binning
     # set up bin bounds
-    c(0, bin) %>% 
-      tidytable::bind_cols(c(bin, bin[length(bin)] + 1)) %>% 
-      tidytable::rename(lwr = '...1', upr = '...2') -> bin_bnds
-    # determine which bin length is in, and define new length as upper bin
-    # note, plus bin is denoted as max length bin + 1
+    tidytable(lwr = c(0, bin)) %>% 
+      tidytable::mutate(label = tidytable::case_when(lwr != 0 ~ lwr,
+                                                     lwr == 0 ~ bin[1])) -> bin_bnds
+    # determine which bin length is in
     .agedat %>% 
       tidytable::distinct(length) %>% 
-      tidytable::mutate(new_length = bin_bnds$upr[max(which(bin_bnds$lwr < length / 10))], 
+      tidytable::mutate(new_length = bin_bnds$label[max(which(bin_bnds$lwr < length / 10))], 
                         .by = c(length)) -> new_lengths
     # replace lengths in length frequency data with new binned lengths
     .agedat %>% 
@@ -524,7 +524,7 @@ srvy_comps_ai_cmplx <- function(lfreq_data,
 #' @param cpue_data catch-per-unit effort input dataframe
 #' @param r_t age reader-tester input dataframe, included in surveyISS package data
 #' @param yrs any year filter >= (default = NULL)
-#' @param bin bin size (default = 1 cm), also can use custom length bins through defining vector of upper length bin limits, i.e., c(5, 10, 20, 35, 60), plus length group will automatically be populated and denoted with the largest defined bin + 1 (i.e., 61 for provided example)
+#' @param bin bin size (default = 1 cm), also can use custom length bins following ss3 bin convention 
 #' @param boot_hauls Boolean. Resample hauls w/replacement? (default = FALSE)
 #' @param boot_ages Boolean. Resample ages w/replacement? (default = FALSE)
 #' @param al_var Boolean. Include age-length variability in resampled age data? (default = FALSE)
@@ -616,16 +616,16 @@ srvy_comps_caal <- function(specimen_data,
   if(length(bin) == 1){
     .agedat %>% 
       tidytable::mutate(length = bin * ceiling((length / 10) / bin)) -> .agedat
-  } else{ # custom length bins
+  } else{
+    # custom length bins, convention follows ss3 binning
     # set up bin bounds
-    c(0, bin) %>% 
-      tidytable::bind_cols(c(bin, bin[length(bin)] + 1)) %>% 
-      tidytable::rename(lwr = '...1', upr = '...2') -> bin_bnds
-    # determine which bin length is in, and define new length as upper bin
-    # note, plus bin is denoted as max length bin + 1
+    tidytable(lwr = c(0, bin)) %>% 
+      tidytable::mutate(label = tidytable::case_when(lwr != 0 ~ lwr,
+                                                     lwr == 0 ~ bin[1])) -> bin_bnds
+    # determine which bin length is in
     .agedat %>% 
       tidytable::distinct(length) %>% 
-      tidytable::mutate(new_length = bin_bnds$upr[max(which(bin_bnds$lwr < length / 10))], 
+      tidytable::mutate(new_length = bin_bnds$label[max(which(bin_bnds$lwr < length / 10))], 
                         .by = c(length)) -> new_lengths
     # replace lengths in length frequency data with new binned lengths
     .agedat %>% 
