@@ -167,16 +167,16 @@ srvy_iss <- function(iters = 1,
   if(length(bin) == 1){
     lfreq_data %>% 
       tidytable::mutate(length = bin * ceiling((length / 10) / bin)) -> .lfreq_data
-  } else{ # custom length bins
+  } else{
+    # custom length bins, convention follows ss3 binning
     # set up bin bounds
-    c(0, bin) %>% 
-      tidytable::bind_cols(c(bin, bin[length(bin)] + 1)) %>% 
-      tidytable::rename(lwr = '...1', upr = '...2') -> bin_bnds
-    # determine which bin length is in, and define new length as upper bin
-    # note, plus bin is denoted as max length bin + 1
+    tidytable(lwr = c(0, bin)) %>% 
+      tidytable::mutate(label = tidytable::case_when(lwr != 0 ~ lwr,
+                                                     lwr == 0 ~ bin[1])) -> bin_bnds
+    # determine which bin length is in
     lfreq_data %>% 
       tidytable::distinct(length) %>% 
-      tidytable::mutate(new_length = bin_bnds$upr[max(which(bin_bnds$lwr < length / 10))], 
+      tidytable::mutate(new_length = bin_bnds$label[max(which(bin_bnds$lwr < length / 10))], 
                         .by = c(length)) -> new_lengths
     # replace lengths in length frequency data with new binned lengths
     lfreq_data %>% 
@@ -407,16 +407,16 @@ srvy_iss_ai_cmplx <- function(iters = 1,
   if(length(bin) == 1){
     lfreq_data %>% 
       tidytable::mutate(length = bin * ceiling((length / 10) / bin)) -> .lfreq_data
-  } else{ # custom length bins
+  } else{ 
+    # custom length bins, convention follows ss3 binning
     # set up bin bounds
-    c(0, bin) %>% 
-      tidytable::bind_cols(c(bin, bin[length(bin)] + 1)) %>% 
-      tidytable::rename(lwr = '...1', upr = '...2') -> bin_bnds
-    # determine which bin length is in, and define new length as upper bin
-    # note, plus bin is denoted as max length bin + 1
+    tidytable(lwr = c(0, bin)) %>% 
+      tidytable::mutate(label = tidytable::case_when(lwr != 0 ~ lwr,
+                                                     lwr == 0 ~ bin[1])) -> bin_bnds
+    # determine which bin length is in
     lfreq_data %>% 
       tidytable::distinct(length) %>% 
-      tidytable::mutate(new_length = bin_bnds$upr[max(which(bin_bnds$lwr < length / 10))], 
+      tidytable::mutate(new_length = bin_bnds$label[max(which(bin_bnds$lwr < length / 10))], 
                         .by = c(length)) -> new_lengths
     # replace lengths in length frequency data with new binned lengths
     lfreq_data %>% 
@@ -672,16 +672,16 @@ srvy_iss_goa_cmplx <- function(iters = 1,
   if(length(bin) == 1){
     lfreq_data %>% 
       tidytable::mutate(length = bin * ceiling((length / 10) / bin)) -> .lfreq_data
-  } else{ # custom length bins
+  } else{ 
+    # custom length bins, convention follows ss3 binning
     # set up bin bounds
-    c(0, bin) %>% 
-      tidytable::bind_cols(c(bin, bin[length(bin)] + 1)) %>% 
-      tidytable::rename(lwr = '...1', upr = '...2') -> bin_bnds
-    # determine which bin length is in, and define new length as upper bin
-    # note, plus bin is denoted as max length bin + 1
+    tidytable(lwr = c(0, bin)) %>% 
+      tidytable::mutate(label = tidytable::case_when(lwr != 0 ~ lwr,
+                                                     lwr == 0 ~ bin[1])) -> bin_bnds
+    # determine which bin length is in
     lfreq_data %>% 
       tidytable::distinct(length) %>% 
-      tidytable::mutate(new_length = bin_bnds$upr[max(which(bin_bnds$lwr < length / 10))], 
+      tidytable::mutate(new_length = bin_bnds$label[max(which(bin_bnds$lwr < length / 10))], 
                         .by = c(length)) -> new_lengths
     # replace lengths in length frequency data with new binned lengths
     lfreq_data %>% 
@@ -993,19 +993,19 @@ srvy_iss_goa_w_c_e <- function(iters = 1,
   if(length(bin) == 1){
     .lfreq_data %>% 
       tidytable::mutate(length = bin * ceiling((length / 10) / bin)) -> .lfreq_data
-  } else{ # custom length bins
+  } else{ 
+    # custom length bins, convention follows ss3 binning
     # set up bin bounds
-    c(0, bin) %>% 
-      tidytable::bind_cols(c(bin, bin[length(bin)] + 1)) %>% 
-      tidytable::rename(lwr = '...1', upr = '...2') -> bin_bnds
-    # determine which bin length is in, and define new length as upper bin
-    # note, plus bin is denoted as max length bin + 1
-    .lfreq_data %>% 
+    tidytable(lwr = c(0, bin)) %>% 
+      tidytable::mutate(label = tidytable::case_when(lwr != 0 ~ lwr,
+                                                     lwr == 0 ~ bin[1])) -> bin_bnds
+    # determine which bin length is in
+    lfreq_data %>% 
       tidytable::distinct(length) %>% 
-      tidytable::mutate(new_length = bin_bnds$upr[max(which(bin_bnds$lwr < length / 10))], 
+      tidytable::mutate(new_length = bin_bnds$label[max(which(bin_bnds$lwr < length / 10))], 
                         .by = c(length)) -> new_lengths
     # replace lengths in length frequency data with new binned lengths
-    .lfreq_data %>% 
+    lfreq_data %>% 
       tidytable::left_join(new_lengths) %>% 
       tidytable::select(-length, length = new_length) -> .lfreq_data
   }
@@ -1305,19 +1305,19 @@ srvy_iss_goa_wc_e <- function(iters = 1,
   if(length(bin) == 1){
     .lfreq_data %>% 
       tidytable::mutate(length = bin * ceiling((length / 10) / bin)) -> .lfreq_data
-  } else{ # custom length bins
+  } else{
+    # custom length bins, convention follows ss3 binning
     # set up bin bounds
-    c(0, bin) %>% 
-      tidytable::bind_cols(c(bin, bin[length(bin)] + 1)) %>% 
-      tidytable::rename(lwr = '...1', upr = '...2') -> bin_bnds
-    # determine which bin length is in, and define new length as upper bin
-    # note, plus bin is denoted as max length bin + 1
-    .lfreq_data %>% 
+    tidytable(lwr = c(0, bin)) %>% 
+      tidytable::mutate(label = tidytable::case_when(lwr != 0 ~ lwr,
+                                                     lwr == 0 ~ bin[1])) -> bin_bnds
+    # determine which bin length is in
+    lfreq_data %>% 
       tidytable::distinct(length) %>% 
-      tidytable::mutate(new_length = bin_bnds$upr[max(which(bin_bnds$lwr < length / 10))], 
+      tidytable::mutate(new_length = bin_bnds$label[max(which(bin_bnds$lwr < length / 10))], 
                         .by = c(length)) -> new_lengths
     # replace lengths in length frequency data with new binned lengths
-    .lfreq_data %>% 
+    lfreq_data %>% 
       tidytable::left_join(new_lengths) %>% 
       tidytable::select(-length, length = new_length) -> .lfreq_data
   }
@@ -1567,16 +1567,16 @@ srvy_iss_w140 <- function(iters = 1,
   if(length(bin) == 1){
     lfreq_data %>% 
       tidytable::mutate(length = bin * ceiling((length / 10) / bin)) -> .lfreq_data
-  } else{ # custom length bins
+  } else{
+    # custom length bins, convention follows ss3 binning
     # set up bin bounds
-    c(0, bin) %>% 
-      tidytable::bind_cols(c(bin, bin[length(bin)] + 1)) %>% 
-      tidytable::rename(lwr = '...1', upr = '...2') -> bin_bnds
-    # determine which bin length is in, and define new length as upper bin
-    # note, plus bin is denoted as max length bin + 1
+    tidytable(lwr = c(0, bin)) %>% 
+      tidytable::mutate(label = tidytable::case_when(lwr != 0 ~ lwr,
+                                                     lwr == 0 ~ bin[1])) -> bin_bnds
+    # determine which bin length is in
     lfreq_data %>% 
       tidytable::distinct(length) %>% 
-      tidytable::mutate(new_length = bin_bnds$upr[max(which(bin_bnds$lwr < length / 10))], 
+      tidytable::mutate(new_length = bin_bnds$label[max(which(bin_bnds$lwr < length / 10))], 
                         .by = c(length)) -> new_lengths
     # replace lengths in length frequency data with new binned lengths
     lfreq_data %>% 
@@ -1907,19 +1907,19 @@ srvy_iss_ai_subreg <- function(iters = 1,
   if(length(bin) == 1){
     .lfreq_data %>% 
       tidytable::mutate(length = bin * ceiling((length / 10) / bin)) -> .lfreq_data
-  } else{ # custom length bins
+  } else{
+    # custom length bins, convention follows ss3 binning
     # set up bin bounds
-    c(0, bin) %>% 
-      tidytable::bind_cols(c(bin, bin[length(bin)] + 1)) %>% 
-      tidytable::rename(lwr = '...1', upr = '...2') -> bin_bnds
-    # determine which bin length is in, and define new length as upper bin
-    # note, plus bin is denoted as max length bin + 1
-    .lfreq_data %>% 
+    tidytable(lwr = c(0, bin)) %>% 
+      tidytable::mutate(label = tidytable::case_when(lwr != 0 ~ lwr,
+                                                     lwr == 0 ~ bin[1])) -> bin_bnds
+    # determine which bin length is in
+    lfreq_data %>% 
       tidytable::distinct(length) %>% 
-      tidytable::mutate(new_length = bin_bnds$upr[max(which(bin_bnds$lwr < length / 10))], 
+      tidytable::mutate(new_length = bin_bnds$label[max(which(bin_bnds$lwr < length / 10))], 
                         .by = c(length)) -> new_lengths
     # replace lengths in length frequency data with new binned lengths
-    .lfreq_data %>% 
+    lfreq_data %>% 
       tidytable::left_join(new_lengths) %>% 
       tidytable::select(-length, length = new_length) -> .lfreq_data
   }
@@ -2076,16 +2076,16 @@ srvy_iss_caal <- function(iters = 1,
   if(length(bin) == 1){
     specimen_data %>% 
       tidytable::mutate(length = bin * ceiling((length / 10) / bin)) -> .specimen_data
-  } else{ # custom length bins
+  } else{
+    # custom length bins, convention follows ss3 binning
     # set up bin bounds
-    c(0, bin) %>% 
-      tidytable::bind_cols(c(bin, bin[length(bin)] + 1)) %>% 
-      tidytable::rename(lwr = '...1', upr = '...2') -> bin_bnds
-    # determine which bin length is in, and define new length as upper bin
-    # note, plus bin is denoted as max length bin + 1
+    tidytable(lwr = c(0, bin)) %>% 
+      tidytable::mutate(label = tidytable::case_when(lwr != 0 ~ lwr,
+                                                     lwr == 0 ~ bin[1])) -> bin_bnds
+    # determine which bin length is in
     specimen_data %>% 
       tidytable::distinct(length) %>% 
-      tidytable::mutate(new_length = bin_bnds$upr[max(which(bin_bnds$lwr < length / 10))], 
+      tidytable::mutate(new_length = bin_bnds$label[max(which(bin_bnds$lwr < length / 10))], 
                         .by = c(length)) -> new_lengths
     # replace lengths in length frequency data with new binned lengths
     specimen_data %>% 
