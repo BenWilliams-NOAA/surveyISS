@@ -170,7 +170,7 @@ srvy_iss <- function(iters = 1,
   } else{
     # custom length bins, convention follows ss3 binning
     # set up bin bounds
-    tidytable(lwr = c(0, bin)) %>% 
+    tidytable::tidytable(lwr = c(0, bin)) %>% 
       tidytable::mutate(label = tidytable::case_when(lwr != 0 ~ lwr,
                                                      lwr == 0 ~ bin[1])) -> bin_bnds
     # determine which bin length is in
@@ -410,7 +410,7 @@ srvy_iss_ai_cmplx <- function(iters = 1,
   } else{ 
     # custom length bins, convention follows ss3 binning
     # set up bin bounds
-    tidytable(lwr = c(0, bin)) %>% 
+    tidytable::tidytable(lwr = c(0, bin)) %>% 
       tidytable::mutate(label = tidytable::case_when(lwr != 0 ~ lwr,
                                                      lwr == 0 ~ bin[1])) -> bin_bnds
     # determine which bin length is in
@@ -675,7 +675,7 @@ srvy_iss_goa_cmplx <- function(iters = 1,
   } else{ 
     # custom length bins, convention follows ss3 binning
     # set up bin bounds
-    tidytable(lwr = c(0, bin)) %>% 
+    tidytable::tidytable(lwr = c(0, bin)) %>% 
       tidytable::mutate(label = tidytable::case_when(lwr != 0 ~ lwr,
                                                      lwr == 0 ~ bin[1])) -> bin_bnds
     # determine which bin length is in
@@ -996,7 +996,7 @@ srvy_iss_goa_w_c_e <- function(iters = 1,
   } else{ 
     # custom length bins, convention follows ss3 binning
     # set up bin bounds
-    tidytable(lwr = c(0, bin)) %>% 
+    tidytable::tidytable(lwr = c(0, bin)) %>% 
       tidytable::mutate(label = tidytable::case_when(lwr != 0 ~ lwr,
                                                      lwr == 0 ~ bin[1])) -> bin_bnds
     # determine which bin length is in
@@ -1308,7 +1308,7 @@ srvy_iss_goa_wc_e <- function(iters = 1,
   } else{
     # custom length bins, convention follows ss3 binning
     # set up bin bounds
-    tidytable(lwr = c(0, bin)) %>% 
+    tidytable::tidytable(lwr = c(0, bin)) %>% 
       tidytable::mutate(label = tidytable::case_when(lwr != 0 ~ lwr,
                                                      lwr == 0 ~ bin[1])) -> bin_bnds
     # determine which bin length is in
@@ -1570,7 +1570,7 @@ srvy_iss_w140 <- function(iters = 1,
   } else{
     # custom length bins, convention follows ss3 binning
     # set up bin bounds
-    tidytable(lwr = c(0, bin)) %>% 
+    tidytable::tidytable(lwr = c(0, bin)) %>% 
       tidytable::mutate(label = tidytable::case_when(lwr != 0 ~ lwr,
                                                      lwr == 0 ~ bin[1])) -> bin_bnds
     # determine which bin length is in
@@ -1910,7 +1910,7 @@ srvy_iss_ai_subreg <- function(iters = 1,
   } else{
     # custom length bins, convention follows ss3 binning
     # set up bin bounds
-    tidytable(lwr = c(0, bin)) %>% 
+    tidytable::tidytable(lwr = c(0, bin)) %>% 
       tidytable::mutate(label = tidytable::case_when(lwr != 0 ~ lwr,
                                                      lwr == 0 ~ bin[1])) -> bin_bnds
     # determine which bin length is in
@@ -2079,7 +2079,7 @@ srvy_iss_caal <- function(iters = 1,
   } else{
     # custom length bins, convention follows ss3 binning
     # set up bin bounds
-    tidytable(lwr = c(0, bin)) %>% 
+    tidytable::tidytable(lwr = c(0, bin)) %>% 
       tidytable::mutate(label = tidytable::case_when(lwr != 0 ~ lwr,
                                                      lwr == 0 ~ bin[1])) -> bin_bnds
     # determine which bin length is in
