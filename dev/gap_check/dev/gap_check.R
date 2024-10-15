@@ -14,14 +14,14 @@
 
 # load/source libraries/functions ----
 # devtools::unload('surveyISS')
-# devtools::install_github("BenWilliams-NOAA/surveyISS", force =)
+# devtools::install_github("BenWilliams-NOAA/surveyISS", force = TRUE)
 library(surveyISS)
 
 source_files <- list.files(here::here("dev", "gap_check", "R"), "*.R$")
 purrr::map(here::here("dev", "gap_check", "R", source_files), source)
 
 # determine whether data pull is necessary ----
-query_srvyISS = FALSE
+query_svyISS = FALSE
 query_gpprod = FALSE
 query_gpindx = FALSE
 

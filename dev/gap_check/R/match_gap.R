@@ -23,6 +23,7 @@ match_gap <- function(oga,
   
   gap_lpop %>% 
     tidytable::select(-stratum) %>% 
+    tidytable::mutate(length = length / 10) %>% 
     tidytable::rename(abund_gap = population_count) %>% 
     tidytable::left_join(ogl) %>% 
     tidytable::drop_na() %>% 
@@ -31,11 +32,12 @@ match_gap <- function(oga,
                          .by = c(year, species_code, sex)) %>% 
     tidytable::mutate(test_mapd_l = tidytable::case_when(match_mapd_l < thresh_mapd ~ 'Y',
                                                          match_mapd_l > thresh_mapd ~ 'N')) -> gap_match_len_n
-  
+
   # Compare between surveyISS and GAP estimates of proportions at length
   
   gap_lpop %>% 
     tidytable::select(-stratum) %>% 
+    tidytable::mutate(length = length / 10) %>% 
     tidytable::rename(abund_gap = population_count) %>% 
     tidytable::left_join(ogl) %>% 
     tidytable::filter(sex != 3) %>% 
