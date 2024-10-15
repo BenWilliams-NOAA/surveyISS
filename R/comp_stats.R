@@ -505,16 +505,16 @@ iss_length <- function(rss_length,
       # add nominal sample size (nss) and number of hauls (nhls)
       tidytable::left_join(lfreq_data %>% 
                              tidytable::filter(sex != 3) %>% 
-                             tidytable::summarise(nss = sum(frequency), .by = c(year, species_code, sex)) %>% 
+                             tidytable::summarise(nss = sum(frequency, na.rm = TRUE), .by = c(year, species_code, sex)) %>% 
                              tidytable::bind_rows(lfreq_data %>% 
-                                                    tidytable::summarise(nss = sum(frequency), .by = c(year, species_code)) %>% 
+                                                    tidytable::summarise(nss = sum(frequency, na.rm = TRUE), .by = c(year, species_code)) %>% 
                                                     tidytable::mutate(sex = 0)) %>% 
                              tidytable::bind_rows(lfreq_data %>% 
-                                                    tidytable::summarise(nss = sum(frequency), .by = c(year, species_code)) %>% 
+                                                    tidytable::summarise(nss = sum(frequency, na.rm = TRUE), .by = c(year, species_code)) %>% 
                                                     tidytable::mutate(sex = 4)) %>% 
                              tidytable::bind_rows(lfreq_data %>% 
                                                     tidytable::filter(sex != 3) %>% 
-                                                    tidytable::summarise(nss = sum(frequency), .by = c(year, species_code)) %>% 
+                                                    tidytable::summarise(nss = sum(frequency, na.rm = TRUE), .by = c(year, species_code)) %>% 
                                                     tidytable::mutate(sex = 12)) %>% 
                              tidytable::left_join(lfreq_data %>% 
                                                     tidytable::filter(sex != 3) %>% 
@@ -538,16 +538,16 @@ iss_length <- function(rss_length,
       # add nominal sample size (nss) and number of hauls (nhls)
       tidytable::left_join(lfreq_data %>% 
                              tidytable::filter(sex != 3) %>% 
-                             tidytable::summarise(nss = sum(frequency), .by = c(year, region, species_code, sex)) %>% 
+                             tidytable::summarise(nss = sum(frequency, na.rm = TRUE), .by = c(year, region, species_code, sex)) %>% 
                              tidytable::bind_rows(lfreq_data %>% 
-                                                    tidytable::summarise(nss = sum(frequency), .by = c(year, region, species_code)) %>% 
+                                                    tidytable::summarise(nss = sum(frequency, na.rm = TRUE), .by = c(year, region, species_code)) %>% 
                                                     tidytable::mutate(sex = 0)) %>% 
                              tidytable::bind_rows(lfreq_data %>% 
-                                                    tidytable::summarise(nss = sum(frequency), .by = c(year, region, species_code)) %>% 
+                                                    tidytable::summarise(nss = sum(frequency, na.rm = TRUE), .by = c(year, region, species_code)) %>% 
                                                     tidytable::mutate(sex = 4)) %>% 
                              tidytable::bind_rows(lfreq_data %>% 
                                                     tidytable::filter(sex != 3) %>% 
-                                                    tidytable::summarise(nss = sum(frequency), .by = c(year, region, species_code)) %>% 
+                                                    tidytable::summarise(nss = sum(frequency, na.rm = TRUE), .by = c(year, region, species_code)) %>% 
                                                     tidytable::mutate(sex = 12)) %>% 
                              tidytable::left_join(lfreq_data %>% 
                                                     tidytable::filter(sex != 3) %>% 
@@ -564,19 +564,19 @@ iss_length <- function(rss_length,
                                                                            tidytable::mutate(sex = 12))) %>% 
                              tidytable::bind_rows(lfreq_data %>% 
                                                     tidytable::filter(sex != 3) %>% 
-                                                    tidytable::summarise(nss = sum(frequency), .by = c(year, species_code, sex)) %>% 
+                                                    tidytable::summarise(nss = sum(frequency, na.rm = TRUE), .by = c(year, species_code, sex)) %>% 
                                                     tidytable::mutate(region = survey_region) %>% 
                                                     tidytable::bind_rows(lfreq_data %>% 
-                                                                           tidytable::summarise(nss = sum(frequency), .by = c(year, species_code)) %>% 
+                                                                           tidytable::summarise(nss = sum(frequency, na.rm = TRUE), .by = c(year, species_code)) %>% 
                                                                            tidytable::mutate(sex = 0,
                                                                                              region = survey_region)) %>% 
                                                     tidytable::bind_rows(lfreq_data %>% 
-                                                                           tidytable::summarise(nss = sum(frequency), .by = c(year, species_code)) %>% 
+                                                                           tidytable::summarise(nss = sum(frequency, na.rm = TRUE), .by = c(year, species_code)) %>% 
                                                                            tidytable::mutate(sex = 4,
                                                                                              region = survey_region)) %>% 
                                                     tidytable::bind_rows(lfreq_data %>% 
                                                                            tidytable::filter(sex != 3) %>% 
-                                                                           tidytable::summarise(nss = sum(frequency), .by = c(year, species_code)) %>% 
+                                                                           tidytable::summarise(nss = sum(frequency, na.rm = TRUE), .by = c(year, species_code)) %>% 
                                                                            tidytable::mutate(sex = 12,
                                                                                              region = survey_region)) %>% 
                                                     tidytable::left_join(lfreq_data %>% 
