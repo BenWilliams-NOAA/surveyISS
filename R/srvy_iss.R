@@ -2125,4 +2125,211 @@ srvy_iss_caal <- function(iters = 1,
 }
 
 
+#' Spatially-explicit survey input sample size function
+#' 
+#' @description
+#' Bootstrap data sources to replicate bottom trawl survey conditional age-at-length
+#' for computation of input sample size by western, central and eastern GOA subregions
+#' 
+#' @param iters number of iterations (min of 500 recommended for full run)
+#' @param specimen_data age-length specimen input dataframe
+#' @param cpue_data catch-per-unit effort input dataframe
+#' @param yrs any year filter >= (default = NULL)
+#' @param bin bin size (default = 1 cm), also can use custom length bins following ss3 bin convention 
+#' @param boot_hauls Boolean. Resample hauls w/replacement? (default = FALSE)
+#' @param boot_ages Boolean. Resample ages w/replacement? (default = FALSE)
+#' @param al_var Boolean. Include age-length variability in resampled age data? (default = FALSE)
+#' @param al_var_ann Boolean. Resample age-length variability annually or pooled across years? (default = FALSE)
+#' @param age_err Boolean. Include ageing error in resampled age data? (default = FALSE)
+#' @param age_samples If set at a value, tests reductions (and increases) in survey-level number of ages collected. To test, set at a proportion of ages collected, i.e., 0.8 or 1.2 (default = NULL)
+#' @param plus_len If set at a value, computes length expansion with a plus-length group (default = FALSE)
+#' @param plus_age If set at a value, computes age expansion with a plus-age group (default = FALSE)
+#' @param region Region will create a folder and place results in said folder. (default = 'goa')
+#' @param save_interm Boolean. Save the intermediate results: resampled age/length comps and realized sample size per iteration? (default = FALSE)
+#' @param save_stats Boolean. Save other statistics: base age/length comps without resampling, mean length-at-age, bootstrap bias? (default = FALSE)
+#' @param save Name to attach to and identify output files. 
+#' 
+#' @return Dataframe of input sample size by year, region (western - 'wgoa', central - 'cgoa', eastern - 'egoa',
+#' and combined across subregions after subregion expansion - 'goa'), species (using RACE species codes), sex (0 - combined sex ,
+#' 1 - males, 2 - females, 3 - unsexed; all with short description IDs in sex_desc column) and length for 
+#' conditional age-at-length (output saved with 'iss_caal' in file name).
+#' For comparison, nominal sample size ('nss' - the number of age-length samples actually taken) is included. 
+#' GOA subregion output will be denoted with w_c_egoa in output filename. Will also produce other dataframes if desired (see save_intern and save_stats argument descriptions).
+#' 
+#' @export
+#'
+srvy_iss_goa_w_c_e_caal <- function(iters = 1, 
+                                    specimen_data, 
+                                    cpue_data, 
+                                    yrs = NULL, 
+                                    bin = 1, 
+                                    boot_hauls = FALSE,
+                                    boot_ages = FALSE,
+                                    al_var = FALSE,
+                                    al_var_ann = FALSE,
+                                    age_err = FALSE,
+                                    age_samples = NULL,
+                                    plus_len = NULL,
+                                    plus_age = NULL,
+                                    region = 'goa',
+                                    save_interm = FALSE, 
+                                    save_stats = FALSE,
+                                    save){
 
+  # create storage location
+  region = tolower(region)
+  if(!dir.exists(here::here('output', region))){
+    dir.create(here::here('output', region), recursive = TRUE)
+  }
+  
+  # restructure data
+  specimen_data <- tidytable::as_tidytable(specimen_data) 
+  cpue_data <- tidytable::as_tidytable(cpue_data)  
+  
+  # define data by subregion 
+  specimen_data %>% 
+    tidytable::left_join(strata_data) %>% 
+    tidytable::mutate(region = dplyr::case_when(area_id == 803 ~ 'cgoa',
+                                                area_id == 804 ~ 'egoa',
+                                                area_id == 805 ~ 'wgoa')) %>% 
+    tidytable::select(-design_year, -area, -area_id, -subarea_name) -> .specimen_data
+  
+  cpue_data %>%  
+    tidytable::left_join(strata_data) %>% 
+    tidytable::mutate(region = dplyr::case_when(area_id == 803 ~ 'cgoa',
+                                                area_id == 804 ~ 'egoa',
+                                                area_id == 805 ~ 'wgoa')) %>% 
+    tidytable::select(-design_year, -area, -area_id, -subarea_name)  -> .cpue_data
+  
+  # filter reader-tester data to species
+  lfreq_data %>% 
+    tidytable::distinct(species_code) -> species
+  surveyISS::read_test %>% 
+    tidytable::filter(species_code %in% species$species_code) -> r_t
+
+  # get original caal values ----
+  subregion = c('wgoa', 'cgoa', 'egoa')
+  og <- purrr::map(1:length(subregion), ~ srvy_comps_caal(specimen_data = subset(.specimen_data, .specimen_data$region == subregion[.]), 
+                                                          cpue_data = subset(.cpue_data, .cpue_data$region == subregion[.]), 
+                                                          r_t = r_t,
+                                                          yrs = yrs, 
+                                                          bin = bin,
+                                                          boot_hauls = FALSE, 
+                                                          boot_ages = FALSE,
+                                                          al_var = FALSE,
+                                                          al_var_ann = FALSE,
+                                                          age_err = FALSE,
+                                                          age_samples = NULL,
+                                                          plus_len = plus_len,
+                                                          plus_age = plus_age))
+  
+  ogcaal <- do.call(mapply, c(list, og, SIMPLIFY = FALSE))$caal %>% 
+    tidytable::map_df(., ~as.data.frame(.x), .id = "region") %>% 
+    tidytable::mutate(region = dplyr::case_when(region == 1 ~ subregion[1],
+                                                region == 2 ~ subregion[2],
+                                                region == 3 ~ subregion[3]))
+
+  # run resampling iterations ----
+  rr <- purrr::map(1:iters, ~ purrr::map(1:length(subregion), ~ srvy_comps_caal(specimen_data = subset(.specimen_data, .specimen_data$region == subregion[.]), 
+                                                                                cpue_data = subset(.cpue_data, .cpue_data$region == subregion[.]), 
+                                                                                r_t = r_t,
+                                                                                yrs = yrs, 
+                                                                                bin = bin,
+                                                                                boot_hauls = boot_hauls, 
+                                                                                boot_ages = boot_ages,
+                                                                                al_var = al_var,
+                                                                                al_var_ann = al_var_ann,
+                                                                                age_err = age_err,
+                                                                                age_samples = age_samples,
+                                                                                plus_len = plus_len,
+                                                                                plus_age = plus_age)),
+                   .progress = list(type = "iterator", 
+                                    format = "Resampling {cli::pb_bar} {cli::pb_percent}",
+                                    clear = TRUE))
+  
+  # get resampled caal
+  r_caal <- purrr::map(1:iters, ~(do.call(mapply, c(list, rr[[.]], SIMPLIFY = FALSE))$caal %>% 
+                                   tidytable::map_df(., ~as.data.frame(.x), .id = "region") %>% 
+                                   tidytable::mutate(region = dplyr::case_when(region == 1 ~ subregion[1],
+                                                                               region == 2 ~ subregion[2],
+                                                                               region == 3 ~ subregion[3])))) %>% 
+    tidytable::map_df(., ~as.data.frame(.x), .id = "sim")
+
+  # compute statistics ----
+  ## first re-bin length data ----
+  # bin by cm blocks
+  if(length(bin) == 1){
+    .specimen_data %>% 
+      tidytable::mutate(length = bin * ceiling((length / 10) / bin)) -> .specimen_data
+  } else{ 
+    # custom length bins, convention follows ss3 binning
+    # set up bin bounds
+    tidytable::tidytable(lwr = c(0, bin)) %>% 
+      tidytable::mutate(label = tidytable::case_when(lwr != 0 ~ lwr,
+                                                     lwr == 0 ~ bin[1])) -> bin_bnds
+    # determine which bin length is in
+    .specimen_data %>% 
+      tidytable::distinct(length) %>% 
+      tidytable::mutate(new_length = bin_bnds$label[max(which(bin_bnds$lwr < length / 10))], 
+                        .by = c(length)) -> new_lengths
+    # replace lengths in length frequency data with new binned lengths
+    .specimen_data %>% 
+      tidytable::left_join(new_lengths) %>% 
+      tidytable::select(-length, length = new_length) -> .specimen_data
+  }
+  ## second deal with plus groups ----
+  # set lengths > plus-length group to plus-length
+  # note: if custom length bins are used the plus length group will already be populated
+  if(!is.null(plus_len)){
+    .specimen_data %>% 
+      tidytable::mutate(length = dplyr::case_when(length >= plus_len ~ plus_len,
+                                                  length < plus_len ~ length)) -> .specimen_data
+  }
+  # set age > plus-age group to plus-age
+  if(!is.null(plus_age)){
+    .specimen_data %>% 
+      tidytable::mutate(age = dplyr::case_when(age >= plus_age ~ plus_age,
+                                               age < plus_age ~ age)) -> .specimen_data
+  }
+  
+  ## now get statistics ----
+  .out_stats <- purrr::map(1:length(subregion), ~ comp_stats_caal(r_caal = subset(r_caal, r_caal$region == subregion[.]), 
+                                                                 ogcaal = subset(ogcaal, ogcaal$region == subregion[.]), 
+                                                                 specimen_data = subset(.specimen_data, .specimen_data$region == subregion[.])))
+  
+  out_stats <- list(rss_caal = purrr::map(1:length(subregion), ~purrr::list_rbind(list(.out_stats[[.]]$rss_caal))) %>% 
+                      tidytable::map_df(., ~as.data.frame(.x), .id = "region") %>% 
+                      tidytable::mutate(region = dplyr::case_when(region == 1 ~ subregion[1],
+                                                                  region == 2 ~ subregion[2],
+                                                                  region == 3 ~ subregion[3])),
+                    iss_caal = purrr::map(1:length(subregion), ~purrr::list_rbind(list(.out_stats[[.]]$iss_caal))) %>% 
+                      tidytable::map_df(., ~as.data.frame(.x), .id = "region") %>% 
+                      tidytable::mutate(region = dplyr::case_when(region == 1 ~ subregion[1],
+                                                                  region == 2 ~ subregion[2],
+                                                                  region == 3 ~ subregion[3])),
+                    bias_caal = purrr::map(1:length(subregion), ~purrr::list_rbind(list(.out_stats[[.]]$bias_caal))) %>% 
+                      tidytable::map_df(., ~as.data.frame(.x), .id = "region") %>% 
+                      tidytable::mutate(region = dplyr::case_when(region == 1 ~ subregion[1],
+                                                                  region == 2 ~ subregion[2],
+                                                                  region == 3 ~ subregion[3])))
+
+  # write results ----
+  # input sample size
+  vroom::vroom_write(out_stats$iss_caal, here::here("output", region, paste0(save, "_iss_caal_w_c_egoa.csv")), delim = ",")    
+  
+  # if desired, write out additional statistics
+  if(isTRUE(save_stats)){
+    # base conditional age-at-length
+    vroom::vroom_write(ogcaal, file = here::here("output", region, paste0(save, "_base_caal_w_c_egoa.csv")), delim = ",")
+    # bias in age & length pop'n
+    vroom::vroom_write(out_stats$bias_caal, file = here::here("output", region, paste0(save, "_bias_caal_w_c_egoa.csv")), delim = ",")
+    # realized sample size
+    vroom::vroom_write(out_stats$rss_caal, here::here("output", region, paste0(save, "_iter_rss_caal_w_c_egoa.csv")), delim = ",")
+  }
+  
+  # if desired, write out bootstrapped age & length pop'n
+  if(isTRUE(save_interm)) {
+    vroom::vroom_write(r_caal, here::here("output", region, paste0(save, "_resampled_caal_w_c_egoa.csv")), delim = ",")
+  }
+  
+}
