@@ -2201,7 +2201,7 @@ srvy_iss_goa_w_c_e_caal <- function(iters = 1,
     tidytable::select(-design_year, -area, -area_id, -subarea_name)  -> .cpue_data
   
   # filter reader-tester data to species
-  lfreq_data %>% 
+  specimen_data %>% 
     tidytable::distinct(species_code) -> species
   surveyISS::read_test %>% 
     tidytable::filter(species_code %in% species$species_code) -> r_t
@@ -2409,7 +2409,7 @@ srvy_iss_goa_wc_e_caal <- function(iters = 1,
     tidytable::select(-design_year, -area, -area_id, -subarea_name)  -> .cpue_data
   
   # filter reader-tester data to species
-  lfreq_data %>% 
+  specimen_data %>% 
     tidytable::distinct(species_code) -> species
   surveyISS::read_test %>% 
     tidytable::filter(species_code %in% species$species_code) -> r_t
