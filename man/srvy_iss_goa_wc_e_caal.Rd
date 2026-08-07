@@ -8,6 +8,7 @@ srvy_iss_goa_wc_e_caal(
   iters = 1,
   specimen_data,
   cpue_data,
+  strat_data,
   yrs = NULL,
   bin = 1,
   boot_hauls = FALSE,
@@ -58,6 +59,8 @@ srvy_iss_goa_wc_e_caal(
 \item{save_stats}{Boolean. Save other statistics: base age/length comps without resampling, mean length-at-age, bootstrap bias? (default = FALSE)}
 
 \item{save}{Name to attach to and identify output files.}
+
+\item{strata_data}{strata id and area size input dataframe}
 }
 \value{
 Dataframe of input sample size by year, region (western/central combined - 'wcgoa', eastern - 'egoa'),
