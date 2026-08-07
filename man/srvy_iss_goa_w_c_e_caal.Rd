@@ -8,7 +8,7 @@ srvy_iss_goa_w_c_e_caal(
   iters = 1,
   specimen_data,
   cpue_data,
-  strat_data,
+  strata_data,
   yrs = NULL,
   bin = 1,
   boot_hauls = FALSE,
@@ -31,6 +31,8 @@ srvy_iss_goa_w_c_e_caal(
 \item{specimen_data}{age-length specimen input dataframe}
 
 \item{cpue_data}{catch-per-unit effort input dataframe}
+
+\item{strata_data}{strata id and area size input dataframe}
 
 \item{yrs}{any year filter >= (default = NULL)}
 
@@ -59,8 +61,6 @@ srvy_iss_goa_w_c_e_caal(
 \item{save_stats}{Boolean. Save other statistics: base age/length comps without resampling, mean length-at-age, bootstrap bias? (default = FALSE)}
 
 \item{save}{Name to attach to and identify output files.}
-
-\item{strata_data}{strata id and area size input dataframe}
 }
 \value{
 Dataframe of input sample size by year, region (western - 'wgoa', central - 'cgoa', eastern - 'egoa'),
