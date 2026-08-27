@@ -357,6 +357,7 @@ query_data <- function(survey,
                            tidytable::left_join(subreg) %>% 
                            tidytable::drop_na()) %>%
     tidytable::filter(design_year == max(design_year), .by = c(stratum)) %>% 
+    tidytable::distinct() %>% 
     vroom::vroom_write(here::here('data', region, "strata.csv"), 
                        delim = ',') -> strata
   
