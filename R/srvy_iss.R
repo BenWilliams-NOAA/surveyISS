@@ -2134,6 +2134,7 @@ srvy_iss_caal <- function(iters = 1,
 #' @param iters number of iterations (min of 500 recommended for full run)
 #' @param specimen_data age-length specimen input dataframe
 #' @param cpue_data catch-per-unit effort input dataframe
+#' @param strata_data strata id and area size input dataframe
 #' @param yrs any year filter >= (default = NULL)
 #' @param bin bin size (default = 1 cm), also can use custom length bins following ss3 bin convention 
 #' @param boot_hauls Boolean. Resample hauls w/replacement? (default = FALSE)
@@ -2160,6 +2161,7 @@ srvy_iss_caal <- function(iters = 1,
 srvy_iss_goa_w_c_e_caal <- function(iters = 1, 
                                     specimen_data, 
                                     cpue_data, 
+                                    strata_data,
                                     yrs = NULL, 
                                     bin = 1, 
                                     boot_hauls = FALSE,
@@ -2343,6 +2345,7 @@ srvy_iss_goa_w_c_e_caal <- function(iters = 1,
 #' @param iters number of iterations (min of 500 recommended for full run)
 #' @param specimen_data age-length specimen input dataframe
 #' @param cpue_data catch-per-unit effort input dataframe
+#' @param strata_data strata id and area size input dataframe
 #' @param yrs any year filter >= (default = NULL)
 #' @param bin bin size (default = 1 cm), also can use custom length bins following ss3 bin convention 
 #' @param boot_hauls Boolean. Resample hauls w/replacement? (default = FALSE)
@@ -2370,6 +2373,7 @@ srvy_iss_goa_w_c_e_caal <- function(iters = 1,
 srvy_iss_goa_wc_e_caal <- function(iters = 1, 
                                    specimen_data, 
                                    cpue_data, 
+                                   strata_data,
                                    yrs = NULL, 
                                    bin = 1, 
                                    boot_hauls = FALSE,

@@ -7,7 +7,7 @@ Authors@R:
              family = "Williams",
              email = "ben.williams@noaa.gov", 
              role = c("aut", "cre"),
-           comment = c(ORCID = "000-0001-7295-2076")),
+           comment = c(ORCID = "0000-0001-7295-2076")),
       person(given = "Pete", 
              family = "Hulson",
              email = "pete.hulson@noaa.gov", 
@@ -17,7 +17,7 @@ License: MIT + file LICENSE
 URL: https://github.com/BenWilliams-NOAA/surveyISS/, https://benwilliams-noaa.github.io/surveyISS/
 BugReports: https://github.com/BenWilliams-NOAA/surveyISS/issues
 Encoding: UTF-8
-RoxygenNote: 7.3.2
+RoxygenNote: 7.3.3
 Remotes: 
     git::https://github.com/afsc-assessments/afscdata
 Imports: 

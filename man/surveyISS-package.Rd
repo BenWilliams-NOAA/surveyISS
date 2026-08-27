@@ -18,7 +18,7 @@ Useful links:
 
 }
 \author{
-\strong{Maintainer}: Ben Williams \email{ben.williams@noaa.gov} (\href{https://orcid.org/000-0001-7295-2076}{ORCID})
+\strong{Maintainer}: Ben Williams \email{ben.williams@noaa.gov} (\href{https://orcid.org/0000-0001-7295-2076}{ORCID})
 
 Authors:
 \itemize{

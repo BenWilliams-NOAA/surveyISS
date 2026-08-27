@@ -8,6 +8,7 @@ srvy_iss_goa_wc_e_caal(
   iters = 1,
   specimen_data,
   cpue_data,
+  strata_data,
   yrs = NULL,
   bin = 1,
   boot_hauls = FALSE,
@@ -30,6 +31,8 @@ srvy_iss_goa_wc_e_caal(
 \item{specimen_data}{age-length specimen input dataframe}
 
 \item{cpue_data}{catch-per-unit effort input dataframe}
+
+\item{strata_data}{strata id and area size input dataframe}
 
 \item{yrs}{any year filter >= (default = NULL)}
 
