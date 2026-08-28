@@ -2,7 +2,7 @@
 
 # load surveyISS library ----
 # devtools::unload('surveyISS')
-# devtools::install_github("BenWilliams-NOAA/surveyISS", force = TRUE)
+# pak::pak("BenWilliams-NOAA/surveyISS")
 library(surveyISS)
 
 ## load/source libraries/functions for testing ----
