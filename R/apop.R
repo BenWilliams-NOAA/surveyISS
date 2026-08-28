@@ -189,13 +189,13 @@ apop_caal <- function(agedat){
     tidytable::summarise(n_age = .N,
                          .by = c(year, species_code, sex, length, age)) %>%
     tidytable::mutate(caal = n_age/sum(n_age), 
-                      .by = c(year, species_code, length)) %>% 
+                      .by = c(year, species_code, sex, length)) %>% 
     tidytable::bind_rows(agedat %>%
                            tidytable::drop_na() %>%
                            tidytable::filter(sex == 0) %>%
                            tidytable::summarise(n_age = .N,
                                                 .by = c(year, species_code, sex, length, age)) %>%
                            tidytable::mutate(caal = n_age/sum(n_age), 
-                                             .by = c(year, species_code, length)))
+                                             .by = c(year, species_code, sex, length)))
   
 }
