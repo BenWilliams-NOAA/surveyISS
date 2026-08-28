@@ -2475,18 +2475,21 @@ srvy_iss_goa_wc_e_caal <- function(iters = 1,
   } else{ 
     # custom length bins, convention follows ss3 binning
     # set up bin bounds
-    tidytable::tidytable(lwr = c(0, bin)) %>% 
+    tidytable::tidytable(lwr = c(0, bin[2:length(bin)])) %>% 
+      tidytable::bind_cols(upr = c(bin[2:length(bin)], 10000) - 0.01) %>% 
       tidytable::mutate(label = tidytable::case_when(lwr != 0 ~ lwr,
                                                      lwr == 0 ~ bin[1])) -> bin_bnds
+    
     # determine which bin length is in
-    .specimen_data %>% 
+    .agedat %>% 
       tidytable::distinct(length) %>% 
-      tidytable::mutate(new_length = bin_bnds$label[max(which(bin_bnds$lwr < length / 10))], 
+      tidytable::mutate(new_length = bin_bnds$label[which(length / 10 >= bin_bnds$lwr & length / 10 < bin_bnds$upr)], 
                         .by = c(length)) -> new_lengths
+    
     # replace lengths in length frequency data with new binned lengths
-    .specimen_data %>% 
+    .agedat %>% 
       tidytable::left_join(new_lengths) %>% 
-      tidytable::select(-length, length = new_length) -> .specimen_data
+      tidytable::select(-length, length = new_length) -> .agedat 
   }
   ## second deal with plus groups ----
   # set lengths > plus-length group to plus-length
