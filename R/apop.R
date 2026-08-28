@@ -182,23 +182,20 @@ apop <- function(lpop,
 #'
 apop_caal <- function(agedat){
   
-  # compute conditional age-at-length for females & males
+  # compute conditional age-at-length for females & males & combined sexes
   agedat %>%
     tidytable::drop_na() %>%
     tidytable::filter(sex %in% c(1, 2)) %>%
-    tidytable::summarise(age_num = .N,
+    tidytable::summarise(n_age = .N,
                          .by = c(year, species_code, sex, length, age)) %>%
-    tidytable::mutate(caal = age_num/sum(age_num), 
+    tidytable::mutate(caal = n_age/sum(n_age), 
                       .by = c(year, species_code, length)) %>% 
-    tidytable::mutate(sex = 12) %>% 
-    tidytable::select(-age_num) %>%
     tidytable::bind_rows(agedat %>%
                            tidytable::drop_na() %>%
                            tidytable::filter(sex == 0) %>%
-                           tidytable::summarise(age_num = .N,
+                           tidytable::summarise(n_age = .N,
                                                 .by = c(year, species_code, sex, length, age)) %>%
-                           tidytable::mutate(caal = age_num/sum(age_num), 
-                                             .by = c(year, species_code, sex, length)) %>% 
-                           tidytable::select(-age_num))
+                           tidytable::mutate(caal = n_age/sum(n_age), 
+                                             .by = c(year, species_code, length)))
   
 }
